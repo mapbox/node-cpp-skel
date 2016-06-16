@@ -21,9 +21,9 @@ matrix:
     - os: linux
       env: CXXFLAGS="-fsanitize=address" LDFLAGS="-fsanitize=address" NPM_FLAGS="--debug" ASAN_OPTIONS=detect_leaks=1
     - os: linux
-      env: CXXFLAGS="-fsanitize=integer" LDFLAGS="-fsanitize=address" NPM_FLAGS="--debug"
+      env: CXXFLAGS="-fsanitize=integer" LDFLAGS="-fsanitize=integer" NPM_FLAGS="--debug"
     - os: linux
-      env: CXXFLAGS="-fsanitize=thread" LDFLAGS="-fsanitize=address" NPM_FLAGS="--debug"
+      env: CXXFLAGS="-fsanitize=thread" LDFLAGS="-fsanitize=thread" NPM_FLAGS="--debug"
 
 before_install:
  - source ./scripts/travis_setup.sh
