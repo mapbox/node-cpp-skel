@@ -33,3 +33,8 @@ function main() {
 }
 
 main
+
+# set back to non-strict bash mode to avoid breaking travis itself
+set +eu
+set +o pipefail
+
