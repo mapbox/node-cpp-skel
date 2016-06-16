@@ -9,6 +9,10 @@ addons:
     sources: [ 'ubuntu-toolchain-r-test' ]
     packages: [ 'libstdc++6','libstdc++-5-dev' ]
 
+env:
+  global:
+   - LSAN_OPTIONS=suppressions=scripts/leak_suppressions.txt
+
 matrix:
   include:
     - os: osx
@@ -29,7 +33,7 @@ before_install:
  - which clang++
 
 install:
- - ASAN_OPTIONS=detect_leaks=0 npm install --build-from-source ${NPM_FLAGS}
+ - npm install --build-from-source ${NPM_FLAGS}
 
 script:
  - echo ${ASAN_OPTIONS}
