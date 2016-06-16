@@ -33,7 +33,7 @@ before_install:
  - which clang++
 
 install:
- - npm install --build-from-source ${NPM_FLAGS}
+ - ASAN_OPTIONS=detect_leaks=0 npm install --build-from-source ${NPM_FLAGS}
 
 script:
  - echo ${ASAN_OPTIONS}
