@@ -14,8 +14,7 @@ NAN_METHOD(HelloWorld::New)
         }
         catch (const std::exception &ex)
         {
-            // return Nan::ThrowTypeError(ex.what());
-            return Nan::ThrowTypeError("Error");
+            return Nan::ThrowTypeError(ex.what());
         }
 
         info.GetReturnValue().Set(info.This());
