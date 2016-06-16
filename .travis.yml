@@ -22,7 +22,7 @@ matrix:
       env: CXXFLAGS="-fsanitize=thread" NPM_FLAGS="--debug"
 
 before_install:
- - source ./travis_setup.sh
+ - source ./scripts/travis_setup.sh
  - node -v
  - which node
  - clang++ -v
