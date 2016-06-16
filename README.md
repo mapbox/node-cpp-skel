@@ -2,6 +2,9 @@ A skeleton for bindings to C++ libraries for Node.js us [Nan](https://github.com
 
 More examples: https://nodejs.org/api/addons.html
 
+[![Build Status](https://travis-ci.org/mapbox/node-cpp-skel.svg?branch=master)](https://travis-ci.org/mapbox/node-cpp-skel)
+[![codecov](https://codecov.io/gh/mapbox/node-cpp-skel/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/node-cpp-skel)
+
 # Installation
 
 ```
