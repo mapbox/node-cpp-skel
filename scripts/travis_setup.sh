@@ -29,7 +29,7 @@ function main() {
         export CXX=clang++
         export CC=clang
     fi
-    init_binary node_asan 4.4.4
+    init_binary node_asan 4.4.5
 }
 
 main
