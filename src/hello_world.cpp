@@ -148,15 +148,11 @@ void HelloWorld::AsyncShout(uv_work_t* req)
 
     /***************** custom code here ******************/
 
-    std::string return_string;
+    std::string return_string = baton->phrase + "!";
 
-    if (baton->louder == true)
+    if (baton->louder)
     {
-        return_string = baton->phrase + "!!!!";
-    }
-    else
-    {
-        return_string = baton->phrase + "!";
+        return_string += "!!!!";
     }
 
     /***************** end custom code *******************/
