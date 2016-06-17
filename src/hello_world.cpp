@@ -77,7 +77,7 @@ typedef struct {
     Nan::Persistent<v8::Function> cb; // callback function type
     std::string phrase;
     // std::string format;
-    // palette_ptr palette;
+    bool louder;
     std::string error_name;
     std::string result;
 } helloworld_shout_baton;
@@ -85,7 +85,7 @@ typedef struct {
 NAN_METHOD(HelloWorld::shout)
 {
     std::string phrase = "";
-    // palette_ptr palette;
+    bool louder = false;
 
     // check first argument, should be a 'phrase' string
     if (!info[0]->IsString()) 
@@ -100,10 +100,19 @@ NAN_METHOD(HelloWorld::shout)
     {
         Nan::ThrowTypeError("second arg 'object' must be an object");
         return;
-
-        // we'll want to do more to the object here
     }
-    // v8::Local<v8::Object> options = info[1].As<v8::Object>();
+
+    v8::Local<v8::Object> options = info[1].As<v8::Object>();
+    if (options->Has(Nan::New("louder").ToLocalChecked())) 
+    {
+        v8::Local<v8::Value> louder_val = options->Get(Nan::New("louder").ToLocalChecked());
+        if (!louder_val->IsBoolean())
+        {
+            Nan::ThrowError("option 'louder' must be a boolean");
+            return;
+        }
+        louder = louder_val->BooleanValue();
+    }
 
     // check third argument, should be a 'callback' function
     if (!info[2]->IsFunction()) 
@@ -117,6 +126,7 @@ NAN_METHOD(HelloWorld::shout)
     helloworld_shout_baton *baton = new helloworld_shout_baton();
     baton->request.data = baton;
     baton->phrase = phrase;
+    baton->louder = louder;
     baton->cb.Reset(callback.As<v8::Function>());
 
     // this is the all-important way to pass info into the threadpool using uv_queue_work
@@ -138,7 +148,16 @@ void HelloWorld::AsyncShout(uv_work_t* req)
 
     /***************** custom code here ******************/
 
-    std::string return_string = baton->phrase + '!';
+    std::string return_string;
+
+    if (baton->louder == true)
+    {
+        return_string = baton->phrase + "!!!!";
+    }
+    else
+    {
+        return_string = baton->phrase + "!";
+    }
 
     /***************** end custom code *******************/
 

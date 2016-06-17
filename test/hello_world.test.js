@@ -11,17 +11,25 @@ test('wave', function(t) {
 test('shout', function(t) {
   HW.shout('rawr', {}, function(err, shout) {
     if (err) throw err;
-    console.log(shout);
+    t.equal(shout, 'rawr!');
     t.end();
   });
 });
 
-test('shout error - non string phrase', function(t) {
-  HW.shout(4, {}, function(err, shout) {
-    t.ok(err);
+test('shout loud', function(t) {
+  HW.shout('rawr', { louder: true }, function(err, shout) {
+    if (err) throw err;
+    t.equal(shout, 'rawr!!!!');
     t.end();
   });
 });
+
+// test('shout error - non string phrase', function(t) {
+//   HW.shout(4, {}, function(err, shout) {
+//     t.ok(err);
+//     t.end();
+//   });
+// });
 
 // test('shout error - no options object', function(t) {
 //   HW.shout('rawr', true, function(err, shout) {
