@@ -1,0 +1,3 @@
+leak:__strdup
+leak:v8::internal
+leak:node::CreateEnvironment
