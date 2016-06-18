@@ -72,15 +72,16 @@ NAN_METHOD(HelloWorld::wave)
 
 // this is the cpp object that will be passed around in our method and callbacks
 // referred to as a "baton"
-typedef struct {
+class AsyncBaton
+{
+  public:
     uv_work_t request; // required
     Nan::Persistent<v8::Function> cb; // callback function type
     std::string phrase;
-    // std::string format;
     bool louder;
     std::string error_name;
     std::string result;
-} helloworld_shout_baton;
+};
 
 NAN_METHOD(HelloWorld::shout)
 {
@@ -123,7 +124,7 @@ NAN_METHOD(HelloWorld::shout)
     v8::Local<v8::Value> callback = info[2];
 
     // set up the baton to pass into our threadpool
-    helloworld_shout_baton *baton = new helloworld_shout_baton();
+    AsyncBaton *baton = new AsyncBaton();
     baton->request.data = baton;
     baton->phrase = phrase;
     baton->louder = louder;
@@ -144,27 +145,25 @@ NAN_METHOD(HelloWorld::shout)
 // this is where we actually exclaim our shout phrase
 void HelloWorld::AsyncShout(uv_work_t* req)
 {
-    helloworld_shout_baton *baton = static_cast<helloworld_shout_baton *>(req->data);
+    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
 
     /***************** custom code here ******************/
-
-    std::string return_string = baton->phrase + "!";
-
-    if (baton->louder)
-    {
-        return_string += "!!!!";
-    }
-
-    /***************** end custom code *******************/
-
     try
     {
-        baton->result = return_string;
+
+        std::string return_string = baton->phrase + "!";
+
+        if (baton->louder)
+        {
+            return_string += "!!!!";
+        }
     }
     catch (std::exception const& ex)
     {
         baton->error_name = ex.what();
     }
+    /***************** end custom code *******************/
+
 }
 
 // handle results from AsyncShout - if there are errors return those
@@ -173,7 +172,7 @@ void HelloWorld::AfterShout(uv_work_t* req)
 {
     Nan::HandleScope scope;
 
-    helloworld_shout_baton *baton = static_cast<helloworld_shout_baton *>(req->data);
+    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
 
     if (!baton->error_name.empty()) 
     {
