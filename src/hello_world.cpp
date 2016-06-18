@@ -130,14 +130,16 @@ NAN_METHOD(HelloWorld::shout)
     baton->louder = louder;
     baton->cb.Reset(callback.As<v8::Function>());
 
-    // this is the all-important way to pass info into the threadpool using uv_queue_work
-    // it cannot take v8 objects, so we need to do some manipulation above to convert into cpp objects
-    // otherwise things get janky
-    // takes four arguments:
-    // 1) which loop to use, node only has one so we pass in a pointer to the default
-    // 2) the baton defined above, we use this to access information important for the method
-    // 3) operations to be executed within the threadpool
-    // 4) operations to be executed after #3 is complete to pass into the callback
+    /*
+    `uv_queue_work` is the all-important way to pass info into the threadpool.
+    It cannot take v8 objects, so we need to do some manipulation above to convert into cpp objects
+    otherwise things get janky. It takes four arguments:
+
+    1) which loop to use, node only has one so we pass in a pointer to the default
+    2) the baton defined above, we use this to access information important for the method
+    3) operations to be executed within the threadpool
+    4) operations to be executed after #3 is complete to pass into the callback
+    */
     uv_queue_work(uv_default_loop(), &baton->request, AsyncShout, (uv_after_work_cb)AfterShout);
     return;
 }
@@ -150,13 +152,14 @@ void HelloWorld::AsyncShout(uv_work_t* req)
     /***************** custom code here ******************/
     try
     {
-
         std::string return_string = baton->phrase + "!";
 
         if (baton->louder)
         {
             return_string += "!!!!";
         }
+
+        baton->result = return_string;
     }
     catch (std::exception const& ex)
     {
