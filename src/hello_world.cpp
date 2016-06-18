@@ -98,7 +98,7 @@ NAN_METHOD(HelloWorld::shout)
     // check second argument, should be an 'options' object
     if (!info[1]->IsObject()) 
     {
-        Nan::ThrowTypeError("second arg 'object' must be an object");
+        Nan::ThrowTypeError("second arg 'options' must be an object");
         return;
     }
 
