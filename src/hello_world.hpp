@@ -17,10 +17,15 @@ class HelloWorld: public Nan::ObjectWrap
         // initializer
         static NAN_MODULE_INIT(Init);
 
-        // method new used for the constructor
+        // methods required for the constructor
         static NAN_METHOD(New);
-
-        // custom method called wave
-        static NAN_METHOD(wave);
         static Nan::Persistent<v8::Function> &constructor();
+
+        // wave, custom sync method
+        static NAN_METHOD(wave);
+        
+        // shout, custom async method
+        static NAN_METHOD(shout);
+        static void AsyncShout(uv_work_t* req);
+        static void AfterShout(uv_work_t* req);
 };

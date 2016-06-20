@@ -5,7 +5,8 @@
   "main": "./lib/index.js",
   "scripts": {
     "test": "tape test/*.test.js",
-    "install": "node-pre-gyp install --fallback-to-build"
+    "install": "node-pre-gyp install --fallback-to-build",
+    "docs": "documentation build src/*.cpp --polyglot -f md -o API.md"
   },
   "author": "Mapbox",
   "license": "ISC",
@@ -14,6 +15,7 @@
     "node-pre-gyp": "^0.6.28"
   },
   "devDependencies": {
+    "documentation": "^4.0.0-beta5",
     "tape": "^4.5.1"
   },
   "binary": {
