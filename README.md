@@ -9,29 +9,22 @@ Nan is used in many C++ => Node.js port projects, such as Node Mapnik, Node OSRM
 
 # What's in the box? :package:
 
-The skeleton prepares a C++ port to Node.js and provides the following tools to enable quick development:
+The skeleton prepares a C++ port to Node.js and provides the following for quick development:
 
-* **Tests**: tests are written on the JS side with Tape in the `test/` directory. Travis CI file is prepared to build and test your project on every push.
-* **Documentation**: Using documentation.js `--polyglot` option to write JSDOC comments directly in the `.cpp` files and generate Markdown output of the API
-* **Build system**: largely relies on the Makefile and node-pre-gyp to generate your project with the proper system architecture flags
-* **Publishing**: Largely reliant on NPM to host JS dependencies and to publish your module to NPM's package registry.
-
-# Architecture :hammer:
-
-#### Class constructors
-
-#### Methods
-
-#### Asynchronous Methods
-
+* **Tests**: created with [Tape](https://github.com/substack/tape) in the `test/` directory. Travis CI file is prepared to build and test your project on every push.
+* **Documentation**: uses [documentation.js](http://documentation.js.org/) to generate API documentation from JSDOC comments in the `.cpp` files. Docs are located in `API.md`.
+* **Build system**: [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) generates binaries with the proper system architecture flags
+* **Publishing**: Structured as a node module with a `package.json` that can be deployed to NPM's registry.
 
 # Installation
+
+This repository itself can be cloned and edited to your needs.
 
 ```
 git clone git@github.com:mapbox/node-cpp-skel.git
 cd node-cpp-skel
-npm install --build-from-source
-npm test
+make # build binaries
+make test
 ```
 
 # Usage
