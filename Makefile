@@ -3,3 +3,6 @@ default:
 
 docs:
 	npm run docs
+
+test:
+	npm test
