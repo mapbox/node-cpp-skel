@@ -2,7 +2,7 @@ A skeleton for binding C++ libraries to Node.js using [Nan](https://github.com/n
 
 Nan is used in many C++ => Node.js port projects, such as Node Mapnik, Node OSRM, and Node Osmium. More examples of how to port C++ libraries to node can be found at [nodejs.org/api/addons.html](https://nodejs.org/api/addons.html).
 
-**Why port C++ to Node.js?**. That's a great question! C++ is a highly performant language that allows you to execute operations without clogging up the event loop. Node.js is single-threaded, which blocks execution. Even in highly optimized javascript code it may be impossible to improve performance. Passing heavy operations into C++ and subsequently into C++ workers can greatly improve the overral runtime of the code.
+**Why port C++ to Node.js?**. That's a great question! C++ is a highly performant language that allows you to execute operations without clogging up the event loop. Node.js is single-threaded, which blocks execution. Even in highly optimized javascript code it may be impossible to improve performance. Passing heavy operations into C++ and subsequently into C++ workers can greatly improve the overall runtime of the code.
 
 [![Build Status](https://travis-ci.org/mapbox/node-cpp-skel.svg?branch=master)](https://travis-ci.org/mapbox/node-cpp-skel)
 [![codecov](https://codecov.io/gh/mapbox/node-cpp-skel/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/node-cpp-skel)
