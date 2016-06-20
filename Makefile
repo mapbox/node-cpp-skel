@@ -1,0 +1,2 @@
+docs:
+	npm run docs

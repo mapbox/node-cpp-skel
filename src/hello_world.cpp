@@ -3,6 +3,13 @@
 #include <exception>
 #include <iostream>
 
+/**
+ * HelloWorld main class
+ * @class HelloWorld
+ * @example
+ * var HelloWorld = require('index.js');
+ * var HW = new HelloWorld();
+ */
 NAN_METHOD(HelloWorld::New)
 {
     if (info.IsConstructCall())
@@ -26,6 +33,15 @@ NAN_METHOD(HelloWorld::New)
     }
 }
 
+/**
+ * Say howdy
+ * @name wave
+ * @memberof HelloWorld
+ * @returns {String} a happy-go-lucky string saying hi
+ * @example
+ * var wave = HW.wave();
+ * console.log(wave); // => 'howdy world!'
+ */
 NAN_METHOD(HelloWorld::wave)
 {
     // info comes from the NAN_METHOD macro, which returns differently
@@ -57,6 +73,3 @@ NAN_MODULE_INIT(HelloWorld::Init)
 }
 
 NODE_MODULE(HelloWorld, HelloWorld::Init);
-
-
-
