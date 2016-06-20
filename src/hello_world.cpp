@@ -4,9 +4,10 @@
 #include <iostream>
 
 /**
- * Main method, called HelloWorld
- *
+ * Main class, called HelloWorld
+ * @class HelloWorld
  * @example
+ * var HelloWorld = require('index.js');
  * var HW = new HelloWorld();
  */
 NAN_METHOD(HelloWorld::New)
@@ -39,14 +40,14 @@ Nan::Persistent<v8::Function> &HelloWorld::constructor()
 }
 
 /**
- * Say hello to the world
- *
- * @returns {String} howdy world
+ * Say howdy to the world
+ * 
+ * @name wave
+ * @memberof HelloWorld
+ * @returns {String} a happy-go-lucky string saying hi
  * @example
- * var HW = new HelloWorld();
  * var wave = HW.wave();
- * console.log(wave); // => 'howdy world'
- *
+ * console.log(wave); // => 'howdy world!'
  */
 NAN_METHOD(HelloWorld::wave)
 {
@@ -56,8 +57,10 @@ NAN_METHOD(HelloWorld::wave)
 }
 
 /**
- * Shout a phrase really loudly, by adding an exclamation to the end
+ * Shout a phrase really loudly by adding an exclamation to the end, asynchronously
  *
+ * @name shout
+ * @memberof HelloWorld
  * @param {String} phrase to shout
  * @param {Object} different ways to shout
  * @param {Function} callback - from whence the shout comes, returns a string
@@ -70,7 +73,7 @@ NAN_METHOD(HelloWorld::wave)
  *
  */
 
-// this is the cpp object that will be passed around in our method and callbacks
+// this is the cpp object that will be passed around in 'shout' and callbacks
 // referred to as a "baton"
 class AsyncBaton
 {
