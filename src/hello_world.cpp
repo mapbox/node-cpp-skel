@@ -39,6 +39,20 @@ Nan::Persistent<v8::Function> &HelloWorld::constructor()
     return init;
 }
 
+/*
+ * This is an internal function used to return callback error messages instead of
+ * throwing errors.
+ * Usage: 
+ * 
+ * v8::Local<v8::Function> callback;
+ * CallbackError("error message", callback);
+ * return; // this is important to prevent duplicate callbacks from being fired!
+ */
+inline void CallbackError(std::string message, v8::Local<v8::Function> callback) {
+    v8::Local<v8::Value> argv[1] = { Nan::Error(message.c_str()) };
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
+}
+
 /**
  * Say howdy to the world
  * 
@@ -91,10 +105,20 @@ NAN_METHOD(HelloWorld::shout)
     std::string phrase = "";
     bool louder = false;
 
+    // check third argument, should be a 'callback' function.
+    // This allows us to set the callback so we can use it to return errors
+    // instead of throwing as well.
+    if (!info[2]->IsFunction()) 
+    {
+        Nan::ThrowTypeError("third arg 'callback' must be a function");
+        return;
+    }
+    v8::Local<v8::Function> callback = info[2].As<v8::Function>();
+
     // check first argument, should be a 'phrase' string
     if (!info[0]->IsString()) 
     {
-        Nan::ThrowTypeError("first arg 'phrase' must be a string");
+        CallbackError("first arg 'phrase' must be a string", callback);
         return;
     }
     phrase = *v8::String::Utf8Value((info[0])->ToString());
@@ -102,36 +126,28 @@ NAN_METHOD(HelloWorld::shout)
     // check second argument, should be an 'options' object
     if (!info[1]->IsObject()) 
     {
-        Nan::ThrowTypeError("second arg 'options' must be an object");
+        CallbackError("second arg 'options' must be an object", callback);
         return;
     }
-
     v8::Local<v8::Object> options = info[1].As<v8::Object>();
+
     if (options->Has(Nan::New("louder").ToLocalChecked())) 
     {
         v8::Local<v8::Value> louder_val = options->Get(Nan::New("louder").ToLocalChecked());
         if (!louder_val->IsBoolean())
         {
-            Nan::ThrowError("option 'louder' must be a boolean");
+            CallbackError("option 'louder' must be a boolean", callback);
             return;
         }
         louder = louder_val->BooleanValue();
     }
-
-    // check third argument, should be a 'callback' function
-    if (!info[2]->IsFunction()) 
-    {
-      Nan::ThrowTypeError("third arg 'callback' must be a function");
-      return;
-    }
-    v8::Local<v8::Value> callback = info[2];
 
     // set up the baton to pass into our threadpool
     AsyncBaton *baton = new AsyncBaton();
     baton->request.data = baton;
     baton->phrase = phrase;
     baton->louder = louder;
-    baton->cb.Reset(callback.As<v8::Function>());
+    baton->cb.Reset(callback);
 
     /*
     `uv_queue_work` is the all-important way to pass info into the threadpool.
@@ -212,4 +228,8 @@ NAN_MODULE_INIT(HelloWorld::Init)
     Nan::Set(target, whoami, fn);
 }
 
+/*
+ * This creates the module, started up with NAN_MODULE_INIT.
+ * The naming/casing of the first argument is reflected in lib/hello_world.js
+ */
 NODE_MODULE(HelloWorld, HelloWorld::Init);

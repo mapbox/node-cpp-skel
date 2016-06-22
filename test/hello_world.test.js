@@ -24,38 +24,31 @@ test('shout success - options.louder', function(t) {
   });
 });
 
-// we have to wrap these in try/catch statements right now
-// https://github.com/mapbox/node-cpp-skel/issues/4
 test('shout error - non string phrase', function(t) {
-  try {
-    HW.shout(4, {}, function(err, shout) {});
-  } catch (err) {
+  HW.shout(4, {}, function(err, shout) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('phrase') > -1, 'proper error message');
     t.end();
-  }
+  });
 });
 
 test('shout error - no options object', function(t) {
-  try {
-    HW.shout('rawr', true, function(err, shout) {});
-  } catch (err) {
+  HW.shout('rawr', true, function(err, shout) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('options') > -1, 'proper error message');
     t.end();
-  }
+  });
 });
 
 test('shout error - options.louder non boolean', function(t) {
-  try {
-    HW.shout('rawr', { louder: 3 }, function(err, shout) {});
-  } catch (err) {
+  HW.shout('rawr', { louder: 3 }, function(err, shout) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('louder') > -1, 'proper error message');
     t.end();
-  }
+  });
 });
 
+// we have to try/catch since a missing callback results in a throw
 test('shout error - no callback', function(t) {
   try {
     HW.shout('rawr', {});
