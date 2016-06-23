@@ -1,7 +1,7 @@
 MODULE_NAME := $(shell node -e "console.log(require('./package.json').name)") 
 
 default: node_modules
-	./node_modules/.bin/node-pre-gyp build
+	./node_modules/.bin/node-pre-gyp build --loglevel=error
 
 debug:
 	npm install --build-from-source=$(MODULE_NAME) --verbose
