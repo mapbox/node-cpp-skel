@@ -4,7 +4,7 @@
     'cflags_cc' : [
       '-std=c++11',
     ],
-    'cflags_cc!': ['-fno-rtti', '-fno-exceptions'],
+    'cflags_cc!': ['-std=gnu++0x','-fno-rtti', '-fno-exceptions'],
     'configurations': {
       'Debug': {
         'defines!': [
