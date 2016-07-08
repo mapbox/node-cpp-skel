@@ -18,3 +18,5 @@ docs:
 
 test:
 	npm test
+
+.PHONY: test docs
