@@ -15,6 +15,7 @@
     "node-pre-gyp": "^0.6.28"
   },
   "devDependencies": {
+    "aws-sdk": "^2.4.7",
     "documentation": "^4.0.0-beta5",
     "tape": "^4.5.1"
   },
