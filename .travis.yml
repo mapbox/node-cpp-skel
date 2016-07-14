@@ -46,5 +46,6 @@ script:
 after_success:
   - |
     if [ -n "${COVERAGE}" ]; then
-      bash <(curl -s https://codecov.io/bash)
+      which llvm-cov
+      bash <(curl -s https://codecov.io/bash) -x "llvm-cov gcov"
     fi
