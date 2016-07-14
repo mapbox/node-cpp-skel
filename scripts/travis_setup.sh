@@ -29,7 +29,9 @@ function main() {
         export CXX=clang++
         export CC=clang
     fi
-    init_binary node_asan 4.4.5
+    if [[ ${NODE_ASAN:-} == 'true' ]]; then
+        init_binary node_asan 4.4.5
+    fi
 }
 
 main
