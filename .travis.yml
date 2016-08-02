@@ -42,10 +42,10 @@ install:
 script:
  - echo ${ASAN_OPTIONS}
  - npm test
-
-after_success:
-  - |
-    if [ -n "${COVERAGE}" ]; then
-      which llvm-cov
-      bash <(curl -s https://codecov.io/bash) -x "llvm-cov gcov"
-    fi
+ - |
+   if [ -n "${COVERAGE}" ]; then
+     which llvm-cov
+     curl -S -f https://codecov.io/bash -o codecov
+     chmod +x codecov
+     ./codecov -x "llvm-cov gcov" -Z
+   fi
