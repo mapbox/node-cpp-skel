@@ -43,7 +43,7 @@ before_script:
   - node-pre-gyp package testpackage ${NPM_FLAGS}
   - |
     if [[ ${PUBLISHABLE} == true ]]; then
-      ./scripts/publish.sh;
+      ./scripts/common.sh;
     fi;
 
 script:
