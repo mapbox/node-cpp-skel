@@ -39,6 +39,13 @@ before_install:
 install:
  - ASAN_OPTIONS=detect_leaks=0 npm install --build-from-source ${NPM_FLAGS}
 
+before_script:
+  - node-pre-gyp package testpackage ${NPM_FLAGS}
+  - |
+    if [[ ${PUBLISHABLE} == true ]]; then
+      ./scripts/common.sh;
+    fi;
+
 script:
  - echo ${ASAN_OPTIONS}
  - npm test

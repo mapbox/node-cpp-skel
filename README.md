@@ -41,3 +41,22 @@ var HW = new HelloWorld();
 var hi = HW.wave();
 console.log(hi); // => howdy world!
 ```
+
+# Publishing Binaries
+
+**Setup**
+
+It's a good idea to publish pre-built binaries of your module if you want others to be able to install it properly on their own systems, which can very likely not have a compiler like `gcc` or `clang`. Node-pre-gyp does a lot of the heavy lifting for us (like detecting which system you are building on and deploying to s3) but you'll need a few things configured to get started.
+
+1. In the `package.json`, update the `"binary"` field to the appropriate s3 bucket `host`.
+1. If you plan on publishing binaries via Travis-CI, [setup your AWS security credentials in the `.travis.yml`](https://github.com/mapbox/node-pre-gyp#travis-automation) - this gives the travis environment the proper access to the bucket named above.
+
+**Publishing on Travis CI**
+
+This project includes a `script/publish.sh` command that runs on travis if the environment variable `PUBLISHABLE` is set to `true`. You can set the environment variable like this. This command checks your commit message for either `[publish binary]` or `[republish binary]` in order to begin publishing. This allows you to publish binaries according to the version specified in your `package.json` like this:
+
+```
+git commit -m 'releasing 0.1.0 [publish binary]'
+```
+
+Republishing a binary overrides the current version and must be specified with `[republish binary]`.
