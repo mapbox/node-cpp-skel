@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-# TODO: seems to lead to odd, intermittent errors on travis
-# right after 'gathering commit message '
-# we see: " failed and exited with 141 during .
-#set -eu
-#set -o pipefail
+set -eu
+set -o pipefail
 
 # `is_pr_merge` is designed to detect if a gitsha represents a normal
 # push commit (to any branch) or whether it represents travis attempting
@@ -13,13 +10,13 @@
 function is_pr_merge() {
   # Get the commit message via git log
   # This should always be the exact text the developer provided
-  COMMIT_LOG=$(git log --format=%B --no-merges -n 1 | tr -d '\n')
+  export COMMIT_LOG=$(git log --format=%B --no-merges -n 1 | tr -d '\n')
 
   # Get the commit message via git show
   # If the gitsha represents a merge then this will
   # look something like "Merge e3b1981 into 615d2a3"
   # Otherwise it will be the same as the "git log" output
-  COMMIT_SHOW=$(git show -s --format=%B | tr -d '\n')
+  export COMMIT_SHOW=$(git show -s --format=%B | tr -d '\n')
 
   if [[ "${COMMIT_LOG}" != "${COMMIT_SHOW}" ]]; then
      echo true
@@ -43,7 +40,7 @@ else
 
     echo "gathering commit message ..."
 
-    COMMIT_MESSAGE=$(git log --format=%B --no-merges | head -n 1 | tr -d '\n')
+    export COMMIT_MESSAGE=$(git log --format=%B --no-merges | head -n 1 | tr -d '\n')
     echo "Commit message: ${COMMIT_MESSAGE}"
 
     if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then
@@ -58,5 +55,5 @@ else
 fi
 
 # reset to make travis happy
-#set +eu
-#set +o pipefail
+set +eu
+set +o pipefail
