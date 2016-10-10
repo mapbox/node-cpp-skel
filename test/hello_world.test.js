@@ -2,6 +2,18 @@ var test = require('tape');
 var HelloWorld = require('../lib/index.js');
 var HW = new HelloWorld();
 
+test('HellowWorld error - throw type error during construction', function(t) {
+  var never = '';
+  try {
+    var HWuhoh = new HelloWorld('uhoh');
+    never = 'neverland';
+  } catch (err) {
+      t.ok(err, 'expected error');
+  }
+  t.equals(never, '', 'constructor definitely throws');
+  t.end();
+});
+
 test('wave success', function(t) {
   var hello = HW.wave();
   t.equal(hello, 'howdy world', 'output of HelloWorld.wave');
