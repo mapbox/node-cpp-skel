@@ -5,7 +5,7 @@ default: node_modules
 	./node_modules/.bin/node-pre-gyp configure build --loglevel=error
 
 debug:
-	npm install --build-from-source=$(PACKAGE_NAME) --verbose
+	npm install --build-from-source=$(PACKAGE_NAME) --debug --verbose
 
 clean:
 	rm -rf lib/binding
