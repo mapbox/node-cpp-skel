@@ -3,21 +3,47 @@
 #include <exception>
 #include <iostream>
 
+// Custom constructor added in order to test/cover throwing an error during initialization
+HelloWorld::HelloWorld(std::string name) : 
+  name_(name) {
+    if (name_ != "hello") {
+        throw std::runtime_error("name must be 'hello'");
+    }
+}
+
 /**
  * Main class, called HelloWorld
  * @class HelloWorld
  * @example
  * var HelloWorld = require('index.js');
  * var HW = new HelloWorld();
+ *          OR
+ * var HW = new HelloWorld('yo');
  */
 NAN_METHOD(HelloWorld::New)
 {
     if (info.IsConstructCall())
     {
         try
-        {
-            auto *const self = new HelloWorld();
-            self->Wrap(info.This());
+        {   
+            if (info.Length() >= 1) {
+              if (info[0]->IsString()) 
+              {
+                std::string name = *v8::String::Utf8Value(info[0]->ToString());
+                auto *const self = new HelloWorld(name);
+                self->Wrap(info.This());
+              }
+              else
+              {
+                return Nan::ThrowTypeError(
+                    "arg must be a string");
+              }
+            }
+            else {
+                auto *const self = new HelloWorld();
+                self->Wrap(info.This());
+            } 
+
         }
         catch (const std::exception &ex)
         {
@@ -163,22 +189,34 @@ NAN_METHOD(HelloWorld::shout)
     return;
 }
 
+std::string do_expensive_work(std::string const& phrase, bool louder) {
+    std::string result;
+
+    // This is purely for testing, to be able to simulate an unexpected throw
+    // from a function you do not control and may throw an exception
+    if (phrase != "rawr") {
+        throw std::runtime_error("we really would prefer rawr all the time");
+    }
+
+    result = phrase + "!";
+
+    if (louder)
+    {
+        result += "!!!!";
+    }
+    return result;
+}
+
 // this is where we actually exclaim our shout phrase
 void HelloWorld::AsyncShout(uv_work_t* req)
 {
     AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
 
     /***************** custom code here ******************/
+    // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
     try
     {
-        std::string return_string = baton->phrase + "!";
-
-        if (baton->louder)
-        {
-            return_string += "!!!!";
-        }
-
-        baton->result = return_string;
+        baton->result = do_expensive_work(baton->phrase,baton->louder);
     }
     catch (std::exception const& ex)
     {

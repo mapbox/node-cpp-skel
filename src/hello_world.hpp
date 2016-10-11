@@ -28,4 +28,15 @@ class HelloWorld: public Nan::ObjectWrap
         static NAN_METHOD(shout);
         static void AsyncShout(uv_work_t* req);
         static void AfterShout(uv_work_t* req);
+
+        // constructor
+        // This includes a Default Argument
+        // If a paramter value is passed in, it takes priority over the default arg
+        HelloWorld(std::string name="hello");
+
+    private:
+        // member variable
+        // specific to each instance of the class
+        std::string name_; 
+
 };
