@@ -18,3 +18,5 @@ CXX_MODULE=$(./node_modules/.bin/node-pre-gyp reveal module --silent)
 $(pwd)/mason_packages/.link/bin/llvm-profdata merge -output=code.profdata code-*.profraw
 $(pwd)/mason_packages/.link/bin/llvm-cov report ${CXX_MODULE} -instr-profile=code.profdata -use-color
 $(pwd)/mason_packages/.link/bin/llvm-cov show ${CXX_MODULE} -instr-profile=code.profdata src/*.cpp -filename-equivalence -use-color
+$(pwd)/mason_packages/.link/bin/llvm-cov show ${CXX_MODULE} -instr-profile=code.profdata src/*.cpp -filename-equivalence -use-color --format html > /tmp/coverage.html
+echo "open /tmp/coverage.html for HTML version of this report"
