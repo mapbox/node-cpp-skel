@@ -40,6 +40,19 @@ test('HellowWorld error - invalid constructor', function(t) {
   t.end();
 });
 
+test('HellowWorld success - valid constructor', function(t) {
+  var never = '';
+  try {
+    var HWyay = new HelloWorld('hello');
+    never = 'neverland';
+  } catch (err) {
+      if (err) throw err;
+  }
+  t.equals(never, 'neverland', 'constructor definitely succeeds');
+  t.end();
+});
+
+
 test('wave success', function(t) {
   var hello = HW.wave();
   t.equal(hello, 'howdy world', 'output of HelloWorld.wave');
