@@ -7,13 +7,19 @@ var HW = new HelloWorld();
 console.timeEnd('constructor');
 
 console.time('shout');
+// memory usage for this single process
+var mem_before = process.memoryUsage();
+
 HW.shout('rawr', {}, function(err, result) {
   if (err) throw err;
   console.timeEnd('shout');
+  
+  // heap: a memory segment dedicated to storing explicitly referenced types like objects and strings
+  var mem_after = process.memoryUsage();
+  var mem_used = (mem_after.heapUsed - mem_before.heapUsed) / 10000;
+  console.log('total memory used: ' + mem_used + ' MB');
 });
 
-// How to benchmark sync functions...?
-// If the event loop is running and HW.wave() could potentially return before the end timer triggers
-// console.time('wave');
-// var hello = HW.wave();
-// console.timeEnd('wave');
+// Going to not worry about benchmarking sync functions for now 
+// since the most common usecase of a C++ in a Node module is 
+// optimizing processes within the threadpool (async)
