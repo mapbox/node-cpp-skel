@@ -12,8 +12,10 @@ debug:
 	git clone -b llvm-3.9.0 --depth 1 https://github.com/mapbox/mason .mason
 
 ./mason_packages/.link/bin/llvm-cov: ./.mason
-	./.mason/mason install llvm 3.9.0
-	./.mason/mason link llvm 3.9.0
+	./.mason/mason install clang++ 3.9.0
+	./.mason/mason link clang++ 3.9.0
+	./.mason/mason install llvm-cov 3.9.0
+	./.mason/mason link llvm-cov 3.9.0
 
 coverage: ./mason_packages/.link/bin/llvm-cov
 	./scripts/coverage.sh
@@ -24,6 +26,7 @@ clean:
 
 distclean: clean
 	rm -rf node_modules
+	rm -rf .mason
 
 node_modules:
 	npm install --build-from-source=$(PACKAGE_NAME)
