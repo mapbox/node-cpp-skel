@@ -5,7 +5,20 @@ default: node_modules
 	./node_modules/.bin/node-pre-gyp configure build --loglevel=error
 
 debug:
-	npm install --build-from-source=$(PACKAGE_NAME) --verbose
+	npm install --build-from-source=$(PACKAGE_NAME) --debug
+
+# TODO: pin to mason master once https://github.com/mapbox/mason/pull/253 is merged
+./.mason:
+	git clone -b llvm-3.9.0 --depth 1 https://github.com/mapbox/mason .mason
+
+./mason_packages/.link/bin/llvm-cov: ./.mason
+	./.mason/mason install clang++ 3.9.0
+	./.mason/mason link clang++ 3.9.0
+	./.mason/mason install llvm-cov 3.9.0
+	./.mason/mason link llvm-cov 3.9.0
+
+coverage: ./mason_packages/.link/bin/llvm-cov
+	./scripts/coverage.sh
 
 clean:
 	rm -rf lib/binding
@@ -13,6 +26,7 @@ clean:
 
 distclean: clean
 	rm -rf node_modules
+	rm -rf .mason
 
 node_modules:
 	npm install --build-from-source=$(PACKAGE_NAME)
