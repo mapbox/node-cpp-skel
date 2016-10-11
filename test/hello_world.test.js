@@ -2,7 +2,7 @@ var test = require('tape');
 var HelloWorld = require('../lib/index.js');
 var HW = new HelloWorld();
 
-test('HellowWorld error - throw exception during construction', function(t) {
+test('HelloWorld error - throw exception during construction', function(t) {
   var never = '';
   try {
     var HWuhoh = new HelloWorld('uhoh');
@@ -14,7 +14,7 @@ test('HellowWorld error - throw exception during construction', function(t) {
   t.end();
 });
 
-test('HellowWorld error - throw type error during construction', function(t) {
+test('HelloWorld error - throw type error during construction', function(t) {
   var never = '';
   try {
     var HWuhoh = new HelloWorld(24);
@@ -27,7 +27,7 @@ test('HellowWorld error - throw type error during construction', function(t) {
   t.end();
 });
 
-test('HellowWorld error - invalid constructor', function(t) {
+test('HelloWorld error - invalid constructor', function(t) {
   var never = '';
   try {
     var HWuhoh = HelloWorld();
@@ -40,7 +40,7 @@ test('HellowWorld error - invalid constructor', function(t) {
   t.end();
 });
 
-test('HellowWorld success - valid constructor', function(t) {
+test('HelloWorld success - valid constructor', function(t) {
   var never = '';
   try {
     var HWyay = new HelloWorld('hello');
