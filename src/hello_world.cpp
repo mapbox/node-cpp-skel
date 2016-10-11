@@ -17,6 +17,8 @@ HelloWorld::HelloWorld(std::string name) :
  * @example
  * var HelloWorld = require('index.js');
  * var HW = new HelloWorld();
+ *          OR
+ * var HW = new HelloWorld('yo');
  */
 NAN_METHOD(HelloWorld::New)
 {

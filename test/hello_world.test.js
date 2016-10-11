@@ -2,13 +2,39 @@ var test = require('tape');
 var HelloWorld = require('../lib/index.js');
 var HW = new HelloWorld();
 
-test('HellowWorld error - throw type error during construction', function(t) {
+test('HellowWorld error - throw exception during construction', function(t) {
   var never = '';
   try {
     var HWuhoh = new HelloWorld('uhoh');
     never = 'neverland';
   } catch (err) {
       t.ok(err, 'expected error');
+  }
+  t.equals(never, '', 'constructor definitely throws');
+  t.end();
+});
+
+test('HellowWorld error - throw type error during construction', function(t) {
+  var never = '';
+  try {
+    var HWuhoh = new HelloWorld(24);
+    never = 'neverland';
+  } catch (err) {
+      t.ok(err, 'expected error');
+      t.equals(err.message, 'arg must be a string')
+  }
+  t.equals(never, '', 'constructor definitely throws');
+  t.end();
+});
+
+test('HellowWorld error - invalid constructor', function(t) {
+  var never = '';
+  try {
+    var HWuhoh = HelloWorld();
+    never = 'neverland';
+  } catch (err) {
+      t.ok(err, 'expected error');
+      t.equals(err.message, "Cannot call constructor as function, you need to use 'new' keyword");
   }
   t.equals(never, '', 'constructor definitely throws');
   t.end();
