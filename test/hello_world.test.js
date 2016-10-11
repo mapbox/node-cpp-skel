@@ -62,6 +62,15 @@ test('shout success - options.louder', function(t) {
   });
 });
 
+
+test('shout error - not enough rawr', function(t) {
+  HW.shout('tiny moo', { louder: true }, function(err, shout) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf('rawr all the time') > -1, 'rawrs all the time are way nicer');
+    t.end();
+  });
+});
+
 test('shout error - non string phrase', function(t) {
   HW.shout(4, {}, function(err, shout) {
     t.ok(err, 'expected error');

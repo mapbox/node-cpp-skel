@@ -189,6 +189,24 @@ NAN_METHOD(HelloWorld::shout)
     return;
 }
 
+std::string do_expensive_work(std::string const& phrase, bool louder) {
+    std::string result;
+
+    // This is purely for testing, to be able to simulate an unexpected throw
+    // from a function you do not control and may throw an exception
+    if (phrase != "rawr") {
+        throw std::runtime_error("we really would prefer rawr all the time");
+    }
+
+    result = phrase + "!";
+
+    if (louder)
+    {
+        result += "!!!!";
+    }
+    return result;
+}
+
 // this is where we actually exclaim our shout phrase
 void HelloWorld::AsyncShout(uv_work_t* req)
 {
@@ -197,14 +215,7 @@ void HelloWorld::AsyncShout(uv_work_t* req)
     /***************** custom code here ******************/
     try
     {
-        std::string return_string = baton->phrase + "!";
-
-        if (baton->louder)
-        {
-            return_string += "!!!!";
-        }
-
-        baton->result = return_string;
+        baton->result = do_expensive_work(baton->phrase,baton->louder);
     }
     catch (std::exception const& ex)
     {
