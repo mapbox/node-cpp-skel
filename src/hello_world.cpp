@@ -213,6 +213,7 @@ void HelloWorld::AsyncShout(uv_work_t* req)
     AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
 
     /***************** custom code here ******************/
+    // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
     try
     {
         baton->result = do_expensive_work(baton->phrase,baton->louder);
