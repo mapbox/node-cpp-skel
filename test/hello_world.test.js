@@ -75,7 +75,6 @@ test('shout success - options.louder', function(t) {
   });
 });
 
-
 test('shout error - not enough rawr', function(t) {
   HW.shout('tiny moo', { louder: true }, function(err, shout) {
     t.ok(err, 'expected error');
@@ -117,4 +116,20 @@ test('shout error - no callback', function(t) {
     t.ok(err.message.indexOf('callback') > -1, 'proper error message');
     t.end();
   }
+});
+
+test('sleep success - options.sleep', function(t) {
+  HW.shout('rawr', { sleep: 2 }, function(err, shout, stdout) {
+    if (err) throw err;
+    t.equal(shout, 'rawr! zzzZZZ');
+    t.end();
+  });
+});
+
+test('sleep error - options.sleep not integer', function(t) {
+  HW.shout('rawr', { sleep: "hi" }, function(err, shout) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf("\'sleep\' must be a positive integer") > -1, 'proper error message');
+    t.end();
+  });
 });

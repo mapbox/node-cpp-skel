@@ -2,6 +2,8 @@
 
 #include <exception>
 #include <iostream>
+#include <chrono> // time lib
+#include <thread> // sleep_for is a function within the thread lib
 
 // Custom constructor added in order to test/cover throwing an error during initialization
 HelloWorld::HelloWorld(std::string name) : 
@@ -120,8 +122,9 @@ class AsyncBaton
   public:
     uv_work_t request; // required
     Nan::Persistent<v8::Function> cb; // callback function type
-    std::string phrase;
-    bool louder;
+    std::string phrase; // required
+    bool louder; // optional
+    std::uint32_t sleep; // optional (# of seconds)
     std::string error_name;
     std::string result;
 };
@@ -130,6 +133,7 @@ NAN_METHOD(HelloWorld::shout)
 {
     std::string phrase = "";
     bool louder = false;
+    std::uint32_t sleep = 0;
 
     // check third argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors
@@ -168,11 +172,23 @@ NAN_METHOD(HelloWorld::shout)
         louder = louder_val->BooleanValue();
     }
 
+    if (options->Has(Nan::New("sleep").ToLocalChecked())) 
+    {
+        v8::Local<v8::Value> sleep_val = options->Get(Nan::New("sleep").ToLocalChecked());
+        if (!sleep_val->IsUint32())
+        {
+            CallbackError("option 'sleep' must be a positive integer", callback);
+            return;
+        }
+        sleep = sleep_val->Uint32Value();
+    }
+
     // set up the baton to pass into our threadpool
     AsyncBaton *baton = new AsyncBaton();
     baton->request.data = baton;
     baton->phrase = phrase;
     baton->louder = louder;
+    baton->sleep = sleep;
     baton->cb.Reset(callback);
 
     /*
@@ -189,7 +205,7 @@ NAN_METHOD(HelloWorld::shout)
     return;
 }
 
-std::string do_expensive_work(std::string const& phrase, bool louder) {
+std::string do_expensive_work(std::string const& phrase, bool louder, uint32_t sleep) {
     std::string result;
 
     // This is purely for testing, to be able to simulate an unexpected throw
@@ -204,6 +220,17 @@ std::string do_expensive_work(std::string const& phrase, bool louder) {
     {
         result += "!!!!";
     }
+
+    // suspends execution of the calling thread for (at least) # of seconds
+    if (sleep) {
+        // http://en.cppreference.com/w/cpp/chrono/duration
+        // duration type object that sleep_for accepts
+        std::chrono::seconds sec(sleep);
+ 
+        std::this_thread::sleep_for(sec);
+        result += " zzzZZZ";
+    }
+
     return result;
 }
 
@@ -216,7 +243,7 @@ void HelloWorld::AsyncShout(uv_work_t* req)
     // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
     try
     {
-        baton->result = do_expensive_work(baton->phrase,baton->louder);
+        baton->result = do_expensive_work(baton->phrase,baton->louder,baton->sleep);
     }
     catch (std::exception const& ex)
     {
