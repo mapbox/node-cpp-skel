@@ -44,8 +44,6 @@ console.log(hi); // => howdy world!
 
 # Publishing Binaries
 
-**Setup**
-
 It's a good idea to publish pre-built binaries of your module if you want others to be able to install it properly on their own systems, which can very likely not have a compiler like `gcc` or `clang`. Node-pre-gyp does a lot of the heavy lifting for us (like detecting which system you are building on and deploying to s3) but you'll need a few things configured to get started.
 
 1. In the `package.json`, update the `"binary"` field to the appropriate s3 bucket `host`.
@@ -53,10 +51,22 @@ It's a good idea to publish pre-built binaries of your module if you want others
 
 **Publishing on Travis CI**
 
-This project includes a `script/publish.sh` command that runs on travis if the environment variable `PUBLISHABLE` is set to `true`. You can set the environment variable like this. This command checks your commit message for either `[publish binary]` or `[republish binary]` in order to begin publishing. This allows you to publish binaries according to the version specified in your `package.json` like this:
+This project includes a `script/publish.sh` command that builds binaries and publishes them to s3. This script checks your commit message for either `[publish binary]` or `[republish binary]` in order to begin publishing. This allows you to publish binaries according to the version specified in your `package.json` like this:
 
 ```
 git commit -m 'releasing 0.1.0 [publish binary]'
 ```
 
 Republishing a binary overrides the current version and must be specified with `[republish binary]`.
+
+**Adding new operating systems and node versions**
+
+The `.travis.yml` file uses the `matrix` to set up each individual job, which specifies the operating system, node version, and other environment variables for running the scripts. To add more operating systems and node versions to the binaries you publish, add another job to the matrix like this:
+
+```yaml
+- os: {operating system}
+  env: NODE="{your node version}" TARGET="Release"
+  install: *setup
+  script: *test
+  after_script: *publish
+```
