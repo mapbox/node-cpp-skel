@@ -29,6 +29,7 @@ function run(cb) {
     var options = {};
 
     if (argv.sleep) options.sleep = argv.sleep;
+    if (argv.fib) options.fib = true;
 
     HW.shout('rawr', options, function(err, result) {
       if (err) {
