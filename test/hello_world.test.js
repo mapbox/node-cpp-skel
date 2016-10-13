@@ -52,7 +52,6 @@ test('HelloWorld success - valid constructor', function(t) {
   t.end();
 });
 
-
 test('wave success', function(t) {
   var hello = HW.wave();
   t.equal(hello, 'howdy world', 'output of HelloWorld.wave');
@@ -130,6 +129,22 @@ test('sleep error - options.sleep not integer', function(t) {
   HW.shout('rawr', { sleep: "hi" }, function(err, shout) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf("\'sleep\' must be a positive integer") > -1, 'proper error message');
+    t.end();
+  });
+});
+
+test('shout success - options.fib', function(t) {
+  HW.shout('rawr', { fib: true }, function(err, shout) {
+    if (err) throw err;
+    t.equal(shout, 'rawr!...and just did a bunch of stuff');
+    t.end();
+  });
+});
+
+test('sleep error - options.fib not boolean', function(t) {
+  HW.shout('rawr', { fib: "hi" }, function(err, shout) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf("\'fib\' must be a boolean") > -1, 'proper error message');
     t.end();
   });
 });

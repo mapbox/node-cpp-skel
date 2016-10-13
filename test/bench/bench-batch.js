@@ -31,7 +31,6 @@ function run(cb) {
     if (argv.sleep) options.sleep = argv.sleep;
 
     HW.shout('rawr', options, function(err, result) {
-      check = result;
       if (err) {
         return cb(err);
       }
@@ -56,7 +55,8 @@ queue.awaitAll(function(error) {
 
   // number of milliseconds per iteration
   var rate = time/runs;
-
+  
+  // There may be instances when you want to assert some performance metric
   //assert.equal(rate < 1, true, 'avg time per iteration ( ' + rate + 'ms ) takes less than 1 ms');
 
 });

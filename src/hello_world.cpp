@@ -124,6 +124,7 @@ class AsyncBaton
     Nan::Persistent<v8::Function> cb; // callback function type
     std::string phrase; // required
     bool louder; // optional
+    bool fib; // optional
     std::uint32_t sleep; // optional (# of seconds)
     std::string error_name;
     std::string result;
@@ -133,6 +134,7 @@ NAN_METHOD(HelloWorld::shout)
 {
     std::string phrase = "";
     bool louder = false;
+    bool fib = false;
     std::uint32_t sleep = 0;
 
     // check third argument, should be a 'callback' function.
@@ -172,6 +174,17 @@ NAN_METHOD(HelloWorld::shout)
         louder = louder_val->BooleanValue();
     }
 
+    if (options->Has(Nan::New("fib").ToLocalChecked())) 
+    {
+        v8::Local<v8::Value> fib_val = options->Get(Nan::New("fib").ToLocalChecked());
+        if (!fib_val->IsBoolean())
+        {
+            CallbackError("option 'fib' must be a boolean", callback);
+            return;
+        }
+        fib = fib_val->BooleanValue();
+    }
+
     if (options->Has(Nan::New("sleep").ToLocalChecked())) 
     {
         v8::Local<v8::Value> sleep_val = options->Get(Nan::New("sleep").ToLocalChecked());
@@ -189,6 +202,7 @@ NAN_METHOD(HelloWorld::shout)
     baton->phrase = phrase;
     baton->louder = louder;
     baton->sleep = sleep;
+    baton->fib = fib;
     baton->cb.Reset(callback);
 
     /*
@@ -205,7 +219,29 @@ NAN_METHOD(HelloWorld::shout)
     return;
 }
 
-std::string do_expensive_work(std::string const& phrase, bool louder, uint32_t sleep) {
+// fibonacci algorithm
+std::string do_expensive_work(std::string const& phrase) {
+    std::string result = phrase;
+
+    int n = 1000, c, first = 0, second = 1, next;
+ 
+    for ( c = 0 ; c < n ; c++ )
+    {
+      if ( c <= 1 )
+        next = c;
+      else
+      {
+         next = first + second;
+         first = second;
+         second = next;
+      }
+      //std::cout << next << std::endl;
+    }
+
+    return result += "!...and just did a bunch of stuff";
+}
+
+std::string do_work(std::string const& phrase, bool louder, uint32_t sleep) {
     std::string result;
 
     // This is purely for testing, to be able to simulate an unexpected throw
@@ -243,7 +279,12 @@ void HelloWorld::AsyncShout(uv_work_t* req)
     // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
     try
     {
-        baton->result = do_expensive_work(baton->phrase,baton->louder,baton->sleep);
+        if (!baton->fib) {
+            baton->result = do_work(baton->phrase,baton->louder,baton->sleep);
+        }
+        else {
+            baton->result = do_expensive_work(baton->phrase);
+        }
     }
     catch (std::exception const& ex)
     {
