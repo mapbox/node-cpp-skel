@@ -11,6 +11,10 @@ env:
     - secure: VMiSV/qeHH7unlhFdnYQuVccnba8gOQG1lci1zCfcvbX3GOd6ZI6A1vu2F/AYvXreDMzCLZbLrQ0/2sdtYCvx0Lgrtz4l8myC2TBqrxJLIDkO2rx77oggZuSIo9JQkXfr8qHx2L1RDL5yxSnxY8hr1l7FLzPTF0f4rErQ6gr/kAfOiqRn5k94635mNTW76TTx0fdk8+TuUIXGUcgJiXD6+l0/d7hnHWABztEPE1YoBP4GVoGIBjSAJdU6Z6cbHWIShF4AHkbv94PpVIgpbb3Kq4wmolXKdNXIvWrs0Z/wvGIr2EYKeMcIwOudGATpfwzf1GKc7+TSa5Z3JZInQ7FBEypDzu+LYigGqAGFb8TBj+TGs8KI5iAW4ez1pDfwksNZnMSX6gg4L+3gIn1plxWQ05jagbgzm5s2/d6jPqi7ZVtedE5zQKbCd5Iwkby/TuE5hWCf06Znk7DfEt/IHpFH/2d+9CgcQiFbn7sYyWeArSbiD3eQxCkYh9EuDNSRgt7BZ9g7PglW9phXrKnTCk6VpE0QXR9ehqz/5D3QYrKOb64B1PPAeFonsWCPamxwCt2jCxaqztoBSYfoa3XXM4EMmkLC30u5qGMy9Vv19dhGEOOgZDMWnr1zsiVFMmceecOl0ivxcGkMOCauDB/fGMB4P7m3As0tqgl/59k0bWQ2m4=
   
 install_default: &setup
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      rvm get head || true
+    fi
   - source ./scripts/setup.sh
   - node -v
   - which node
