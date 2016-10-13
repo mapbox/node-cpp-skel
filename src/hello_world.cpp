@@ -20,7 +20,7 @@ HelloWorld::HelloWorld(std::string name) :
  *          OR
  * var HW = new HelloWorld('yo');
  */
-NAN_METHOD(HelloWorld::New)
+void HelloWorld::New(const Nan::FunctionCallbackInfo<v8::Value>& info)
 {
     if (info.IsConstructCall())
     {
@@ -29,7 +29,7 @@ NAN_METHOD(HelloWorld::New)
             if (info.Length() >= 1) {
               if (info[0]->IsString()) 
               {
-                std::string name = *v8::String::Utf8Value(info[0]->ToString());
+                std::string name = *Nan::Utf8String(Nan::To<v8::String>(info[0]).ToLocalChecked());
                 auto *const self = new HelloWorld(name);
                 self->Wrap(info.This());
               }
@@ -89,11 +89,9 @@ inline void CallbackError(std::string message, v8::Local<v8::Function> callback)
  * var wave = HW.wave();
  * console.log(wave); // => 'howdy world!'
  */
-NAN_METHOD(HelloWorld::wave)
+void HelloWorld::Wave(const Nan::FunctionCallbackInfo<v8::Value>& info)
 {
-    // info comes from the NAN_METHOD macro, which returns differently
-    // according to the version of node
-    info.GetReturnValue().Set(Nan::New<v8::String>("howdy world").ToLocalChecked());
+    info.GetReturnValue().Set(Nan::New("howdy world").ToLocalChecked());
 }
 
 /**
@@ -126,7 +124,7 @@ class AsyncBaton
     std::string result;
 };
 
-NAN_METHOD(HelloWorld::shout)
+void HelloWorld::Shout(const Nan::FunctionCallbackInfo<v8::Value>& info)
 {
     std::string phrase = "";
     bool louder = false;
@@ -147,7 +145,7 @@ NAN_METHOD(HelloWorld::shout)
         CallbackError("first arg 'phrase' must be a string", callback);
         return;
     }
-    phrase = *v8::String::Utf8Value((info[0])->ToString());
+    phrase = *Nan::Utf8String(Nan::To<v8::String>(info[0]).ToLocalChecked());
 
     // check second argument, should be an 'options' object
     if (!info[1]->IsObject()) 
@@ -157,9 +155,9 @@ NAN_METHOD(HelloWorld::shout)
     }
     v8::Local<v8::Object> options = info[1].As<v8::Object>();
 
-    if (options->Has(Nan::New("louder").ToLocalChecked())) 
+    if (Nan::Has(options, Nan::New("louder").ToLocalChecked()).FromJust()) 
     {
-        v8::Local<v8::Value> louder_val = options->Get(Nan::New("louder").ToLocalChecked());
+        v8::Local<v8::Value> louder_val = Nan::Get(options, Nan::New("louder").ToLocalChecked()).ToLocalChecked();
         if (!louder_val->IsBoolean())
         {
             CallbackError("option 'louder' must be a boolean", callback);
@@ -249,7 +247,7 @@ void HelloWorld::AfterShout(uv_work_t* req)
     delete baton;
 }
 
-NAN_MODULE_INIT(HelloWorld::Init)
+void HelloWorld::Init(v8::Local<v8::Object> target, v8::Local<v8::Object> module)
 {
     const auto whoami = Nan::New("HelloWorld").ToLocalChecked();
 
@@ -258,8 +256,8 @@ NAN_MODULE_INIT(HelloWorld::Init)
     fnTp->SetClassName(whoami);
 
     // custom methods added here
-    SetPrototypeMethod(fnTp, "wave", wave);
-    SetPrototypeMethod(fnTp, "shout", shout);
+    Nan::SetPrototypeMethod(fnTp, "wave", Wave);
+    Nan::SetPrototypeMethod(fnTp, "shout", Shout);
 
     const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
     constructor().Reset(fn);
@@ -267,7 +265,7 @@ NAN_MODULE_INIT(HelloWorld::Init)
 }
 
 /*
- * This creates the module, started up with NAN_MODULE_INIT.
+ * This creates the module, started up with HelloWorld::Init
  * The naming/casing of the first argument is reflected in lib/hello_world.js
  */
 NODE_MODULE(HelloWorld, HelloWorld::Init);
