@@ -15,16 +15,20 @@ class HelloWorld : public Nan::ObjectWrap
 {
     public:
         // initializer
+        // static NAN_MODULE_INIT(Init)
         static void Init(v8::Local<v8::Object>, v8::Local<v8::Object> module);
 
         // methods required for the constructor
+        // static NAN_METHOD(New)
         static void New(const Nan::FunctionCallbackInfo<v8::Value>&);
         static Nan::Persistent<v8::Function> &constructor();
 
         // Wave, custom sync method
+        // static NAN_METHOD(Wave)
         static void Wave(const Nan::FunctionCallbackInfo<v8::Value>&);
         
         // Shout, custom async method
+        // static NAN_METHOD(Shout)
         static void Shout(const Nan::FunctionCallbackInfo<v8::Value>&);
         static void AsyncShout(uv_work_t* req);
         static void AfterShout(uv_work_t* req);

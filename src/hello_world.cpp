@@ -20,6 +20,8 @@ HelloWorld::HelloWorld(std::string name) :
  *          OR
  * var HW = new HelloWorld('yo');
  */
+
+// NAN_METHOD(HelloWorld::New)
 void HelloWorld::New(const Nan::FunctionCallbackInfo<v8::Value>& info)
 {
     if (info.IsConstructCall())
@@ -89,6 +91,8 @@ inline void CallbackError(std::string message, v8::Local<v8::Function> callback)
  * var wave = HW.wave();
  * console.log(wave); // => 'howdy world!'
  */
+
+// NAN_METHOD(HelloWorld::Wave)
 void HelloWorld::Wave(const Nan::FunctionCallbackInfo<v8::Value>& info)
 {
     info.GetReturnValue().Set(Nan::New("howdy world").ToLocalChecked());
@@ -124,6 +128,7 @@ class AsyncBaton
     std::string result;
 };
 
+// NAN_METHOD(HelloWorld::Shout)
 void HelloWorld::Shout(const Nan::FunctionCallbackInfo<v8::Value>& info)
 {
     std::string phrase = "";
@@ -247,6 +252,7 @@ void HelloWorld::AfterShout(uv_work_t* req)
     delete baton;
 }
 
+// NAN_MODULE_INIT(HelloWorld::Init)
 void HelloWorld::Init(v8::Local<v8::Object> target, v8::Local<v8::Object> module)
 {
     const auto whoami = Nan::New("HelloWorld").ToLocalChecked();
