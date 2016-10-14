@@ -31,7 +31,7 @@ void HelloWorld::New(const Nan::FunctionCallbackInfo<v8::Value>& info)
             if (info.Length() >= 1) {
               if (info[0]->IsString()) 
               {
-                std::string name = *Nan::Utf8String(Nan::To<v8::String>(info[0]).ToLocalChecked());
+                std::string name = *Nan::Utf8String(info[0]);
                 auto *const self = new HelloWorld(name);
                 self->Wrap(info.This());
               }
@@ -150,7 +150,7 @@ void HelloWorld::Shout(const Nan::FunctionCallbackInfo<v8::Value>& info)
         CallbackError("first arg 'phrase' must be a string", callback);
         return;
     }
-    phrase = *Nan::Utf8String(Nan::To<v8::String>(info[0]).ToLocalChecked());
+    phrase = *Nan::Utf8String(info[0]);
 
     // check second argument, should be an 'options' object
     if (!info[1]->IsObject()) 
