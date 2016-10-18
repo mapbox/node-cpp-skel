@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono> // time lib
 #include <thread> // sleep_for is a function within the thread lib
+#include <map>
 
 // Custom constructor added in order to test/cover throwing an error during initialization
 HelloWorld::HelloWorld(std::string name) : 
@@ -124,7 +125,6 @@ class AsyncBaton
     Nan::Persistent<v8::Function> cb; // callback function type
     std::string phrase; // required
     bool louder; // optional
-    bool fib; // optional
     std::uint32_t sleep; // optional (# of seconds)
     std::string error_name;
     std::string result;
@@ -134,7 +134,6 @@ NAN_METHOD(HelloWorld::shout)
 {
     std::string phrase = "";
     bool louder = false;
-    bool fib = false;
     std::uint32_t sleep = 0;
 
     // check third argument, should be a 'callback' function.
@@ -174,17 +173,6 @@ NAN_METHOD(HelloWorld::shout)
         louder = louder_val->BooleanValue();
     }
 
-    if (options->Has(Nan::New("fib").ToLocalChecked())) 
-    {
-        v8::Local<v8::Value> fib_val = options->Get(Nan::New("fib").ToLocalChecked());
-        if (!fib_val->IsBoolean())
-        {
-            CallbackError("option 'fib' must be a boolean", callback);
-            return;
-        }
-        fib = fib_val->BooleanValue();
-    }
-
     if (options->Has(Nan::New("sleep").ToLocalChecked())) 
     {
         v8::Local<v8::Value> sleep_val = options->Get(Nan::New("sleep").ToLocalChecked());
@@ -202,7 +190,6 @@ NAN_METHOD(HelloWorld::shout)
     baton->phrase = phrase;
     baton->louder = louder;
     baton->sleep = sleep;
-    baton->fib = fib;
     baton->cb.Reset(callback);
 
     /*
@@ -219,45 +206,23 @@ NAN_METHOD(HelloWorld::shout)
     return;
 }
 
-// fibonacci algorithm
+// expensive allocation of std::map, querying, and string comparison
 std::string do_expensive_work(std::string const& phrase) {
     std::string result = phrase;
-    for i in 1 2 3 4; do while : ; do : ; done & done;
-    // std::uint32_t a[100][100],b[100][100],c[100][100],m,n,p,q,i,j,k;
-    // m = 100;
-    // n = 100;
-    // p = 100;
-    // q = 100;
- 
-    // if(n==p)
-    // {
-    //     for(i=0;i<m;++i) {
-    //         for(j=0;j<n;++j) {
-    //             a[i][j]=j+4;
-    //         }
-    //     }
 
-    //     for(i=0;i<p;++i) {
-    //         for(j=0;j<q;++j) {
-    //             b[i][j]=j+4;
-    //         }
-    //     }
+    std::map<std::size_t,std::string> container;
+    std::size_t iterations = 1000000;
 
-    //     for(i=0;i<m;++i)
-    //     {
-    //         for(j=0;j<q;++j)
-    //         {
-    //             c[i][j]=0;
-    //             for(k=0;k<n;++k){
-    //                 //std::cout<< k << std::endl;
-    //                 c[i][j]=c[i][j]+(a[i][k]*b[k][j]);
-    //             }
-    //             //std::cout << c[i][j]<< " ";
-    //         }
-    //         //std::cout << "\n" << std::endl;
-    //     }
-    // }
-    // else std::cout<<"\nSorry!!!! Matrix multiplication can't be done";
+    for (std::size_t i=0;i<iterations;++i) {
+        container.emplace(i,std::to_string(i));
+    }
+
+    for (std::size_t i=0;i<iterations;++i) {
+        std::string const& item = container[i];
+        if (item != std::to_string(i)) {
+            abort();
+        }
+    }
 
     return result += "!...and just did a bunch of stuff";
 }
@@ -300,10 +265,9 @@ void HelloWorld::AsyncShout(uv_work_t* req)
     // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
     try
     {
-        if (!baton->fib) {
+        if (baton->sleep > 0) {
             baton->result = do_work(baton->phrase,baton->louder,baton->sleep);
-        }
-        else {
+        } else {
             baton->result = do_expensive_work(baton->phrase);
         }
     }
