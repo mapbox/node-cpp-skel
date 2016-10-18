@@ -222,21 +222,42 @@ NAN_METHOD(HelloWorld::shout)
 // fibonacci algorithm
 std::string do_expensive_work(std::string const& phrase) {
     std::string result = phrase;
-
-    int n = 1000, c, first = 0, second = 1, next;
+    for i in 1 2 3 4; do while : ; do : ; done & done;
+    // std::uint32_t a[100][100],b[100][100],c[100][100],m,n,p,q,i,j,k;
+    // m = 100;
+    // n = 100;
+    // p = 100;
+    // q = 100;
  
-    for ( c = 0 ; c < n ; c++ )
-    {
-      if ( c <= 1 )
-        next = c;
-      else
-      {
-         next = first + second;
-         first = second;
-         second = next;
-      }
-      //std::cout << next << std::endl;
-    }
+    // if(n==p)
+    // {
+    //     for(i=0;i<m;++i) {
+    //         for(j=0;j<n;++j) {
+    //             a[i][j]=j+4;
+    //         }
+    //     }
+
+    //     for(i=0;i<p;++i) {
+    //         for(j=0;j<q;++j) {
+    //             b[i][j]=j+4;
+    //         }
+    //     }
+
+    //     for(i=0;i<m;++i)
+    //     {
+    //         for(j=0;j<q;++j)
+    //         {
+    //             c[i][j]=0;
+    //             for(k=0;k<n;++k){
+    //                 //std::cout<< k << std::endl;
+    //                 c[i][j]=c[i][j]+(a[i][k]*b[k][j]);
+    //             }
+    //             //std::cout << c[i][j]<< " ";
+    //         }
+    //         //std::cout << "\n" << std::endl;
+    //     }
+    // }
+    // else std::cout<<"\nSorry!!!! Matrix multiplication can't be done";
 
     return result += "!...and just did a bunch of stuff";
 }
