@@ -61,7 +61,7 @@ test('wave success', function(t) {
 test('shout success', function(t) {
   HW.shout('rawr', {}, function(err, shout) {
     if (err) throw err;
-    t.equal(shout, 'rawr!');
+    t.equal(shout, 'rawr!...and just did a bunch of stuff');
     t.end();
   });
 });
@@ -69,7 +69,7 @@ test('shout success', function(t) {
 test('shout success - options.louder', function(t) {
   HW.shout('rawr', { louder: true }, function(err, shout) {
     if (err) throw err;
-    t.equal(shout, 'rawr!!!!!');
+    t.equal(shout, 'rawr!!!!!...and just did a bunch of stuff');
     t.end();
   });
 });
@@ -133,18 +133,18 @@ test('sleep error - options.sleep not integer', function(t) {
   });
 });
 
-test('shout success - options.fib', function(t) {
-  HW.shout('rawr', { fib: true }, function(err, shout) {
+test('shout success - default ', function(t) {
+  HW.shout('rawr', {}, function(err, shout) {
     if (err) throw err;
     t.equal(shout, 'rawr!...and just did a bunch of stuff');
     t.end();
   });
 });
 
-test('sleep error - options.fib not boolean', function(t) {
-  HW.shout('rawr', { fib: "hi" }, function(err, shout) {
+test('sleep error - options.sleep not number', function(t) {
+  HW.shout('rawr', { sleep: "hi" }, function(err, shout) {
     t.ok(err, 'expected error');
-    t.ok(err.message.indexOf("\'fib\' must be a boolean") > -1, 'proper error message');
+    t.ok(err.message.indexOf("\'sleep\' must be a positive integer") > -1, 'proper error message');
     t.end();
   });
 });

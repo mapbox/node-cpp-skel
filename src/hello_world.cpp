@@ -207,8 +207,11 @@ NAN_METHOD(HelloWorld::shout)
 }
 
 // expensive allocation of std::map, querying, and string comparison
-std::string do_expensive_work(std::string const& phrase) {
-    std::string result = phrase;
+std::string do_expensive_work(std::string const& phrase, bool louder) {
+
+    if (phrase != "rawr") {
+        throw std::runtime_error("we really would prefer rawr all the time");
+    }
 
     std::map<std::size_t,std::string> container;
     std::size_t iterations = 1000000;
@@ -224,7 +227,14 @@ std::string do_expensive_work(std::string const& phrase) {
         }
     }
 
-    return result += "!...and just did a bunch of stuff";
+    std::string result = phrase + "!";
+
+    if (louder)
+    {
+        result += "!!!!";
+    }
+
+    return result += "...and just did a bunch of stuff";
 }
 
 std::string do_work(std::string const& phrase, bool louder, uint32_t sleep) {
@@ -268,7 +278,7 @@ void HelloWorld::AsyncShout(uv_work_t* req)
         if (baton->sleep > 0) {
             baton->result = do_work(baton->phrase,baton->louder,baton->sleep);
         } else {
-            baton->result = do_expensive_work(baton->phrase);
+            baton->result = do_expensive_work(baton->phrase,baton->louder);
         }
     }
     catch (std::exception const& ex)
