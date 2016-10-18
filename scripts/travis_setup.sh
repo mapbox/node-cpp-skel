@@ -25,7 +25,7 @@ function init_binary() {
 function main() {
     setup_mason
     if [[ $(uname -s) == 'Linux' ]]; then
-        init_binary clang 3.8.0
+        init_binary clang++ 3.9.0
         export CXX=clang++
         export CC=clang
     fi
