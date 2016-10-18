@@ -12,7 +12,7 @@ addons:
 env:
   global:
    - NODE_VERSION=4
-   - LSAN_OPTIONS=suppressions=scripts/leak_suppressions.txt
+   - LSAN_OPTIONS=print_suppressions=1:suppressions=scripts/leak_suppressions.txt
 
 matrix:
   include:
