@@ -8,7 +8,7 @@ if (!argv.iterations || !argv.concurrency) {
 var concurrency = argv.concurrency;
 
 // This must be at the very top of the file
-// This env var set the UV threadpool size, but as soon as you start interacting with the threadpool,
+// This env var set the UV threadpool size. As soon as you start interacting with the threadpool,
 // this value gets locked in and cant be changed.
 process.env.UV_THREADPOOL_SIZE = concurrency;
 

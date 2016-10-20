@@ -71,3 +71,33 @@ git commit -m 'releasing 0.1.0 [publish binary]'
 ```
 
 Republishing a binary overrides the current version and must be specified with `[republish binary]`.
+
+# Benchmark Performance
+
+This project includes [bench tests](https://github.com/mapbox/node-cpp-skel/tree/master/test/bench) you can use to experiment with and measure performance. We've included a couple different scenarios that demonstrate the affects of concurrency and threads within a process or processes.
+
+For example, you can run:
+
+```
+node test/bench/bench-batch.js --iterations 50 --concurrency 10
+```
+
+This will run a batch/bundle/basket of calls to HelloWorld's `shout()` function. You can control two things:
+
+- iterations: number of times to call `shout()`
+- concurrency: max number of threads the test can utilize, by setting `UV_THREADPOOL_SIZE`. When running the bench-batch test, you can see this number of threads reflected in your [Activity Monitor](https://github.com/springmeyer/profiling-guide#activity-monitorapp-on-os-x)/[htop window](https://hisham.hm/htop/). 
+
+This bench-batch test can demonstrate various performance scenarios:
+
+1. An async function that is super CPU intensive and takes a while to finish (expensive allocation of std::map). This scenario demonstrates when worker threads are busy doing a lot of work, and the main loop is relatively idle. Depending on how many threads (concurrency) you enable, you may see your CPU% sky-rocket and your cores max out. Yeaahhh!!!
+
+2. An async function that sleeps in the thread pool. This scenario demonstrates when worker threads are busy, but aren't doing much work and causing a bottlenech. Typically in this situation, the callstack of your process will show your workers spending most of their time in some kind of 'cond_wait' state.
+
+### Activity Monitor will display a few different kinds of threads:
+- main thread (this is the event loop)
+- [worker threads (libuv)](https://github.com/libuv/libuv/blob/1a96fe33343f82721ba8bc93adb5a67ddcf70ec4/src/threadpool.c#L64-L104) will include `worker (in node)` in the callstack. These are usually unnamed: `Thread_2206161` (some of these might not actually be running your code)
+- V8 WorkerThread: we dont really need to care about these right now. They dont actually run your code.
+
+To learn more about what exactly is happening with threads behind the scenes in Node and how `UV_THREADPOOL_SIZE` is involved, check out [this great blogpost](https://www.future-processing.pl/blog/on-problems-with-threads-in-node-js/).
+
+Feel free to play around with these bench tests and profile to get a better idea of how threading can affect the performance of your code. We are in the process of [adding more benchmarks](https://github.com/mapbox/node-cpp-skel/issues/30) that demonstrate a number of other scenarios.
