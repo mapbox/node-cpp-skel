@@ -89,9 +89,17 @@ This will run a batch/bundle/basket of calls to HelloWorld's `shout()` function.
 
 This bench-batch test can demonstrate various performance scenarios:
 
-1. An async function that is super CPU intensive and takes a while to finish (expensive allocation of std::map). This scenario demonstrates when worker threads are busy doing a lot of work, and the main loop is relatively idle. Depending on how many threads (concurrency) you enable, you may see your CPU% sky-rocket and your cores max out. Yeaahhh!!!
+##### Good scenarios
 
-2. An async function that sleeps in the thread pool. This scenario demonstrates when worker threads are busy, but aren't doing much work and causing a bottlenech. Typically in this situation, the callstack of your process will show your workers spending most of their time in some kind of 'cond_wait' state. To run this scenario, be sure to set the number of seconds youd like your workers to `--sleep`:
+These scenarios demonstrate idealized behavior for a healthy node c++ addon. They are what you would ideally expect to see when you've picked a good problem to solve with node.
+
+1. An async function that is CPU intensive and takes a while to finish (expensive creation and querying of a `std::map` and string comparisons). This scenario demonstrates when worker threads are busy doing a lot of work, and the main loop is relatively idle. Depending on how many threads (concurrency) you enable, you may see your CPU% sky-rocket and your cores max out. Yeaahhh!!!
+
+##### Bad scenarios
+
+These scenarios demonstrate non-ideal behavior for a node c++ addon. They represent situations you need to watch out for that may spell trouble in your code or that you are trying to solve a problem that is not well suited to node.
+
+1. An async function that sleeps in the thread pool. This is a bizarre example since you'd never want to do this in practice. This scenario demonstrates when all worker threads have work (threadpool is full) but the work they are doing is not CPU intensive. This is an antipatter: it does not make sense to push work to the threadpool unless it is CPU intensive. Typically in this situation, the callstack of your process will show your workers spending most of their time in some kind of 'cond_wait' state. To run this scenario, be sure to set the number of seconds you'd like your workers to `--sleep`:
 
 ```
 node test/bench/bench-batch.js --iterations 50 --concurrency 10 --sleep 1
