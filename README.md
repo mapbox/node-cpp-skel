@@ -91,9 +91,15 @@ This bench-batch test can demonstrate various performance scenarios:
 
 1. An async function that is super CPU intensive and takes a while to finish (expensive allocation of std::map). This scenario demonstrates when worker threads are busy doing a lot of work, and the main loop is relatively idle. Depending on how many threads (concurrency) you enable, you may see your CPU% sky-rocket and your cores max out. Yeaahhh!!!
 
-2. An async function that sleeps in the thread pool. This scenario demonstrates when worker threads are busy, but aren't doing much work and causing a bottlenech. Typically in this situation, the callstack of your process will show your workers spending most of their time in some kind of 'cond_wait' state.
+2. An async function that sleeps in the thread pool. This scenario demonstrates when worker threads are busy, but aren't doing much work and causing a bottlenech. Typically in this situation, the callstack of your process will show your workers spending most of their time in some kind of 'cond_wait' state. To run this scenario, be sure to set the `--sleep` flag:
 
-### Activity Monitor will display a few different kinds of threads:
+```
+node test/bench/bench-batch.js --iterations 50 --concurrency 10 --sleep 1
+```
+
+#### Ideally, you want your workers to run your code ~99% of the time.
+
+#### Activity Monitor will display a few different kinds of threads:
 - main thread (this is the event loop)
 - [worker threads (libuv)](https://github.com/libuv/libuv/blob/1a96fe33343f82721ba8bc93adb5a67ddcf70ec4/src/threadpool.c#L64-L104) will include `worker (in node)` in the callstack. These are usually unnamed: `Thread_2206161` (some of these might not actually be running your code)
 - V8 WorkerThread: we dont really need to care about these right now. They dont actually run your code.
