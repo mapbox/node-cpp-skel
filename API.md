@@ -39,7 +39,7 @@ Shout a phrase really loudly by adding an exclamation to the end, asynchronously
 var HW = new HelloWorld();
 HW.shout('rawr', {}, function(err, shout) {
   if (err) throw err;
-  console.log(shout); // => 'rawr!'
+  console.log(shout); // => 'rawr!...and just did a bunch of stuff'
 });
 ```
 
@@ -59,11 +59,4 @@ HW.shout('rawr', { sleep: 2 }, function(err, shout) {
   if (err) throw err;
   console.log(shout); // => 'rawr! zzzZZZ'
 });
-
-```javascript
-// Shout and then do a bunch of stuff
-var HW = new HelloWorld();
-HW.shout('rawr', { fib: true }, function(err, shout) {
-  if (err) throw err;
-  console.log(shout); // => 'rawr!...and just did a bunch of stuff'
-});
+```
