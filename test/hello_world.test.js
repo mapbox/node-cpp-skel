@@ -75,7 +75,7 @@ test('shout success - options.louder', function(t) {
 });
 
 test('shout error - not enough rawr', function(t) {
-  HW.shout('tiny moo', { louder: true }, function(err, shout) {
+  HW.shout('tiny moo', { louder: true }, function(err) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('rawr all the time') > -1, 'rawrs all the time are way nicer');
     t.end();
@@ -83,7 +83,7 @@ test('shout error - not enough rawr', function(t) {
 });
 
 test('shout error - non string phrase', function(t) {
-  HW.shout(4, {}, function(err, shout) {
+  HW.shout(4, {}, function(err) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('phrase') > -1, 'proper error message');
     t.end();
@@ -91,7 +91,7 @@ test('shout error - non string phrase', function(t) {
 });
 
 test('shout error - no options object', function(t) {
-  HW.shout('rawr', true, function(err, shout) {
+  HW.shout('rawr', true, function(err) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('options') > -1, 'proper error message');
     t.end();
@@ -99,7 +99,7 @@ test('shout error - no options object', function(t) {
 });
 
 test('shout error - options.louder non boolean', function(t) {
-  HW.shout('rawr', { louder: 3 }, function(err, shout) {
+  HW.shout('rawr', { louder: 3 }, function(err) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('louder') > -1, 'proper error message');
     t.end();
@@ -117,6 +117,14 @@ test('shout error - no callback', function(t) {
   }
 });
 
+test('shout success - default ', function(t) {
+  HW.shout('rawr', {}, function(err, shout) {
+    if (err) throw err;
+    t.equal(shout, 'rawr!');
+    t.end();
+  });
+});
+
 test('sleep success - options.sleep', function(t) {
   HW.sleepyThreads('rawr', { sleep: 2 }, function(err, shout, stdout) {
     if (err) throw err;
@@ -126,25 +134,27 @@ test('sleep success - options.sleep', function(t) {
 });
 
 test('sleep error - options.sleep not integer', function(t) {
-  HW.shout('rawr', { sleep: "hi" }, function(err, shout) {
+  HW.sleepyThreads('rawr', { sleep: "hi" }, function(err) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf("\'sleep\' must be a positive integer") > -1, 'proper error message');
     t.end();
   });
 });
 
-test('shout success - default ', function(t) {
-  HW.shout('rawr', {}, function(err, shout) {
+test('busyThreads success - default ', function(t) {
+  HW.busyThreads('rawr', function(err, result) {
     if (err) throw err;
-    t.equal(shout, 'rawr!');
+    t.equal(result, 'rawr...threads are busy bees');
     t.end();
   });
 });
 
-test('sleep error - options.sleep not number', function(t) {
-  HW.shout('rawr', { sleep: "hi" }, function(err, shout) {
+test('busyThreads error - no callback', function(t) {
+  try {
+    HW.busyThreads('rawr', {});
+  } catch (err) {
     t.ok(err, 'expected error');
-    t.ok(err.message.indexOf("\'sleep\' must be a positive integer") > -1, 'proper error message');
+    t.ok(err.message.indexOf('callback') > -1, 'proper error message');
     t.end();
-  });
+  }
 });
