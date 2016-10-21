@@ -158,3 +158,11 @@ test('busyThreads error - no callback', function(t) {
     t.end();
   }
 });
+
+test('contentiousThreads success - default ', function(t) {
+  HW.contentiousThreads('rawr', function(err, result) {
+    if (err) throw err;
+    t.equal(result, 'rawr...threads are locked and contending with each other');
+    t.end();
+  });
+});

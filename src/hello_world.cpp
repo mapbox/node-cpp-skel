@@ -311,6 +311,62 @@ NAN_METHOD(HelloWorld::sleepyThreads)
     return;
 }
 
+NAN_METHOD(HelloWorld::contentiousThreads)
+{
+    std::string phrase = "";
+
+    // check second argument, should be a 'callback' function.
+    // This allows us to set the callback so we can use it to return errors
+    // instead of throwing as well.
+    if (!info[1]->IsFunction()) 
+    {
+        Nan::ThrowTypeError("second arg 'callback' must be a function");
+        return;
+    }
+    v8::Local<v8::Function> callback = info[1].As<v8::Function>();
+
+    // check first argument, should be a 'phrase' string
+    if (!info[0]->IsString()) 
+    {
+        CallbackError("first arg 'phrase' must be a string", callback);
+        return;
+    }
+    phrase = *v8::String::Utf8Value((info[0])->ToString());
+
+    // set up the baton to pass into our threadpool
+    AsyncBaton *baton = new AsyncBaton();
+    baton->request.data = baton;
+    baton->phrase = phrase;
+    baton->cb.Reset(callback);
+
+    /*
+    `uv_queue_work` is the all-important way to pass info into the threadpool.
+    It cannot take v8 objects, so we need to do some manipulation above to convert into cpp objects
+    otherwise things get janky. It takes four arguments:
+
+    1) which loop to use, node only has one so we pass in a pointer to the default
+    2) the baton defined above, we use this to access information important for the method
+    3) operations to be executed within the threadpool
+    4) operations to be executed after #3 is complete to pass into the callback
+    */
+    uv_queue_work(uv_default_loop(), &baton->request, AsyncContentiousThreads, (uv_after_work_cb)AfterContentiousThreads);
+    return;
+}
+
+// contentious mutex locking keeping threads from doing work
+std::string do_contentious_work(std::string const& phrase) {
+
+    if (phrase != "rawr") {
+        throw std::runtime_error("we really would prefer rawr all the time");
+    }
+
+    // impl lock
+
+    std::string result = phrase + "...threads are locked and contending with each other";
+
+    return result;
+}
+
 // expensive allocation of std::map, querying, and string comparison
 std::string do_expensive_work(std::string const& phrase) {
 
@@ -503,6 +559,48 @@ void HelloWorld::AfterSleepyThreads(uv_work_t* req)
     delete baton;
 }
 
+// this is where we actually exclaim our shout phrase
+void HelloWorld::AsyncContentiousThreads(uv_work_t* req)
+{
+    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
+
+    /***************** custom code here ******************/
+    // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
+    try
+    {
+        baton->result = do_contentious_work(baton->phrase);
+    }
+    catch (std::exception const& ex)
+    {
+        baton->error_name = ex.what();
+    }
+    /***************** end custom code *******************/
+
+}
+
+// handle results from AsyncShout - if there are errors return those
+// otherwise return the type & info to our callback
+void HelloWorld::AfterContentiousThreads(uv_work_t* req)
+{
+    Nan::HandleScope scope;
+
+    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
+
+    if (!baton->error_name.empty()) 
+    {
+        v8::Local<v8::Value> argv[1] = { Nan::Error(baton->error_name.c_str()) };
+        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 1, argv);
+    }
+    else
+    {
+        v8::Local<v8::Value> argv[2] = { Nan::Null(), Nan::New<v8::String>(baton->result.data()).ToLocalChecked() };
+        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 2, argv);
+    }
+
+    baton->cb.Reset();
+    delete baton;
+}
+
 NAN_MODULE_INIT(HelloWorld::Init)
 {
     const auto whoami = Nan::New("HelloWorld").ToLocalChecked();
@@ -516,6 +614,7 @@ NAN_MODULE_INIT(HelloWorld::Init)
     SetPrototypeMethod(fnTp, "shout", shout);
     SetPrototypeMethod(fnTp, "busyThreads", busyThreads);
     SetPrototypeMethod(fnTp, "sleepyThreads", sleepyThreads);
+    SetPrototypeMethod(fnTp, "contentiousThreads", contentiousThreads);
 
     const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
     constructor().Reset(fn);

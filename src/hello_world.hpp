@@ -39,6 +39,11 @@ class HelloWorld: public Nan::ObjectWrap
         static void AsyncSleepyThreads(uv_work_t* req);
         static void AfterSleepyThreads(uv_work_t* req);
 
+        // sleepyThreads, custom async method
+        static NAN_METHOD(contentiousThreads);
+        static void AsyncContentiousThreads(uv_work_t* req);
+        static void AfterContentiousThreads(uv_work_t* req);
+
         // constructor
         // This includes a Default Argument
         // If a paramter value is passed in, it takes priority over the default arg
