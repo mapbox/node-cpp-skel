@@ -125,7 +125,7 @@ test('shout success - default ', function(t) {
   });
 });
 
-test('sleep success - options.sleep', function(t) {
+test('sleepyThreads success - options.sleep', function(t) {
   HW.sleepyThreads('rawr', { sleep: 2 }, function(err, shout, stdout) {
     if (err) throw err;
     t.equal(shout, 'rawr zzzZZZ');
@@ -133,10 +133,44 @@ test('sleep success - options.sleep', function(t) {
   });
 });
 
-test('sleep error - options.sleep not integer', function(t) {
+test('sleepyThreads error - phrase not a string', function(t) {
+  HW.sleepyThreads(24, {}, function(err) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf("\'phrase\' must be a string") > -1, 'proper error message');
+    t.end();
+  });
+});
+
+test('sleepyThreads error - options.sleep not integer', function(t) {
   HW.sleepyThreads('rawr', { sleep: "hi" }, function(err) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf("\'sleep\' must be a positive integer") > -1, 'proper error message');
+    t.end();
+  });
+});
+
+test('sleepyThreads error - no callback', function(t) {
+  try {
+    HW.sleepyThreads('rawr', {});
+  } catch (err) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf('callback') > -1, 'proper error message');
+    t.end();
+  }
+});
+
+test('sleepyThreads error - no options object', function(t) {
+  HW.sleepyThreads('rawr', true, function(err) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf('options') > -1, 'proper error message');
+    t.end();
+  });
+});
+
+test('sleepyThreads error - not enough rawr', function(t) {
+  HW.sleepyThreads('tiny moo', {}, function(err) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf('rawr all the time') > -1, 'rawrs all the time are way nicer');
     t.end();
   });
 });
@@ -159,10 +193,52 @@ test('busyThreads error - no callback', function(t) {
   }
 });
 
+test('busyThreads error - phrase not a string', function(t) {
+  HW.busyThreads(24, function(err) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf("\'phrase\' must be a string") > -1, 'proper error message');
+    t.end();
+  });
+});
+
+test('busyThreads error - not enough rawr', function(t) {
+  HW.busyThreads('tiny moo', function(err) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf('rawr all the time') > -1, 'rawrs all the time are way nicer');
+    t.end();
+  });
+});
+
 test('contentiousThreads success - default ', function(t) {
   HW.contentiousThreads('rawr', function(err, result) {
     if (err) throw err;
     t.equal(result, 'rawr...threads are locked and contending with each other');
+    t.end();
+  });
+});
+
+test('contentiousThreads error - no callback', function(t) {
+  try {
+    HW.contentiousThreads('rawr', {});
+  } catch (err) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf('callback') > -1, 'proper error message');
+    t.end();
+  }
+});
+
+test('contentiousThreads error - phrase not a string', function(t) {
+  HW.contentiousThreads(24, function(err) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf("\'phrase\' must be a string") > -1, 'proper error message');
+    t.end();
+  });
+});
+
+test('contentiousThreads error - not enough rawr', function(t) {
+  HW.contentiousThreads('tiny moo', function(err) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf('rawr all the time') > -1, 'rawrs all the time are way nicer');
     t.end();
   });
 });

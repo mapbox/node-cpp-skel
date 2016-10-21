@@ -5,6 +5,12 @@
 #include <chrono> // time lib
 #include <thread> // sleep_for is a function within the thread lib
 #include <map>
+#include <mutex>
+
+// Global vars for demonstrating contentiousThreads()
+std::uint32_t a;
+std::uint32_t b;
+std::mutex mutex;
 
 // Custom constructor added in order to test/cover throwing an error during initialization
 HelloWorld::HelloWorld(std::string name) : 
@@ -359,8 +365,11 @@ std::string do_contentious_work(std::string const& phrase) {
     if (phrase != "rawr") {
         throw std::runtime_error("we really would prefer rawr all the time");
     }
-
-    // impl lock
+    
+    // The first thread to lock this mutex is the only one that has access to a and b
+    std::lock_guard<decltype(mutex)> lock(mutex);
+    ++a;
+    b += a;
 
     std::string result = phrase + "...threads are locked and contending with each other";
 
