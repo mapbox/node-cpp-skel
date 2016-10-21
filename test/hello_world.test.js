@@ -61,7 +61,7 @@ test('wave success', function(t) {
 test('shout success', function(t) {
   HW.shout('rawr', {}, function(err, shout) {
     if (err) throw err;
-    t.equal(shout, 'rawr!...and just did a bunch of stuff');
+    t.equal(shout, 'rawr!');
     t.end();
   });
 });
@@ -69,7 +69,7 @@ test('shout success', function(t) {
 test('shout success - options.louder', function(t) {
   HW.shout('rawr', { louder: true }, function(err, shout) {
     if (err) throw err;
-    t.equal(shout, 'rawr!!!!!...and just did a bunch of stuff');
+    t.equal(shout, 'rawr!!!!!');
     t.end();
   });
 });
@@ -118,9 +118,9 @@ test('shout error - no callback', function(t) {
 });
 
 test('sleep success - options.sleep', function(t) {
-  HW.shout('rawr', { sleep: 2 }, function(err, shout, stdout) {
+  HW.sleepyThreads('rawr', { sleep: 2 }, function(err, shout, stdout) {
     if (err) throw err;
-    t.equal(shout, 'rawr! zzzZZZ');
+    t.equal(shout, 'rawr zzzZZZ');
     t.end();
   });
 });
@@ -136,7 +136,7 @@ test('sleep error - options.sleep not integer', function(t) {
 test('shout success - default ', function(t) {
   HW.shout('rawr', {}, function(err, shout) {
     if (err) throw err;
-    t.equal(shout, 'rawr!...and just did a bunch of stuff');
+    t.equal(shout, 'rawr!');
     t.end();
   });
 });
