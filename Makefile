@@ -9,7 +9,7 @@ debug:
 
 # TODO: pin to mason master once https://github.com/mapbox/mason/pull/253 is merged
 ./.mason:
-	git clone -b llvm-3.9.0 --depth 1 https://github.com/mapbox/mason .mason
+	git clone --depth 1 https://github.com/mapbox/mason .mason
 
 ./mason_packages/.link/bin/llvm-cov: ./.mason
 	./.mason/mason install clang++ 3.9.0
