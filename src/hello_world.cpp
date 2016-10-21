@@ -140,7 +140,6 @@ NAN_METHOD(HelloWorld::shout)
 {
     std::string phrase = "";
     bool louder = false;
-    std::uint32_t sleep = 0;
 
     // check third argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors
@@ -179,23 +178,11 @@ NAN_METHOD(HelloWorld::shout)
         louder = louder_val->BooleanValue();
     }
 
-    if (options->Has(Nan::New("sleep").ToLocalChecked())) 
-    {
-        v8::Local<v8::Value> sleep_val = options->Get(Nan::New("sleep").ToLocalChecked());
-        if (!sleep_val->IsUint32())
-        {
-            CallbackError("option 'sleep' must be a positive integer", callback);
-            return;
-        }
-        sleep = sleep_val->Uint32Value();
-    }
-
     // set up the baton to pass into our threadpool
     AsyncBaton *baton = new AsyncBaton();
     baton->request.data = baton;
     baton->phrase = phrase;
     baton->louder = louder;
-    baton->sleep = sleep;
     baton->cb.Reset(callback);
 
     /*
