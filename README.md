@@ -27,6 +27,17 @@ make # build binaries
 make test
 ```
 
+# Code coverage
+
+Code coverage is critical for knowing how well your tests actually test all your code. To see code coverage you can view current results online at [![codecov](https://codecov.io/gh/mapbox/node-cpp-skel/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/node-cpp-skel) or you can build in a customized way and display coverage locally like:
+
+```
+make coverage
+```
+
+For more details about what `make coverage` is doing under the hood see https://github.com/mapbox/cpp#code-coverage
+
+
 # Xcode
 
 ![npm-test scheme in Xcode](https://cloud.githubusercontent.com/assets/52399/16448893/4967a454-3df4-11e6-8bb5-701fe46174ef.png)
