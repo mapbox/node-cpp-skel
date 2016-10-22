@@ -3,6 +3,8 @@
 set -eu
 set -o pipefail
 
+export NPM_FLAGS=${NPM_FLAGS:-}
+
 # `is_pr_merge` is designed to detect if a gitsha represents a normal
 # push commit (to any branch) or whether it represents travis attempting
 # to merge between the origin and the upstream branch.
