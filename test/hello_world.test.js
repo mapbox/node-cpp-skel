@@ -1,3 +1,5 @@
+"use strict";
+
 var test = require('tape');
 var HelloWorld = require('../lib/index.js');
 var HW = new HelloWorld();

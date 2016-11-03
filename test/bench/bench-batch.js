@@ -1,3 +1,5 @@
+"use strict";
+
 var argv = require('minimist')(process.argv.slice(2));
 if (!argv.iterations || !argv.concurrency) {
   process.stdout.write('Please provide desired iterations and concurrency\n');
@@ -7,9 +9,10 @@ if (!argv.iterations || !argv.concurrency) {
 
 var concurrency = argv.concurrency;
 
-// This must be at the very top of the file
-// This env var set the UV threadpool size. As soon as you start interacting with the threadpool,
-// this value gets locked in and cant be changed.
+// This env var sets the libuv threadpool size.
+// This value is locked in once a function interacts with the threadpool
+// Therefore we need to set this value either in the shell or at the very
+// top of a JS file (like we do here)
 process.env.UV_THREADPOOL_SIZE = concurrency;
 
 var fs = require('fs');
@@ -55,7 +58,9 @@ queue.awaitAll(function(error) {
   time = +(new Date()) - time;
 
   // number of milliseconds per iteration
-  var rate = time/runs;
+  var rate = runs/(time/1000);
+
+  console.log('speed: ' + rate.toFixed(0) + ' runs/s (runs:' + runs + ' ms:' + time + ' )');
   
   // There may be instances when you want to assert some performance metric
   //assert.equal(rate < 1, true, 'avg time per iteration ( ' + rate + 'ms ) takes less than 1 ms');
