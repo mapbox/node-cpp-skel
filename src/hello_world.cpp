@@ -8,9 +8,9 @@
 #include <mutex>
 
 // Global vars for demonstrating contentiousThreads()
-std::uint32_t a;
-std::uint32_t b;
-std::mutex mutex;
+static std::uint32_t a = 0;
+static std::uint32_t b = 0;
+static std::mutex mutex;
 
 // Custom constructor added in order to test/cover throwing an error during initialization
 HelloWorld::HelloWorld(std::string name) : 
@@ -346,45 +346,49 @@ NAN_METHOD(HelloWorld::contentiousThreads)
     return;
 }
 
-// contentious mutex locking keeping threads from doing work
-std::string do_contentious_work(std::string const& phrase) {
-
-    if (phrase != "rawr") {
-        throw std::runtime_error("we really would prefer rawr all the time");
-    }
-    
-    // The first thread to lock this mutex is the only one that has access to a and b
-    std::lock_guard<decltype(mutex)> lock(mutex);
-    ++a;
-    b += a;
-
-    std::string result = phrase + "...threads are locked and contending with each other";
-
-    return result;
-}
-
 // expensive allocation of std::map, querying, and string comparison
-std::string do_expensive_work(std::string const& phrase) {
+std::string do_expensive_work(std::string const& phrase, std::size_t work_to_do=100000) {
 
     if (phrase != "rawr") {
         throw std::runtime_error("we really would prefer rawr all the time");
     }
 
     std::map<std::size_t,std::string> container;
-    std::size_t iterations = 100000;
 
-    for (std::size_t i=0;i<iterations;++i) {
+    for (std::size_t i=0;i<work_to_do;++i) {
         container.emplace(i,std::to_string(i));
     }
 
-    for (std::size_t i=0;i<iterations;++i) {
+    for (std::size_t i=0;i<work_to_do;++i) {
         std::string const& item = container[i];
         if (item != std::to_string(i)) {
-            abort();
+            abort(); // should never get here
         }
     }
 
     std::string result = phrase + "...threads are busy bees";
+
+    return result;
+}
+
+// contentious mutex locking keeping threads from doing work
+std::string do_contentious_work(std::string const& phrase) {
+
+    if (phrase != "rawr") {
+        throw std::runtime_error("we really would prefer rawr all the time");
+    }
+
+    // The first thread to lock this mutex is the only one that has access to a and b
+    std::lock_guard<decltype(mutex)> lock(mutex);
+    if (a != 0 || b != 0) {
+        abort(); // should never happen since lock synchronized access to this variable
+    }
+    a = 1;
+    b = 1;
+    do_expensive_work(phrase);
+    a = 0;
+    b = 0;
+    std::string result = phrase + "...threads are locked and contending with each other";
 
     return result;
 }
