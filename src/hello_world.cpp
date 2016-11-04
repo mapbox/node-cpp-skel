@@ -203,12 +203,12 @@ NAN_METHOD(HelloWorld::busyThreads)
 {
     std::string phrase = "";
 
-    // check second argument, should be a 'callback' function.
+    // check last argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors
     // instead of throwing as well.
-    if (!info[1]->IsFunction()) 
+    if (info.Length() < 1 || !info[info.Length()-1]->IsFunction())
     {
-        Nan::ThrowTypeError("second arg 'callback' must be a function");
+        Nan::ThrowTypeError("last arg 'callback' must be a function");
         return;
     }
     v8::Local<v8::Function> callback = info[1].As<v8::Function>();
@@ -246,12 +246,12 @@ NAN_METHOD(HelloWorld::sleepyThreads)
     std::string phrase = "";
     std::uint32_t sleep = 0;
 
-    // check third argument, should be a 'callback' function.
+    // check last argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors
     // instead of throwing as well.
-    if (!info[2]->IsFunction()) 
+    if (info.Length() < 1 || !info[info.Length()-1]->IsFunction())
     {
-        Nan::ThrowTypeError("third arg 'callback' must be a function");
+        Nan::ThrowTypeError("last arg 'callback' must be a function");
         return;
     }
     v8::Local<v8::Function> callback = info[2].As<v8::Function>();
@@ -308,12 +308,12 @@ NAN_METHOD(HelloWorld::contentiousThreads)
 {
     std::string phrase = "";
 
-    // check second argument, should be a 'callback' function.
+    // check last argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors
     // instead of throwing as well.
-    if (!info[1]->IsFunction()) 
+    if (info.Length() < 1 || !info[info.Length()-1]->IsFunction())
     {
-        Nan::ThrowTypeError("second arg 'callback' must be a function");
+        Nan::ThrowTypeError("last arg 'callback' must be a function");
         return;
     }
     v8::Local<v8::Function> callback = info[1].As<v8::Function>();
