@@ -22,7 +22,6 @@ var assert = require('assert')
 var d3_queue = require('d3-queue');
 
 var HelloWorld = require('../../lib/index.js');
-var HW = new HelloWorld();
 var queue = d3_queue.queue(concurrency);
 var iterations = argv.iterations;
 var runs = 0;
@@ -43,7 +42,7 @@ function run(cb) {
     });
 }
 
-for (var i = 1; i <= iterations; i++) {
+for (var i = 0; i < iterations; i++) {
     queue.defer(run);
 }
 
@@ -57,12 +56,16 @@ queue.awaitAll(function(error) {
   // check rate
   time = +(new Date()) - time;
 
+  if (time == 0) {
+    console.log("Warning: ms timer not high enough resolution to reliably track rate. Try more iterations");
+  } else {
   // number of milliseconds per iteration
-  var rate = runs/(time/1000);
+    var rate = runs/(time/1000);
 
-  console.log('speed: ' + rate.toFixed(0) + ' runs/s (runs:' + runs + ' ms:' + time + ' )');
-  
+    console.log('speed: ' + rate.toFixed(0) + ' runs/s (runs:' + runs + ' ms:' + time + ' )');
+  }
+
   // There may be instances when you want to assert some performance metric
-  //assert.equal(rate < 1, true, 'avg time per iteration ( ' + rate + 'ms ) takes less than 1 ms');
+  assert.equal(rate > 1000, true, 'speed not at least 1000/second ( rate was ' + rate + ' runs/s )');
 
 });
