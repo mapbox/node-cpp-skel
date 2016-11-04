@@ -23,26 +23,26 @@ class HelloWorld: public Nan::ObjectWrap
 
         // wave, custom sync method
         static NAN_METHOD(wave);
+
+        // Function called after aync work is done
+        // Currently re-used by all async functions
+        static void AfterAsync(uv_work_t* req);
         
         // shout, custom async method
         static NAN_METHOD(shout);
         static void AsyncShout(uv_work_t* req);
-        static void AfterShout(uv_work_t* req);
 
         // busyThreads, custom async method
         static NAN_METHOD(busyThreads);
         static void AsyncBusyThreads(uv_work_t* req);
-        static void AfterBusyThreads(uv_work_t* req);
 
         // sleepyThreads, custom async method
         static NAN_METHOD(sleepyThreads);
         static void AsyncSleepyThreads(uv_work_t* req);
-        static void AfterSleepyThreads(uv_work_t* req);
 
         // sleepyThreads, custom async method
         static NAN_METHOD(contentiousThreads);
         static void AsyncContentiousThreads(uv_work_t* req);
-        static void AfterContentiousThreads(uv_work_t* req);
 
         // constructor
         // This includes a Default Argument

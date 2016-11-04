@@ -195,7 +195,7 @@ NAN_METHOD(HelloWorld::shout)
     3) operations to be executed within the threadpool
     4) operations to be executed after #3 is complete to pass into the callback
     */
-    uv_queue_work(uv_default_loop(), &baton->request, AsyncShout, (uv_after_work_cb)AfterShout);
+    uv_queue_work(uv_default_loop(), &baton->request, AsyncShout, (uv_after_work_cb)AfterAsync);
     return;
 }
 
@@ -237,7 +237,7 @@ NAN_METHOD(HelloWorld::busyThreads)
     3) operations to be executed within the threadpool
     4) operations to be executed after #3 is complete to pass into the callback
     */
-    uv_queue_work(uv_default_loop(), &baton->request, AsyncBusyThreads, (uv_after_work_cb)AfterBusyThreads);
+    uv_queue_work(uv_default_loop(), &baton->request, AsyncBusyThreads, (uv_after_work_cb)AfterAsync);
     return;
 }
 
@@ -300,7 +300,7 @@ NAN_METHOD(HelloWorld::sleepyThreads)
     3) operations to be executed within the threadpool
     4) operations to be executed after #3 is complete to pass into the callback
     */
-    uv_queue_work(uv_default_loop(), &baton->request, AsyncSleepyThreads, (uv_after_work_cb)AfterSleepyThreads);
+    uv_queue_work(uv_default_loop(), &baton->request, AsyncSleepyThreads, (uv_after_work_cb)AfterAsync);
     return;
 }
 
@@ -342,7 +342,7 @@ NAN_METHOD(HelloWorld::contentiousThreads)
     3) operations to be executed within the threadpool
     4) operations to be executed after #3 is complete to pass into the callback
     */
-    uv_queue_work(uv_default_loop(), &baton->request, AsyncContentiousThreads, (uv_after_work_cb)AfterContentiousThreads);
+    uv_queue_work(uv_default_loop(), &baton->request, AsyncContentiousThreads, (uv_after_work_cb)AfterAsync);
     return;
 }
 
@@ -447,9 +447,9 @@ void HelloWorld::AsyncShout(uv_work_t* req)
 
 }
 
-// handle results from AsyncShout - if there are errors return those
+// handle results from Async function - if there are errors return those
 // otherwise return the type & info to our callback
-void HelloWorld::AfterShout(uv_work_t* req)
+void HelloWorld::AfterAsync(uv_work_t* req)
 {
     Nan::HandleScope scope;
 
@@ -490,29 +490,6 @@ void HelloWorld::AsyncBusyThreads(uv_work_t* req)
 
 }
 
-// handle results from AsyncShout - if there are errors return those
-// otherwise return the type & info to our callback
-void HelloWorld::AfterBusyThreads(uv_work_t* req)
-{
-    Nan::HandleScope scope;
-
-    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
-
-    if (!baton->error_name.empty()) 
-    {
-        v8::Local<v8::Value> argv[1] = { Nan::Error(baton->error_name.c_str()) };
-        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 1, argv);
-    }
-    else
-    {
-        v8::Local<v8::Value> argv[2] = { Nan::Null(), Nan::New<v8::String>(baton->result.data()).ToLocalChecked() };
-        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 2, argv);
-    }
-
-    baton->cb.Reset();
-    delete baton;
-}
-
 // this is where we actually exclaim our shout phrase
 void HelloWorld::AsyncSleepyThreads(uv_work_t* req)
 {
@@ -532,29 +509,6 @@ void HelloWorld::AsyncSleepyThreads(uv_work_t* req)
 
 }
 
-// handle results from AsyncShout - if there are errors return those
-// otherwise return the type & info to our callback
-void HelloWorld::AfterSleepyThreads(uv_work_t* req)
-{
-    Nan::HandleScope scope;
-
-    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
-
-    if (!baton->error_name.empty()) 
-    {
-        v8::Local<v8::Value> argv[1] = { Nan::Error(baton->error_name.c_str()) };
-        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 1, argv);
-    }
-    else
-    {
-        v8::Local<v8::Value> argv[2] = { Nan::Null(), Nan::New<v8::String>(baton->result.data()).ToLocalChecked() };
-        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 2, argv);
-    }
-
-    baton->cb.Reset();
-    delete baton;
-}
-
 // this is where we actually exclaim our shout phrase
 void HelloWorld::AsyncContentiousThreads(uv_work_t* req)
 {
@@ -572,29 +526,6 @@ void HelloWorld::AsyncContentiousThreads(uv_work_t* req)
     }
     /***************** end custom code *******************/
 
-}
-
-// handle results from AsyncShout - if there are errors return those
-// otherwise return the type & info to our callback
-void HelloWorld::AfterContentiousThreads(uv_work_t* req)
-{
-    Nan::HandleScope scope;
-
-    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
-
-    if (!baton->error_name.empty()) 
-    {
-        v8::Local<v8::Value> argv[1] = { Nan::Error(baton->error_name.c_str()) };
-        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 1, argv);
-    }
-    else
-    {
-        v8::Local<v8::Value> argv[2] = { Nan::Null(), Nan::New<v8::String>(baton->result.data()).ToLocalChecked() };
-        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 2, argv);
-    }
-
-    baton->cb.Reset();
-    delete baton;
 }
 
 NAN_MODULE_INIT(HelloWorld::Init)
