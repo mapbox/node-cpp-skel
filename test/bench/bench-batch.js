@@ -3,7 +3,7 @@
 var argv = require('minimist')(process.argv.slice(2));
 if (!argv.iterations || !argv.concurrency || !argv.mode) {
   console.error('Please provide desired iterations, concurrency, and mode');
-  console.error('Example: \nbench/bench-batch.js --iterations 50 --concurrency 10 --mode sleep');
+  console.error('Example: \nnode test/bench/bench-batch.js --iterations 50 --concurrency 10 --mode contentiousThreads');
   process.exit(1);
 }
 
@@ -32,7 +32,7 @@ var queue = d3_queue.queue(argv.concurrency);
 var runs = 0;
 
 function run(cb) {
-    HW[argv.mode](argv, function(err, result) {
+    HW[argv.mode]('rawr', argv, function(err, result) {
       if (err) {
         return cb(err);
       }
