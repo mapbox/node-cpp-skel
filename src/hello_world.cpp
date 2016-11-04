@@ -141,15 +141,15 @@ NAN_METHOD(HelloWorld::shout)
     std::string phrase = "";
     bool louder = false;
 
-    // check third argument, should be a 'callback' function.
+    // check last argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors
     // instead of throwing as well.
-    if (!info[2]->IsFunction()) 
+    if (info.Length() < 1 || !info[info.Length()-1]->IsFunction())
     {
-        Nan::ThrowTypeError("third arg 'callback' must be a function");
+        Nan::ThrowTypeError("last arg 'callback' must be a function");
         return;
     }
-    v8::Local<v8::Function> callback = info[2].As<v8::Function>();
+    v8::Local<v8::Function> callback = info[info.Length()-1].As<v8::Function>();
 
     // check first argument, should be a 'phrase' string
     if (!info[0]->IsString()) 
@@ -211,7 +211,7 @@ NAN_METHOD(HelloWorld::busyThreads)
         Nan::ThrowTypeError("last arg 'callback' must be a function");
         return;
     }
-    v8::Local<v8::Function> callback = info[1].As<v8::Function>();
+    v8::Local<v8::Function> callback = info[info.Length()-1].As<v8::Function>();
 
     // check first argument, should be a 'phrase' string
     if (!info[0]->IsString()) 
@@ -254,7 +254,7 @@ NAN_METHOD(HelloWorld::sleepyThreads)
         Nan::ThrowTypeError("last arg 'callback' must be a function");
         return;
     }
-    v8::Local<v8::Function> callback = info[2].As<v8::Function>();
+    v8::Local<v8::Function> callback = info[info.Length()-1].As<v8::Function>();
 
     // check first argument, should be a 'phrase' string
     if (!info[0]->IsString()) 
@@ -316,7 +316,7 @@ NAN_METHOD(HelloWorld::contentiousThreads)
         Nan::ThrowTypeError("last arg 'callback' must be a function");
         return;
     }
-    v8::Local<v8::Function> callback = info[1].As<v8::Function>();
+    v8::Local<v8::Function> callback = info[info.Length()-1].As<v8::Function>();
 
     // check first argument, should be a 'phrase' string
     if (!info[0]->IsString()) 
