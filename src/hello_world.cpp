@@ -371,7 +371,7 @@ std::string do_expensive_work(std::string const& phrase) {
     }
 
     std::map<std::size_t,std::string> container;
-    std::size_t iterations = 1000000;
+    std::size_t iterations = 100000;
 
     for (std::size_t i=0;i<iterations;++i) {
         container.emplace(i,std::to_string(i));
