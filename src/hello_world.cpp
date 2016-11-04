@@ -381,7 +381,7 @@ std::string do_contentious_work(std::string const& phrase) {
     // The first thread to lock this mutex is the only one that has access to a and b
     std::lock_guard<decltype(mutex)> lock(mutex);
     if (a != 0 || b != 0) {
-        abort(); // should never happen since lock synchronized access to this variable
+        abort(); // should never happen since the lock should synchronized access to these variables
     }
     a = 1;
     b = 1;
