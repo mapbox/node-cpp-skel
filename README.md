@@ -101,21 +101,45 @@ This bench-batch test can demonstrate various performance scenarios:
 
 ##### Good scenarios
 
-These scenarios demonstrate idealized behavior for a healthy node c++ addon. They are what you would ideally expect to see when you've picked a good problem to solve with node.
+These scenarios demonstrate idealized behavior for a healthy node c++ addon. They are what you would ideally expect to see when you've picked a good problem to solve with node. 
+
+**Ideally, you want your workers to run your code ~99% of the time.**
 
 1. An async function that is CPU intensive and takes a while to finish (expensive creation and querying of a `std::map` and string comparisons). This scenario demonstrates when worker threads are busy doing a lot of work, and the main loop is relatively idle. Depending on how many threads (concurrency) you enable, you may see your CPU% sky-rocket and your cores max out. Yeaahhh!!!
+
+```
+node test/bench/bench-batch.js --iterations 100 --concurrency 10 --mode busyThreads
+```
+
+If you bump up `--iterations` to 500 and profile in Activity Monitor.app, you'll see the main loop is idle as expected since the threads are doing all the work. You'll also see the threads busy doing work in AsyncContentiousThreads function 99% of the time :tada:
+
+![screenshot 2016-11-07 11 50 59](https://cloud.githubusercontent.com/assets/1209162/20066705/81f71cf2-a4e0-11e6-95e2-1a2128a7db6b.png)
 
 ##### Bad scenarios
 
 These scenarios demonstrate non-ideal behavior for a node c++ addon. They represent situations you need to watch out for that may spell trouble in your code or that you are trying to solve a problem that is not well suited to node.
 
-1. An async function that sleeps in the thread pool. This is a bizarre example since you'd never want to do this in practice. This scenario demonstrates when all worker threads have work (threadpool is full) but the work they are doing is not CPU intensive. This is an antipatter: it does not make sense to push work to the threadpool unless it is CPU intensive. Typically in this situation, the callstack of your process will show your workers spending most of their time in some kind of 'cond_wait' state. To run this scenario, be sure to set the number of seconds you'd like your workers to `--sleep`:
+##### Contentious Threads (using a mutex lock)
+
+1. An async function where the code running inside the threadpool locks a global mutex and continues to do expensive work. Only one thread at a time can have access to the global mutex, therefore only one thread can do work at one time. This causes all threads to contend with one another. In this situation, all threads are full with work, but they are really slow since they're each waiting for their turn for the mutex lock. This is called "lock contention".
+
+```
+node test/bench/bench-batch.js --iterations 50 --concurrency 10 --mode contentiousThreads
+```
+
+If you bump up `--iterations` to 500 and profile in Activity Monitor.app, you'll see the main loop is idle. This is expected because it is only dispatching work to the threads. The threads however are all "majority busy" in `psynch_mutexwait` (waiting for a locked mutex) as more time is spent waiting than doing the expensive work. This is because one thread will grab a lock, do work, all others will wait, another will grab the released lock, do work, all other threads will wait. This is all too common and the reason you don't want to use mutex locks. This is the profiling output of this non-ideal situation:
+
+~[](https://cloud.githubusercontent.com/assets/20300/19990905/7e9a677a-a1ee-11e6-8ba2-c63ff63b1a1b.png)
+
+When locks are unavoidable in real-world applications, we would hope that the % of time spent in `psynch_mutexwait` would be very small rather than very big. The real-world optimization would be to either rewrite the code to avoid needing locks or at least to rewrite the code to hold onto a lock for less time (scope the lock more).
+
+##### Sleepy Threads
+
+2. An async function that sleeps in the thread pool. This is a bizarre example since you'd never want to do this in practice. This scenario demonstrates when all worker threads have work (threadpool is full) but the work they are doing is not CPU intensive. This is an antipattern: it does not make sense to push work to the threadpool unless it is CPU intensive. Typically in this situation, the callstack of your process will show your workers spending most of their time in some kind of 'cond_wait' state. To run this scenario, be sure to set the number of seconds you'd like your workers to `--sleep`:
 
 ```
 node test/bench/bench-batch.js --iterations 50 --concurrency 10 --sleep 1
-```
-
-#### Ideally, you want your workers to run your code ~99% of the time.
+``` 
 
 #### Activity Monitor will display a few different kinds of threads:
 - main thread (this is the event loop)
@@ -124,4 +148,4 @@ node test/bench/bench-batch.js --iterations 50 --concurrency 10 --sleep 1
 
 To learn more about what exactly is happening with threads behind the scenes in Node and how `UV_THREADPOOL_SIZE` is involved, check out [this great blogpost](https://www.future-processing.pl/blog/on-problems-with-threads-in-node-js/).
 
-Feel free to play around with these bench tests and profile to get a better idea of how threading can affect the performance of your code. We are in the process of [adding more benchmarks](https://github.com/mapbox/node-cpp-skel/issues/30) that demonstrate a number of other scenarios.
+Feel free to play around with these bench tests, and profile the code to get a better idea of how threading can affect the performance of your code. We are in the process of [adding more benchmarks](https://github.com/mapbox/node-cpp-skel/issues/30) that demonstrate a number of other scenarios.
