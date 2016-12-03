@@ -56,8 +56,9 @@ matrix:
     - os: linux
       # node_js: "4"
       env: NODE="4" CXXFLAGS="--coverage" LDFLAGS="--coverage" NPM_FLAGS="--debug"
-      install: 
-        - source ./scripts/setup.sh
+      install: *setup
+      script: *test
+      after_script:
         - which llvm-cov
         - curl -S -f https://codecov.io/bash -o codecov
         - chmod +x codecov
