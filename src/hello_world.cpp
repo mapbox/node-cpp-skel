@@ -1,6 +1,7 @@
 #include "hello_world.hpp"
 
 #include <exception>
+#include <stdexcept>
 #include <iostream>
 
 // Custom constructor added in order to test/cover throwing an error during initialization
