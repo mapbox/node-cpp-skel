@@ -59,6 +59,8 @@ matrix:
       install: *setup
       script: *test
       after_script:
+        - mason install llvm-cov 3.9.0
+        - export PATH=$(mason prefix llvm-cov 3.9.0)/bin:${PATH}
         - which llvm-cov
         - curl -S -f https://codecov.io/bash -o codecov
         - chmod +x codecov
