@@ -5,7 +5,7 @@ set -o pipefail
 
 export TARGET=${TARGET:-Release}
 export CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export NODE_VERSION=${NODE:-4}
+#export NODE_VERSION=${NODE:-4}
 export MASON_VERSION="master"
 export NPM_FLAGS=${NPM_FLAGS:-}
 
@@ -13,8 +13,8 @@ export NPM_FLAGS=${NPM_FLAGS:-}
 # NODE
 #
 
-echo $NODE_VERSION
-source ./scripts/setup_node.sh ${NODE_VERSION}
+#echo $NODE_VERSION
+#source ./scripts/setup_node.sh ${NODE_VERSION}
 
 #
 # MASON
