@@ -53,12 +53,30 @@ matrix:
       install: *setup
       script: *test
       after_script: *publish
+    # Coverage build (not publishable)
     - os: linux
       # node_js: "4"
       env: NODE="4" CXXFLAGS="--coverage" LDFLAGS="--coverage" NPM_FLAGS="--debug"
       install: *setup
       script: *test
       after_script:
+        - mason install llvm-cov 3.9.0
+        - export PATH=$(mason prefix llvm-cov 3.9.0)/bin:${PATH}
+        - which llvm-cov
+        - curl -S -f https://codecov.io/bash -o codecov
+        - chmod +x codecov
+        - ./codecov -x "llvm-cov gcov" -Z
+      script: *test
+    # Sanitizer build
+    - os: linux
+      # node_js: "4"
+      env: NODE="4" CXXFLAGS="-fsanitize=address" LDFLAGS="-fsanitize=address" NPM_FLAGS="--debug"
+      install: *setup
+      before_script:
+        - export LD_PRELOAD=$(mason prefix clang++ 3.9.0)/lib/clang/3.9.0/lib/linux/libclang_rt.asan-x86_64.so
+      script: *test
+      after_script:
+        - unset LD_PRELOAD
         - mason install llvm-cov 3.9.0
         - export PATH=$(mason prefix llvm-cov 3.9.0)/bin:${PATH}
         - which llvm-cov
