@@ -52,19 +52,30 @@ after_script_default: &publish
 # run your tests and build binaries
 matrix:
   include:
-    # linux publishable
+    # linux publishable node v4
     - os: linux
       env: TARGET="Release"
       node_js:
         - 4
+      after_script: *publish
+    # linux publishable node v6
+    - os: linux
+      env: TARGET="Release"
+      node_js:
         - 6
       after_script: *publish
-    # osx publishable
+    # osx publishable node v4
     - os: osx
       osx_image: xcode8
       env: TARGET=Release
       node_js:
         - 4
+      after_script: *publish
+    # osx publishable node v6
+    - os: osx
+      osx_image: xcode8
+      env: TARGET=Release
+      node_js:
         - 6
       after_script: *publish
     # Coverage build
@@ -86,7 +97,7 @@ matrix:
         - 4
       before_script:
         - export LD_PRELOAD=$(mason prefix clang++ 3.9.0)/lib/clang/3.9.0/lib/linux/libclang_rt.asan-x86_64.so
-        - LSAN_OPTIONS=suppressions=scripts/leak_suppressions.txt
+        - export LSAN_OPTIONS=suppressions=scripts/leak_suppressions.txt
       after_script:
         - unset LD_PRELOAD
         - mason install llvm-cov 3.9.0
