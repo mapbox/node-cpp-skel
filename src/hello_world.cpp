@@ -1,6 +1,7 @@
 #include "hello_world.hpp"
 
 #include <exception>
+#include <stdexcept>
 #include <iostream>
 #include <chrono> // time lib
 #include <thread> // sleep_for is a function within the thread lib

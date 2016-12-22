@@ -14,10 +14,7 @@ function setup_mason() {
         echo "Updating to latest mason"
         (cd ./.mason && git fetch && git checkout ${MASON_VERSION})
     fi
-    export MASON_HOME=$(pwd)/mason_packages/.link
     export PATH=$(pwd)/.mason:$PATH
-    export CXX=${CXX:-clang++}
-    export CC=${CC:-clang}
 }
 
 setup_mason
