@@ -2,7 +2,12 @@
   "name": "node-cpp-skel",
   "version": "1.0.0",
   "description": "Project",
+  "url": "http://github.com/mapbox/node-cpp-skel",
   "main": "./lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mapbox/node-cpp-skel.git"
+  },
   "scripts": {
     "test": "tape test/*.test.js",
     "install": "node-pre-gyp install --fallback-to-build",
