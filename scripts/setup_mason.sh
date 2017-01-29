@@ -3,18 +3,14 @@
 set -eu
 set -o pipefail
 
-# we pin the mason version to avoid changes in mason breaking builds
-MASON_VERSION=$1
+MASON_RELEASE=$1
 
 function setup_mason() {
-    if [[ ! -d ./.mason ]]; then
-        git clone https://github.com/mapbox/mason.git ./.mason
-        (cd ./.mason && git checkout ${MASON_VERSION})
-    else
-        echo "Updating to latest mason"
-        (cd ./.mason && git fetch && git checkout ${MASON_VERSION})
-    fi
-    export PATH=$(pwd)/.mason:$PATH
+ # install clang++ via mason
+  rm -rf /tmp/mason-${MASON_RELEASE}
+  mkdir /tmp/mason-${MASON_RELEASE}
+  curl -sSfL https://github.com/mapbox/mason/archive/v${MASON_RELEASE}.tar.gz | tar --gunzip --extract --strip-components=1 --directory=/tmp/mason
+  export PATH=/tmp/mason:${PATH}
 }
 
 setup_mason

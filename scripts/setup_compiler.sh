@@ -3,8 +3,7 @@
 set -eu
 set -o pipefail
 
-if [[ $(uname -s) == 'Linux' ]]; then
-    mason install clang++ 3.9.0
-    export PATH=$(mason prefix clang++ 3.9.0)/bin:${PATH}
-    export CXX=$(mason prefix clang++ 3.9.0)/bin/clang++
-fi
+CLANG_VERSION="${1}"
+mason install clang++ ${CLANG_VERSION}
+export PATH=$(mason prefix clang++ ${CLANG_VERSION})/bin:${PATH}
+export CXX=$(mason prefix clang++ ${CLANG_VERSION})/bin/clang++
