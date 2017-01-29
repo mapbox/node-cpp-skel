@@ -16,13 +16,13 @@ fi
 # MASON
 #
 
-source ${CURRENT_DIR}/setup_mason.sh ${MASON_VERSION}
+source ./scripts/setup_mason.sh ${MASON_VERSION}
 
 #
 # COMPILER
 #
 
-source ${CURRENT_DIR}/setup_compiler.sh ${CLANG_VERSION}
+source ./scripts/setup_compiler.sh ${CLANG_VERSION}
 
 # set back to non-strict bash mode to avoid breaking travis itself
 set +eu
