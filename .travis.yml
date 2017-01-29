@@ -22,6 +22,11 @@ addons:
 # set up the environment by installing node, installing mason dependencies,
 # setting up clang, and installing node deps
 install:
+  # unbreak bash shell due to rvm bug on osx: https://github.com/direnv/direnv/issues/210#issuecomment-203383459
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      echo 'shell_session_update() { :; }' > ~/.direnvrc
+    fi
   - source ./scripts/setup.sh
   - node -v
   - which node
