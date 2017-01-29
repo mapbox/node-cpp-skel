@@ -1,11 +1,13 @@
 PACKAGE_NAME := $(shell node -e "console.log(require('./package.json').name)")
 MODULE_NAME := $(shell node -e "console.log(require('./package.json').binary.module_name)")
 
-default: node_modules
+release: node_modules
 	./node_modules/.bin/node-pre-gyp configure build --loglevel=error
 
+default: release
+
 debug:
-	npm install --build-from-source=$(PACKAGE_NAME) --debug
+	./node_modules/.bin/node-pre-gyp configure build --loglevel=error --debug
 
 coverage:
 	./scripts/coverage.sh
@@ -19,7 +21,9 @@ distclean: clean
 	rm -rf .mason
 
 node_modules:
-	npm install --build-from-source=$(PACKAGE_NAME)
+	# install deps but for now ignore our own install script
+	# so that we can run it directly in either debug or release
+	npm install --ignore-scripts
 
 xcode: node_modules
 	./node_modules/.bin/node-pre-gyp configure -- -f xcode
