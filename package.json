@@ -25,7 +25,7 @@
     "tape": "^4.5.1"
   },
   "binary": {
-    "module_name": "{name}",
+    "module_name": "hello_world",
     "module_path": "./lib/binding/",
     "host": "https://mapbox-node-binary.s3.amazonaws.com",
     "remote_path": "./{name}/v{version}/{configuration}/",

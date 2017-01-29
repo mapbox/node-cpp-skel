@@ -14,11 +14,12 @@ addons:
   apt:
     sources: [ 'ubuntu-toolchain-r-test' ]
     packages: [ 'libstdc++-4.9-dev' ]
-  
-# set up the environment by installing node, installing mason dependencies,
-# setting up clang, and installing node deps
+
 install:
-  - source ./scripts/setup.sh
+  # set up the environment by installing mason and clang++
+  - ./scripts/setup.sh --config local.env
+  # put mason and clang++ on PATH
+  - source local.env
   - node -v
   - which node
   - clang++ -v
@@ -49,13 +50,13 @@ matrix:
       after_script: *publish
     # osx publishable node v4
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode8.2
       env: TARGET=release
       node_js: 4
       after_script: *publish
     # osx publishable node v6
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode8.2
       env: TARGET=release
       node_js: 6
       after_script: *publish
@@ -64,8 +65,8 @@ matrix:
       env: TARGET=debug CXXFLAGS="--coverage" LDFLAGS="--coverage"
       node_js: 4
       after_script:
-        - mason install llvm-cov ${LLVM_VERSION}
-        - export PATH=$(mason prefix llvm-cov ${LLVM_VERSION})/bin:${PATH}
+        - mason install llvm-cov ${MASON_LLVM_RELEASE}
+        - mason link llvm-cov ${MASON_LLVM_RELEASE}
         - which llvm-cov
         - curl -S -f https://codecov.io/bash -o codecov
         - chmod +x codecov
@@ -75,5 +76,5 @@ matrix:
       env: TARGET=debug CXXFLAGS="-fsanitize=address" LDFLAGS="-fsanitize=address"
       node_js: 4
       before_script:
-        - export LD_PRELOAD=$(mason prefix clang++ ${LLVM_VERSION})/lib/clang/${LLVM_VERSION}/lib/linux/libclang_rt.asan-x86_64.so
+        - export LD_PRELOAD=${MASON_LLVM_RT_PRELOAD}
         - export LSAN_OPTIONS=suppressions=scripts/leak_suppressions.txt
