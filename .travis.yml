@@ -22,10 +22,6 @@ addons:
 # set up the environment by installing node, installing mason dependencies,
 # setting up clang, and installing node deps
 install:
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      rvm get head || true
-    fi
   - source ./scripts/setup.sh
   - node -v
   - which node
@@ -55,34 +51,29 @@ matrix:
     # linux publishable node v4
     - os: linux
       env: TARGET="Release"
-      node_js:
-        - 4
+      node_js: 4
       after_script: *publish
     # linux publishable node v6
     - os: linux
       env: TARGET="Release"
-      node_js:
-        - 6
+      node_js: 6
       after_script: *publish
     # osx publishable node v4
     - os: osx
       osx_image: xcode8
       env: TARGET=Release
-      node_js:
-        - 4
+      node_js: 4
       after_script: *publish
     # osx publishable node v6
     - os: osx
       osx_image: xcode8
       env: TARGET=Release
-      node_js:
-        - 6
+      node_js: 6
       after_script: *publish
     # Coverage build
     - os: linux
       env: CXXFLAGS="--coverage" LDFLAGS="--coverage" NPM_FLAGS="--debug"
-      node_js:
-        - 4
+      node_js: 4
       after_script:
         - mason install llvm-cov 3.9.0
         - export PATH=$(mason prefix llvm-cov 3.9.0)/bin:${PATH}
@@ -93,8 +84,7 @@ matrix:
     # Sanitizer build
     - os: linux
       env: CXXFLAGS="-fsanitize=address" LDFLAGS="-fsanitize=address" NPM_FLAGS="--debug" ENABLE_CCACHE=false
-      node_js:
-        - 4
+      node_js: 4
       before_script:
         - export LD_PRELOAD=$(mason prefix clang++ 3.9.0)/lib/clang/3.9.0/lib/linux/libclang_rt.asan-x86_64.so
         - export LSAN_OPTIONS=suppressions=scripts/leak_suppressions.txt
