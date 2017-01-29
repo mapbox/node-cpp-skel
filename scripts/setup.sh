@@ -9,6 +9,12 @@ export MASON_VERSION="0.5.0"
 export CLANG_VERSION="3.9.1"
 export NPM_FLAGS=${NPM_FLAGS:-}
 
+# unbreak bash shell due to rvm bug on osx: https://github.com/direnv/direnv/issues/210#issuecomment-203383459
+# this impacts any usage of scripts that are source'd (like this one)
+if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+  echo 'shell_session_update() { :; }' > ~/.direnvrc
+fi
+
 #
 # MASON
 #
