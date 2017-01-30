@@ -8,7 +8,6 @@ env:
   global:
     - secure: FdVVvHIcKe3pa228D9A4e/sspfrg7I0T2SbXkD4EILBVahA9CBmX+ruNR/ZEKXfWtuhGf5G+/r0DOk0sT+G+hAaAx6QtFOAt+AY2dMlB0Up+f/8tr8cAWk0+Te3yUyrKXcRRqSmPx3XIcYERhQGoNNlhaivxW0juIAB5Kn4f0RqyuzsiuzZFFzRzp1cj8D9nGA3tRtiXWKBPtltVjmNH234sK6/ztlHnMo5bqbL0NJcfKGPbY35mQkgWgcbsogeoU6D6h8E1mbS0oDxo7NSJbUaF5RtWbnPemE80Gj7IBUiqvmiqZV7e1EiSgGWX/cmTLAqniTFDrdjk5YntYPi4rHOxMnDCumJ8LQP+vWXjGLxHeWjwXzNRkFLuSMqzvnaAc0URpxHpaJ997l+a1/JQDtUtX/5zVTJsZ8/RHh40QyY/WUwVpcR601SeodSQ1vO5gVghXWh7BdIPA9lwI9eBenoL3wBMRnlwvjMatXXh5uirEiZIWov7DjOl6so67IxTivDQ06TuCAURUYFB61ToYJs+hdSrw83u/AKNgm3eAcz8qeL0YQ6ReAx/bCDIu5YcXBY17yeySOF7xBNM3a7X8+9Ejbqgphik0mAjC/3Z6Uuds3GGIRZmd4XA153TvPBYUHi5tSEUSbpVtAJ5YVp2ETqp64IdChDB3NnyaMyd8b8=
     - secure: VMiSV/qeHH7unlhFdnYQuVccnba8gOQG1lci1zCfcvbX3GOd6ZI6A1vu2F/AYvXreDMzCLZbLrQ0/2sdtYCvx0Lgrtz4l8myC2TBqrxJLIDkO2rx77oggZuSIo9JQkXfr8qHx2L1RDL5yxSnxY8hr1l7FLzPTF0f4rErQ6gr/kAfOiqRn5k94635mNTW76TTx0fdk8+TuUIXGUcgJiXD6+l0/d7hnHWABztEPE1YoBP4GVoGIBjSAJdU6Z6cbHWIShF4AHkbv94PpVIgpbb3Kq4wmolXKdNXIvWrs0Z/wvGIr2EYKeMcIwOudGATpfwzf1GKc7+TSa5Z3JZInQ7FBEypDzu+LYigGqAGFb8TBj+TGs8KI5iAW4ez1pDfwksNZnMSX6gg4L+3gIn1plxWQ05jagbgzm5s2/d6jPqi7ZVtedE5zQKbCd5Iwkby/TuE5hWCf06Znk7DfEt/IHpFH/2d+9CgcQiFbn7sYyWeArSbiD3eQxCkYh9EuDNSRgt7BZ9g7PglW9phXrKnTCk6VpE0QXR9ehqz/5D3QYrKOb64B1PPAeFonsWCPamxwCt2jCxaqztoBSYfoa3XXM4EMmkLC30u5qGMy9Vv19dhGEOOgZDMWnr1zsiVFMmceecOl0ivxcGkMOCauDB/fGMB4P7m3As0tqgl/59k0bWQ2m4=
-    - SANITIZERS: "address,integer,alignment,bounds,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,unreachable,unsigned-integer-overflow,vla-bound"
 
 # enable c++11/14 builds
 addons:
@@ -74,21 +73,19 @@ matrix:
         - ./codecov -x "llvm-cov gcov" -Z
     # Sanitizer build node v4/Debug
     - os: linux
-      env: TARGET=debug CXXFLAGS="-fsanitize=${SANITIZERS}" LDFLAGS="-fsanitize=${SANITIZERS}"
+      env: TARGET=debug SANITIZE=debug
       node_js: 4
       before_install:
-        - export CXXFLAGS="-fsanitize=${SANITIZERS} -fsanitize-trap=${SANITIZER/address,/} -fsanitize-address-use-after-scope -fno-omit-frame-pointer -fno-common"
+        - export CXXFLAGS="${MASON_SANITIZE_CXXFLAGS} -fsanitize-trap=${MASON_SANITIZE/address,/}"
+        - export LDFLAGS="${MASON_SANITIZE_LDFLAGS}"
       before_script:
         - export LD_PRELOAD=${MASON_LLVM_RT_PRELOAD}
-        - export ASAN_OPTIONS=check_initialization_order=1:detect_stack_use_after_return=1
-        - export LSAN_OPTIONS=suppressions=scripts/leak_suppressions.txt
     # Sanitizer build node v6/Release
     - os: linux
-      env: TARGET=release CXXFLAGS="-fsanitize=${SANITIZERS}" LDFLAGS="-fsanitize=${SANITIZERS}"
+      env: TARGET=release SANITIZE=release
       node_js: 6
       before_install:
-        - export CXXFLAGS="-fsanitize=${SANITIZERS} -fsanitize-trap=${SANITIZER/address,/} -fsanitize-address-use-after-scope -fno-omit-frame-pointer -fno-common"
+        - export CXXFLAGS="${MASON_SANITIZE_CXXFLAGS} -fsanitize-trap=${MASON_SANITIZE/address,/}"
+        - export LDFLAGS="${MASON_SANITIZE_LDFLAGS}"
       before_script:
         - export LD_PRELOAD=${MASON_LLVM_RT_PRELOAD}
-        - export ASAN_OPTIONS=check_initialization_order=1:detect_stack_use_after_return=1
-        - export LSAN_OPTIONS=suppressions=scripts/leak_suppressions.txt
