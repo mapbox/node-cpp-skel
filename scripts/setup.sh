@@ -40,6 +40,7 @@ function run() {
     echo "export CXX=$(pwd)/mason_packages/.link/bin/clang++" >> ${config}
     echo "export MASON_RELEASE=${MASON_RELEASE}" >> ${config}
     echo "export MASON_LLVM_RELEASE=${MASON_LLVM_RELEASE}" >> ${config}
+    # https://github.com/google/sanitizers/wiki/AddressSanitizerAsDso
     RT_BASE=$(pwd)/mason_packages/.link/lib/clang/${MASON_LLVM_RELEASE}/lib/$(uname | tr A-Z a-z)/libclang_rt
     if [[ $(uname -s) == 'Darwin' ]]; then
         RT_PRELOAD=${RT_BASE}.asan_osx_dynamic.dylib
