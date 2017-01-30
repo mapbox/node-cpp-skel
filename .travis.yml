@@ -76,16 +76,42 @@ matrix:
       env: TARGET=debug SANITIZE=debug
       node_js: 4
       before_install:
-        - export CXXFLAGS="${MASON_SANITIZE_CXXFLAGS} -fsanitize-trap=${MASON_SANITIZE/address,/}"
+        - ./scripts/setup.sh --config local.env
+        # put mason and clang++ on PATH
+        - source local.env
+        # first we build without trapping errors such that tests run
+        # all the way through and you can see ASAN output all the errors
+        # in the logs, with details on line numbers. In the after_script
+        # we rebuild again and trap errors to ensure the build fails if there are any.
+        - export CXXFLAGS="${MASON_SANITIZE_CXXFLAGS}"
         - export LDFLAGS="${MASON_SANITIZE_LDFLAGS}"
       before_script:
         - export LD_PRELOAD=${MASON_LLVM_RT_PRELOAD}
+        - export ASAN_OPTIONS=fast_unwind_on_malloc=0:${ASAN_OPTIONS}
+      after_script:
+        - export CXXFLAGS="${CXXFLAGS} -fsanitize-trap=${MASON_SANITIZE/address,/}"
+        - unset LD_PRELOAD
+        - make clean
+        - make ${TARGET}
+        - export LD_PRELOAD=${MASON_LLVM_RT_PRELOAD}
+        - npm test
     # Sanitizer build node v6/Release
     - os: linux
       env: TARGET=release SANITIZE=release
       node_js: 6
       before_install:
-        - export CXXFLAGS="${MASON_SANITIZE_CXXFLAGS} -fsanitize-trap=${MASON_SANITIZE/address,/}"
+        - ./scripts/setup.sh --config local.env
+        # put mason and clang++ on PATH
+        - source local.env
+        - export CXXFLAGS="${MASON_SANITIZE_CXXFLAGS}"
         - export LDFLAGS="${MASON_SANITIZE_LDFLAGS}"
       before_script:
         - export LD_PRELOAD=${MASON_LLVM_RT_PRELOAD}
+        - export ASAN_OPTIONS=fast_unwind_on_malloc=0:${ASAN_OPTIONS}
+      after_script:
+        - export CXXFLAGS="${CXXFLAGS} -fsanitize-trap=${MASON_SANITIZE/address,/}"
+        - unset LD_PRELOAD
+        - make clean
+        - make ${TARGET}
+        - export LD_PRELOAD=${MASON_LLVM_RT_PRELOAD}
+        - npm test
