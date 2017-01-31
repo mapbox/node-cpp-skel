@@ -54,10 +54,10 @@ function run() {
     echo "leak:node::CreateEnvironment" >> ${SUPPRESSION_FILE}
     echo "leak:node::Init" >> ${SUPPRESSION_FILE}
     echo "export LSAN_OPTIONS=suppressions=${SUPPRESSION_FILE}" >> ${config}
-    echo "export ASAN_OPTIONS=check_initialization_order=1:detect_stack_use_after_return=1" >> ${config}
-    echo "export MASON_SANITIZE=address,integer,alignment,bounds,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,unreachable,unsigned-integer-overflow,vla-bound" >> ${config}
-    echo 'export MASON_SANITIZE_CXXFLAGS="-fsanitize=${MASON_SANITIZE} -fsanitize-address-use-after-scope -fno-omit-frame-pointer -fno-common"' >> ${config}
-    echo 'export MASON_SANITIZE_LDFLAGS="-fsanitize=${MASON_SANITIZE}"' >> ${config}
+    echo "export ASAN_OPTIONS=abort_on_error=1:check_initialization_order=1:detect_stack_use_after_return=1" >> ${config}
+    echo 'export MASON_SANITIZE="-fsanitize=address,undefined -fno-sanitize=vptr,function"' >> ${config}
+    echo 'export MASON_SANITIZE_CXXFLAGS="${MASON_SANITIZE} -fno-sanitize=vptr,function -fsanitize-address-use-after-scope -fno-omit-frame-pointer -fno-common"' >> ${config}
+    echo 'export MASON_SANITIZE_LDFLAGS="${MASON_SANITIZE}"' >> ${config}
 
     exit 0
 }

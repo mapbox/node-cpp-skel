@@ -89,7 +89,7 @@ matrix:
         - export LD_PRELOAD=${MASON_LLVM_RT_PRELOAD}
         - export ASAN_OPTIONS=fast_unwind_on_malloc=0:${ASAN_OPTIONS}
       after_script:
-        - export CXXFLAGS="${CXXFLAGS} -fsanitize-trap=${MASON_SANITIZE/address,/}"
+        - export CXXFLAGS="${CXXFLAGS} -fno-sanitize-recover=all"
         - unset LD_PRELOAD
         - make clean
         - make ${TARGET}
@@ -109,7 +109,7 @@ matrix:
         - export LD_PRELOAD=${MASON_LLVM_RT_PRELOAD}
         - export ASAN_OPTIONS=fast_unwind_on_malloc=0:${ASAN_OPTIONS}
       after_script:
-        - export CXXFLAGS="${CXXFLAGS} -fsanitize-trap=${MASON_SANITIZE/address,/}"
+        - export CXXFLAGS="${CXXFLAGS} -fno-sanitize-recover=all"
         - unset LD_PRELOAD
         - make clean
         - make ${TARGET}
