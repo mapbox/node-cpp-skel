@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
-set -eu
-set -o pipefail
 
-export NPM_FLAGS=${NPM_FLAGS:-}
+if [[ ${1:-} ]]; then
+  echo "please pass target: release or debug"
+fi
+
+if [[ ${1} == 'debug' ]]; then
+  export NPM_FLAGS="--debug"
+else
+  export NPM_FLAGS=""
+fi
 
 # `is_pr_merge` is designed to detect if a gitsha represents a normal
 # push commit (to any branch) or whether it represents travis attempting

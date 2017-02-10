@@ -2,7 +2,12 @@
   "name": "node-cpp-skel",
   "version": "1.0.0",
   "description": "Project",
+  "url": "http://github.com/mapbox/node-cpp-skel",
   "main": "./lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mapbox/node-cpp-skel.git"
+  },
   "scripts": {
     "test": "tape test/*.test.js",
     "install": "node-pre-gyp install --fallback-to-build",
@@ -11,8 +16,8 @@
   "author": "Mapbox",
   "license": "ISC",
   "dependencies": {
-    "nan": "^2.3.5",
-    "node-pre-gyp": "^0.6.28"
+    "nan": "~2.5.1",
+    "node-pre-gyp": "~0.6.32"
   },
   "devDependencies": {
     "aws-sdk": "^2.4.7",
@@ -23,7 +28,7 @@
     "module_name": "hello_world",
     "module_path": "./lib/binding/",
     "host": "https://mapbox-node-binary.s3.amazonaws.com",
-    "remote_path": "./{name}/v{version}/{configuration}/",
+    "remote_path": "./{name}/v{version}/{configuration}/{toolset}/",
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
   }
 }
