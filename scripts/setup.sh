@@ -3,8 +3,15 @@
 set -eu
 set -o pipefail
 
-export MASON_RELEASE="${MASON_RELEASE:-0.5.0}"
+export MASON_RELEASE="${MASON_RELEASE:-0.7.0}"
 export MASON_LLVM_RELEASE="${MASON_LLVM_RELEASE:-3.9.1}"
+
+PLATFORM=$(uname | tr A-Z a-z)
+if [[ ${PLATFORM} == 'darwin' ]]; then
+  PLATFORM="osx"
+fi
+
+MASON_URL="https://s3.amazonaws.com/mason-binaries/${PLATFORM}-$(uname -m)"
 
 function run() {
     local config=${1}
@@ -12,6 +19,31 @@ function run() {
     # this impacts any usage of scripts that are source'd (like this one)
     if [[ "${TRAVIS_OS_NAME:-}" == "osx" ]]; then
       echo 'shell_session_update() { :; }' > ~/.direnvrc
+    fi
+
+    #
+    # COMPILER TOOLCHAIN
+    #
+
+    # We install clang++ without the mason client for a couple reasons:
+    # 1) decoupling makes it viable to use a custom branch of mason that might
+    #    modify the upstream s3 bucket in a such a way that does not give
+    #    it access to build tools like clang++
+    # 2) Allows us to short-circuit and use a global clang++ install if it
+    #    is available to save space for local builds.
+    local clang_install_dir="$(pwd)/.toolchain/"
+    mkdir -p ${clang_install_dir}
+    GLOBAL_CLANG="${HOME}/.mason/mason_packages/${PLATFORM}-$(uname -m)/clang++/${MASON_LLVM_RELEASE}/bin/clang++"
+    if [[ -f ${GLOBAL_CLANG} ]]; then
+      echo "Detected '${GLOBAL_CLANG}', using it"
+      mkdir -p ${clang_install_dir}/bin
+      ln -sf ${GLOBAL_CLANG} ${clang_install_dir}/bin/clang++-3.9
+      ln -sf ${GLOBAL_CLANG} ${clang_install_dir}/bin/clang++
+    else
+      BINARY="${MASON_URL}/clang++/${MASON_LLVM_RELEASE}.tar.gz"
+      echo "Did not detect global clang++ at '${GLOBAL_CLANG}'"
+      echo "Downloading ${BINARY}"
+      curl -sSfL ${BINARY} | tar --gunzip --extract --strip-components=1 --directory=${clang_install_dir}
     fi
 
     #
@@ -30,14 +62,11 @@ function run() {
     setup_mason $(pwd)/.mason ${MASON_RELEASE}
 
     #
-    # COMPILER
+    # ENV SETTINGS
     #
 
-    .mason/mason install clang++ ${MASON_LLVM_RELEASE}
-    .mason/mason link clang++ ${MASON_LLVM_RELEASE}
-
-    echo "export PATH=$(pwd)/.mason:$(pwd)/mason_packages/.link/bin:"'${PATH}' > ${config}
-    echo "export CXX=$(pwd)/mason_packages/.link/bin/clang++" >> ${config}
+    echo "export PATH=${clang_install_dir}/bin:$(pwd)/.mason:$(pwd)/mason_packages/.link/bin:"'${PATH}' > ${config}
+    echo "export CXX=${clang_install_dir}/bin/clang++" >> ${config}
     echo "export MASON_RELEASE=${MASON_RELEASE}" >> ${config}
     echo "export MASON_LLVM_RELEASE=${MASON_LLVM_RELEASE}" >> ${config}
     # https://github.com/google/sanitizers/wiki/AddressSanitizerAsDso
