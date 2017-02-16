@@ -6,12 +6,14 @@
 #include <nan.h>
 #pragma GCC diagnostic pop
 
+#include <string>
+
 /**
  * HelloWorld class
  * This is in a header file so we can access it across other .cpp files
  * if necessary
  */
-class HelloWorld: public Nan::ObjectWrap 
+class HelloWorld: public Nan::ObjectWrap
 {
     public:
         // initializer
@@ -23,11 +25,9 @@ class HelloWorld: public Nan::ObjectWrap
 
         // wave, custom sync method
         static NAN_METHOD(wave);
-        
+
         // shout, custom async method
         static NAN_METHOD(shout);
-        static void AsyncShout(uv_work_t* req);
-        static void AfterShout(uv_work_t* req);
 
         // constructor
         // This includes a Default Argument
@@ -37,6 +37,6 @@ class HelloWorld: public Nan::ObjectWrap
     private:
         // member variable
         // specific to each instance of the class
-        std::string name_; 
+        std::string name_;
 
 };

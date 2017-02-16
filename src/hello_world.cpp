@@ -5,7 +5,7 @@
 #include <iostream>
 
 // Custom constructor added in order to test/cover throwing an error during initialization
-HelloWorld::HelloWorld(std::string name) : 
+HelloWorld::HelloWorld(std::string name) :
   name_(name) {
     if (name_ != "hello") {
         throw std::runtime_error("name must be 'hello'");
@@ -26,9 +26,9 @@ NAN_METHOD(HelloWorld::New)
     if (info.IsConstructCall())
     {
         try
-        {   
+        {
             if (info.Length() >= 1) {
-              if (info[0]->IsString()) 
+              if (info[0]->IsString())
               {
                 std::string name = *v8::String::Utf8Value(info[0]->ToString());
                 auto *const self = new HelloWorld(name);
@@ -43,7 +43,7 @@ NAN_METHOD(HelloWorld::New)
             else {
                 auto *const self = new HelloWorld();
                 self->Wrap(info.This());
-            } 
+            }
 
         }
         catch (const std::exception &ex)
@@ -69,8 +69,8 @@ Nan::Persistent<v8::Function> &HelloWorld::constructor()
 /*
  * This is an internal function used to return callback error messages instead of
  * throwing errors.
- * Usage: 
- * 
+ * Usage:
+ *
  * v8::Local<v8::Function> callback;
  * CallbackError("error message", callback);
  * return; // this is important to prevent duplicate callbacks from being fired!
@@ -82,7 +82,7 @@ inline void CallbackError(std::string message, v8::Local<v8::Function> callback)
 
 /**
  * Say howdy to the world
- * 
+ *
  * @name wave
  * @memberof HelloWorld
  * @returns {String} a happy-go-lucky string saying hi
@@ -135,7 +135,7 @@ NAN_METHOD(HelloWorld::shout)
     // check third argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors
     // instead of throwing as well.
-    if (!info[2]->IsFunction()) 
+    if (!info[2]->IsFunction())
     {
         Nan::ThrowTypeError("third arg 'callback' must be a function");
         return;
@@ -143,7 +143,7 @@ NAN_METHOD(HelloWorld::shout)
     v8::Local<v8::Function> callback = info[2].As<v8::Function>();
 
     // check first argument, should be a 'phrase' string
-    if (!info[0]->IsString()) 
+    if (!info[0]->IsString())
     {
         CallbackError("first arg 'phrase' must be a string", callback);
         return;
@@ -151,14 +151,14 @@ NAN_METHOD(HelloWorld::shout)
     phrase = *v8::String::Utf8Value((info[0])->ToString());
 
     // check second argument, should be an 'options' object
-    if (!info[1]->IsObject()) 
+    if (!info[1]->IsObject())
     {
         CallbackError("second arg 'options' must be an object", callback);
         return;
     }
     v8::Local<v8::Object> options = info[1].As<v8::Object>();
 
-    if (options->Has(Nan::New("louder").ToLocalChecked())) 
+    if (options->Has(Nan::New("louder").ToLocalChecked()))
     {
         v8::Local<v8::Value> louder_val = options->Get(Nan::New("louder").ToLocalChecked());
         if (!louder_val->IsBoolean())
@@ -235,7 +235,7 @@ void HelloWorld::AfterShout(uv_work_t* req)
 
     AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
 
-    if (!baton->error_name.empty()) 
+    if (!baton->error_name.empty())
     {
         v8::Local<v8::Value> argv[1] = { Nan::Error(baton->error_name.c_str()) };
         Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 1, argv);
