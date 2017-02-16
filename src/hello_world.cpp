@@ -97,6 +97,61 @@ NAN_METHOD(HelloWorld::wave)
     info.GetReturnValue().Set(Nan::New<v8::String>("howdy world").ToLocalChecked());
 }
 
+std::string do_expensive_work(std::string const& phrase, bool louder) {
+    std::string result;
+
+    // This is purely for testing, to be able to simulate an unexpected throw
+    // from a function you do not control and may throw an exception
+    if (phrase != "rawr") {
+        throw std::runtime_error("we really would prefer rawr all the time");
+    }
+
+    result = phrase + "!";
+
+    if (louder)
+    {
+        result += "!!!!";
+    }
+    return result;
+}
+
+// This is the worker running asynchronously and calling a user-provided callback when done.
+// Consider storing all C++ objects you need by value or by shared_ptr to keep them alive until done.
+struct AsyncShoutWorker : Nan::AsyncWorker {
+    using Base = Nan::AsyncWorker;
+
+    AsyncShoutWorker(std::string phrase, bool louder, Nan::Callback* callback)
+        : Base(callback), phrase_(phrase), louder_(louder) { }
+
+    // The Execute() function is getting called when the worker starts to run.
+    // - You only have access to member variables stored in this worker.
+    // - You do not have access to Javascript v8 objects here.
+    void Execute() override {
+        try {
+            phrase_ = do_expensive_work(phrase_, louder_);
+        } catch (const std::exception& e) {
+            SetErrorMessage(e.what());
+        }
+    }
+
+    // The HandleOKCallback() is getting called when Execute() successfully completed.
+    // - In case Execute() invoked SetErrorMessage("") this function is not getting called.
+    // - You have access to Javascript v8 objects again
+    // - You have to translate from C++ member variables to Javascript v8 objects
+    // - Finally, you call the user's callback with your results
+    void HandleOKCallback() override {
+        Nan::HandleScope scope;
+
+        const auto argc = 2u;
+        v8::Local<v8::Value> argv[argc] = {Nan::Null(), Nan::New<v8::String>(phrase_).ToLocalChecked()};
+
+        callback->Call(argc, argv);
+    }
+
+    std::string phrase_;
+    const bool louder_;
+};
+
 /**
  * Shout a phrase really loudly by adding an exclamation to the end, asynchronously
  *
@@ -113,20 +168,6 @@ NAN_METHOD(HelloWorld::wave)
  * });
  *
  */
-
-// this is the cpp object that will be passed around in 'shout' and callbacks
-// referred to as a "baton"
-class AsyncBaton
-{
-  public:
-    uv_work_t request; // required
-    Nan::Persistent<v8::Function> cb; // callback function type
-    std::string phrase;
-    bool louder;
-    std::string error_name;
-    std::string result;
-};
-
 NAN_METHOD(HelloWorld::shout)
 {
     std::string phrase = "";
@@ -169,85 +210,11 @@ NAN_METHOD(HelloWorld::shout)
         louder = louder_val->BooleanValue();
     }
 
-    // set up the baton to pass into our threadpool
-    AsyncBaton *baton = new AsyncBaton();
-    baton->request.data = baton;
-    baton->phrase = phrase;
-    baton->louder = louder;
-    baton->cb.Reset(callback);
-
-    /*
-    `uv_queue_work` is the all-important way to pass info into the threadpool.
-    It cannot take v8 objects, so we need to do some manipulation above to convert into cpp objects
-    otherwise things get janky. It takes four arguments:
-
-    1) which loop to use, node only has one so we pass in a pointer to the default
-    2) the baton defined above, we use this to access information important for the method
-    3) operations to be executed within the threadpool
-    4) operations to be executed after #3 is complete to pass into the callback
-    */
-    uv_queue_work(uv_default_loop(), &baton->request, AsyncShout, (uv_after_work_cb)AfterShout);
-    return;
-}
-
-std::string do_expensive_work(std::string const& phrase, bool louder) {
-    std::string result;
-
-    // This is purely for testing, to be able to simulate an unexpected throw
-    // from a function you do not control and may throw an exception
-    if (phrase != "rawr") {
-        throw std::runtime_error("we really would prefer rawr all the time");
-    }
-
-    result = phrase + "!";
-
-    if (louder)
-    {
-        result += "!!!!";
-    }
-    return result;
-}
-
-// this is where we actually exclaim our shout phrase
-void HelloWorld::AsyncShout(uv_work_t* req)
-{
-    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
-
-    /***************** custom code here ******************/
-    // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
-    try
-    {
-        baton->result = do_expensive_work(baton->phrase,baton->louder);
-    }
-    catch (std::exception const& ex)
-    {
-        baton->error_name = ex.what();
-    }
-    /***************** end custom code *******************/
-
-}
-
-// handle results from AsyncShout - if there are errors return those
-// otherwise return the type & info to our callback
-void HelloWorld::AfterShout(uv_work_t* req)
-{
-    Nan::HandleScope scope;
-
-    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
-
-    if (!baton->error_name.empty())
-    {
-        v8::Local<v8::Value> argv[1] = { Nan::Error(baton->error_name.c_str()) };
-        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 1, argv);
-    }
-    else
-    {
-        v8::Local<v8::Value> argv[2] = { Nan::Null(), Nan::New<v8::String>(baton->result.data()).ToLocalChecked() };
-        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(baton->cb), 2, argv);
-    }
-
-    baton->cb.Reset();
-    delete baton;
+    // Create a worker instance and queues it to run asynchronously invoking the callback when done.
+    // - Nan::AsyncWorker takes a pointer to a Nan::Callback and deletes the pointer automatically.
+    // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes the pointer automatically.
+    auto* worker = new AsyncShoutWorker{phrase, louder, new Nan::Callback{callback}};
+    Nan::AsyncQueueWorker(worker);
 }
 
 NAN_MODULE_INIT(HelloWorld::Init)
