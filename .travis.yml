@@ -32,7 +32,7 @@ script:
 
 # after successful tests, publish binaries if specified in commit message
 after_script_default: &publish
-  - ASAN_OPTIONS=exitcode=0 ./scripts/publish.sh ${TARGET}
+  - ./scripts/publish.sh --debug=$([ "${TARGET}" == 'debug' ] && echo "true" || echo "false")
 
 # the matrix allows you to specify different operating systems and environments to 
 # run your tests and build binaries
