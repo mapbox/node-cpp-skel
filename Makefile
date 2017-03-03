@@ -1,4 +1,3 @@
-PACKAGE_NAME := $(shell node -e "console.log(require('./package.json').name)")
 MODULE_NAME := $(shell node -e "console.log(require('./package.json').binary.module_name)")
 
 default: release
