@@ -6,10 +6,10 @@ set -o pipefail
 # http://clang.llvm.org/docs/UsersManual.html#profiling-with-instrumentation
 # https://www.bignerdranch.com/blog/weve-got-you-covered/
 
-if [[ ! ${MASON_LLVM_RELEASE:-} ]]; then
-    echo "MASON_LLVM_RELEASE must be set"
-    exit 1
-fi
+# automatically setup environment
+
+./scripts/setup.sh --config local.env
+source local.env
 
 make clean
 export CXXFLAGS="-fprofile-instr-generate -fcoverage-mapping"
