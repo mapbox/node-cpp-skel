@@ -84,6 +84,23 @@ matrix:
         - unset LD_PRELOAD
         # after successful tests, publish binaries if specified in commit message
         - ./scripts/publish.sh --toolset=${TOOLSET:-} --debug=$([ "${BUILDTYPE}" == 'debug' ] && echo "true" || echo "false")
+    # g++ build (default builds all use clang++)
+    - os: linux
+      env: BUILDTYPE=debug CXX="g++-6" CC="gcc-6"
+      node_js: 4
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - libstdc++-6-dev
+            - g++-6
+      # Overrides `install` to avoid initializing clang toolchain
+      install:
+        - make ${BUILDTYPE}
+      # Overrides `script` to disable publishing
+      script:
+        - npm test
     # Coverage build
     - os: linux
       env: BUILDTYPE=debug CXXFLAGS="--coverage" LDFLAGS="--coverage"
