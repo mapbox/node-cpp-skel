@@ -88,11 +88,32 @@ Then run:
 
 ```
 # https://github.com/mapbox/node-pre-gyp/#2-create-secure-variables
-travis encrypt node_pre_gyp_accessKeyId=${AccessKeyId} --add
-travis encrypt node_pre_gyp_secretAccessKey=${SecretAccessKey} --add
+travis encrypt node_pre_gyp_accessKeyId=${AccessKeyId}
+travis encrypt node_pre_gyp_secretAccessKey=${SecretAccessKey}
 ```
 
-That will add the keys as secure variables to your `.travis.yml`
+Those will dump text with `secure: <some string>` you can then copy and paste into your .travis.yml like:
+
+```yml
+env:
+  global:
+    - secure: <string encoding aws key>
+    - secure: <string encoding aws secret>
+``
+
+The strings can be quoted but do not need to be quoted.
+
+Once set, these values will be propogated to the build environment in a secure way. If you look at your travis logs you see:
+
+```
+Setting environment variables from .travis.yml
+$ export node_pre_gyp_accessKeyId=[secure]
+$ export node_pre_gyp_secretAccessKey=[secure]
+```
+
+They are printed in the order listed in the `global:` section, which allows you to know what each `- secure: <string>` represents.
+
+Note: you can also pass the `--add` flag to `travis encrypt`. This will add the keys as secure variables to your `.travis.yml` automatically. However this is often not desirable since it will also reformat your `.travis.yml` indentation, hence we why recommend the manual copy/paste method.
 
 **Publishing on Travis CI**
 
