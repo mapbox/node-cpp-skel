@@ -77,12 +77,12 @@ npm install @mapbox/cfn-config
 npm install @mapbox/cloudfriend
 ./node_modules/.bin/validate-template cloudformation/ci.template.js
 ./node_modules/.bin/build-template cloudformation/ci.template.js > cloudformation/ci.template
-./node_modules/.bin/cfn-config create ci cloudformation/ci.template -c cfn-configs
+./node_modules/.bin/cfn-config create ci-binary-publish cloudformation/ci.template -c cfn-configs
 ```
 
 3) Encode aws keys in .travis.yml
 
-First export your config with mbxcli (`mbx export-stack-config ci`).
+First export your config with mbxcli (`mbx export-stack-config ci-binary-publish`).
 
 Then run:
 
