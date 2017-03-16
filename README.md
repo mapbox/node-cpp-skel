@@ -60,6 +60,40 @@ It's a good idea to publish pre-built binaries of your module if you want others
 1. In the `package.json`, update the `"binary"` field to the appropriate s3 bucket `host`.
 1. If you plan on publishing binaries via Travis-CI, [setup your AWS security credentials in the `.travis.yml`](https://github.com/mapbox/node-pre-gyp#travis-automation) - this gives the travis environment the proper access to the bucket named above.
 
+For Mapbox staff we recommend publishing to `s3://mapbox-node-binary/<your module>`.
+
+1) Copy the ci.template.js
+
+Copy the `cloudformation/ci.template.js` into your repo.
+
+2) Create a user with permissions to upload to s3://mapbox-node-binary/<your module name>/
+
+First configure your AWS creds with `mbx auth`
+
+Then run:
+
+```bash
+npm install @mapbox/cfn-config
+npm install @mapbox/cloudfriend
+./node_modules/.bin/validate-template cloudformation/ci.template.js
+./node_modules/.bin/build-template cloudformation/ci.template.js > cloudformation/ci.template
+./node_modules/.bin/cfn-config create ci cloudformation/ci.template -c cfn-configs
+```
+
+3) Encode aws keys in .travis.yml
+
+First export your config with mbxcli (`mbx export-stack-config ci`).
+
+Then run:
+
+```
+# https://github.com/mapbox/node-pre-gyp/#2-create-secure-variables
+travis encrypt node_pre_gyp_accessKeyId=${AccessKeyId} --add
+travis encrypt node_pre_gyp_secretAccessKey=${SecretAccessKey} --add
+```
+
+That will add the keys as secure variables to your `.travis.yml`
+
 **Publishing on Travis CI**
 
 This project includes a `script/publish.sh` command that builds binaries and publishes them to s3. This script checks your commit message for either `[publish binary]` or `[republish binary]` in order to begin publishing. This allows you to publish binaries according to the version specified in your `package.json` like this:
