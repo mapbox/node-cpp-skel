@@ -1,5 +1,14 @@
 {
   'includes': [ 'common.gypi' ],
+  'variables': {
+      'error_on_warnings%':'true',
+      # includes we don't want warnings for.
+      # As a variable to make easy to pass to
+      # cflags (linux) and xcode (mac)
+      'system_includes': [
+        "-isystem <(module_root_dir)/<!(node -e \"require('nan')\")"
+      ]
+  },
   'targets': [
     {
       'target_name': '<(module_name)',
@@ -11,9 +20,23 @@
       'ldflags': [
         '-Wl,-z,now',
       ],
+      'conditions': [
+        ['error_on_warnings == "true"', {
+            'cflags_cc' : [ '-Werror' ],
+            'xcode_settings': {
+              'OTHER_CPLUSPLUSFLAGS': [ '-Werror' ]
+            }
+        }]
+      ],
+      'cflags': [
+          '<@(system_includes)'
+      ],
       'xcode_settings': {
         'OTHER_LDFLAGS':[
           '-Wl,-bind_at_load'
+        ],
+        'OTHER_CPLUSPLUSFLAGS': [
+            '<@(system_includes)'
         ],
         'GCC_ENABLE_CPP_RTTI': 'YES',
         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',

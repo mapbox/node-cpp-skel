@@ -27,6 +27,13 @@ make # build binaries
 make test
 ```
 
+Note: by default the build errors on compiler warnings. To disable this do:
+
+```
+WERROR=false make
+```
+
+
 # Code coverage
 
 Code coverage is critical for knowing how well your tests actually test all your code. To see code coverage you can view current results online at [![codecov](https://codecov.io/gh/mapbox/node-cpp-skel/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/node-cpp-skel) or you can build in a customized way and display coverage locally like:
