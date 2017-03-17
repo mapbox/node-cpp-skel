@@ -119,6 +119,13 @@ NAN_METHOD(HelloWorld::wave)
 class AsyncBaton
 {
   public:
+    AsyncBaton() :
+      request(),
+      cb(),
+      phrase(),
+      louder(false),
+      error_name(),
+      result() {}
     uv_work_t request; // required
     Nan::Persistent<v8::Function> cb; // callback function type
     std::string phrase;
