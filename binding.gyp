@@ -15,7 +15,7 @@
         '-Wl,-z,now',
       ],
       'conditions': [
-        ['error_on_warnings != "false"', {
+        ['error_on_warnings == "true"', {
             'cflags_cc' : [ '-Werror' ],
             'xcode_settings': {
               'OTHER_CPLUSPLUSFLAGS': [ '-Werror' ]
