@@ -1,5 +1,8 @@
 MODULE_NAME := $(shell node -e "console.log(require('./package.json').binary.module_name)")
 
+# Whether to turn compiler warnings into errors
+export WERROR ?= true
+
 default: release
 
 node_modules:
@@ -8,11 +11,11 @@ node_modules:
 	npm install --ignore-scripts
 
 release: node_modules
-	V=1 ./node_modules/.bin/node-pre-gyp configure build --loglevel=error
+	V=1 ./node_modules/.bin/node-pre-gyp configure build --error_on_warnings=$(WERROR) --loglevel=error
 	@echo "run 'make clean' for full rebuild"
 
 debug: node_modules
-	V=1 ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --debug
+	V=1 ./node_modules/.bin/node-pre-gyp configure build --error_on_warnings=$(WERROR) --loglevel=error --debug
 	@echo "run 'make clean' for full rebuild"
 
 coverage:

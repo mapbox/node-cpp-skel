@@ -1,5 +1,8 @@
 {
   'includes': [ 'common.gypi' ],
+  'variables': {
+      'error_on_warnings%':'true'
+  },
   'targets': [
     {
       'target_name': '<(module_name)',
@@ -10,6 +13,14 @@
       ],
       'ldflags': [
         '-Wl,-z,now',
+      ],
+      'conditions': [
+        ['error_on_warnings != "false"', {
+            'cflags_cc' : [ '-Werror' ],
+            'xcode_settings': {
+              'OTHER_CPLUSPLUSFLAGS': [ '-Werror' ]
+            }
+        }]
       ],
       'xcode_settings': {
         'OTHER_LDFLAGS':[
