@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <iostream>
 
+#include <protozero/pbf_reader.hpp>
+
 // Custom constructor added in order to test/cover throwing an error during initialization
 HelloWorld::HelloWorld(std::string name) : 
   name_(name) {
