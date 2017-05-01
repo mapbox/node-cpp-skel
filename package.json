@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test": "tape test/*.test.js",
+    "prepublish": "npm ls",
     "install": "node-pre-gyp install --fallback-to-build",
     "docs": "npm install ^4.0.0-beta5 && documentation build src/*.cpp --polyglot -f md -o API.md"
   },
@@ -19,6 +20,7 @@
     "nan": "~2.5.1",
     "node-pre-gyp": "~0.6.32"
   },
+  "bundledDependencies":["node-pre-gyp"],
   "devDependencies": {
     "aws-sdk": "^2.4.7",
     "tape": "^4.5.1"
