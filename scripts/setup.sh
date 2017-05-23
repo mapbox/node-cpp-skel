@@ -3,7 +3,7 @@
 set -eu
 set -o pipefail
 
-export MASON_RELEASE="${MASON_RELEASE:-0.9.0}"
+export MASON_RELEASE="${MASON_RELEASE:-v0.9.0}"
 export MASON_LLVM_RELEASE="${MASON_LLVM_RELEASE:-4.0.0}"
 
 PLATFORM=$(uname | tr A-Z a-z)
@@ -59,7 +59,7 @@ function run() {
       local install_dir=${1}
       local mason_release=${2}
       mkdir -p ${install_dir}
-      curl -sSfL https://github.com/mapbox/mason/archive/v${mason_release}.tar.gz | tar --gunzip --extract --strip-components=1 --directory=${install_dir}
+      curl -sSfL https://github.com/mapbox/mason/archive/${mason_release}.tar.gz | tar --gunzip --extract --strip-components=1 --directory=${install_dir}
     }
 
     setup_mason $(pwd)/.mason ${MASON_RELEASE}
