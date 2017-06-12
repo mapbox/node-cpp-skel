@@ -119,9 +119,9 @@ These scenarios demonstrate ideal behavior for a healthy node c++ addon. They ar
 node test/bench/bench-batch.js --iterations 100 --concurrency 10 --mode busyThreads
 ```
 
-If you bump up `--iterations` to 500 and profile in Activity Monitor.app, you'll see the main loop is idle as expected since the threads are doing all the work. You'll also see the threads busy doing work in AsyncContentiousThreads function 99% of the time :tada:
+If you bump up `--iterations` to 500 and profile in Activity Monitor.app, you'll see the main loop is idle as expected since the threads are doing all the work. You'll also see the threads busy doing work in AsyncBusyThreads function 99% of the time :tada:
 
-![screenshot 2016-11-07 11 50 59](https://cloud.githubusercontent.com/assets/1209162/20066705/81f71cf2-a4e0-11e6-95e2-1a2128a7db6b.png)
+![screenshot 2016-11-07 11 50 59](https://user-images.githubusercontent.com/1209162/27053695-cce91e9c-4f83-11e7-904b-b717feb065cf.png)
 
 ### Bad scenarios
 
