@@ -135,6 +135,7 @@ class AsyncBaton
       cb(),
       phrase(),
       louder(false),
+      sleep(),
       error_name(),
       result() {}
     uv_work_t request; // required
