@@ -3,7 +3,7 @@
 set -eu
 set -o pipefail
 
-export NPM_FLAGS=${NPM_FLAGS:-}
+export COMMIT_MESSAGE=$(git log --format=%B --no-merges -n 1 | tr -d '\n')
 
 # `is_pr_merge` is designed to detect if a gitsha represents a normal
 # push commit (to any branch) or whether it represents travis attempting
@@ -11,8 +11,8 @@ export NPM_FLAGS=${NPM_FLAGS:-}
 # For more details see: https://docs.travis-ci.com/user/pull-requests
 function is_pr_merge() {
   # Get the commit message via git log
-  # This should always be the exact text the developer provided
-  export COMMIT_LOG=$(git log --format=%B --no-merges -n 1 | tr -d '\n')
+  # This should always be the exactly the text the developer provided
+  local COMMIT_LOG=${COMMIT_MESSAGE}
 
   # Get the commit message via git show
   # If the gitsha represents a merge then this will
@@ -29,33 +29,50 @@ function is_pr_merge() {
 # - the commit message includes [publish binary]
 # - the commit message includes [republish binary]
 # - the commit is not a pr_merge (checked with `is_pr_merge` function)
-echo "dumping binary meta..."
-./node_modules/.bin/node-pre-gyp reveal ${NPM_FLAGS}
+function publish() {
+  echo "dumping binary meta..."
+  ./node_modules/.bin/node-pre-gyp reveal --loglevel=error $@
 
-echo "determining publishing status..."
+  echo "determining publishing status..."
 
-if [[ $(is_pr_merge) ]]; then
-    echo "Skipping publishing because this is a PR merge commit"
-else
-    echo "This is a push commit, continuing to package..."
-    ./node_modules/.bin/node-pre-gyp package ${NPM_FLAGS}
+  if [[ $(is_pr_merge) ]]; then
+      echo "Skipping publishing because this is a PR merge commit"
+  else
+      echo "Commit message: ${COMMIT_MESSAGE}"
 
-    echo "gathering commit message ..."
+      if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then
+          echo "Publishing"
+          ./node_modules/.bin/node-pre-gyp package publish $@
+      elif [[ ${COMMIT_MESSAGE} =~ "[republish binary]" ]]; then
+          echo "Re-Publishing"
+          ./node_modules/.bin/node-pre-gyp package unpublish publish $@
+      else
+          echo "Skipping publishing since we did not detect either [publish binary] or [republish binary] in commit message"
+      fi
+  fi
+}
 
-    export COMMIT_MESSAGE=$(git log --format=%B --no-merges | head -n 1 | tr -d '\n')
-    echo "Commit message: ${COMMIT_MESSAGE}"
+function usage() {
+  >&2 echo "Usage"
+  >&2 echo ""
+  >&2 echo "$ ./scripts/publish.sh <args>"
+  >&2 echo ""
+  >&2 echo "All args are forwarded to node-pre-gyp like --debug"
+  >&2 echo ""
+  exit 1
+}
 
-    if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then
-        echo "Publishing"
-        ./node_modules/.bin/node-pre-gyp publish ${NPM_FLAGS}
-    elif [[ ${COMMIT_MESSAGE} =~ "[republish binary]" ]]; then
-        echo "Re-Publishing"
-        ./node_modules/.bin/node-pre-gyp unpublish publish ${NPM_FLAGS}
-    else
-        echo "Skipping publishing"
-    fi;
-fi
+# https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
+for i in "$@"
+do
+case $i in
+    -h | --help)
+    usage
+    shift
+    ;;
+    *)
+    ;;
+esac
+done
 
-# reset to make travis happy
-set +eu
-set +o pipefail
+publish $@

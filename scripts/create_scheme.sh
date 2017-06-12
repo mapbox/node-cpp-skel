@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-set -u
+set -eu
+set -o pipefail
 
 CONTAINER=build/binding.xcodeproj
 OUTPUT="${CONTAINER}/xcshareddata/xcschemes/${SCHEME_NAME}.xcscheme"

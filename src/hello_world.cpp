@@ -13,6 +13,8 @@ static std::uint32_t a = 0;
 static std::uint32_t b = 0;
 static std::mutex mutex;
 
+#include <protozero/pbf_reader.hpp>
+
 // Custom constructor added in order to test/cover throwing an error during initialization
 HelloWorld::HelloWorld(std::string name) : 
   name_(name) {
@@ -128,6 +130,13 @@ NAN_METHOD(HelloWorld::wave)
 class AsyncBaton
 {
   public:
+    AsyncBaton() :
+      request(),
+      cb(),
+      phrase(),
+      louder(false),
+      error_name(),
+      result() {}
     uv_work_t request; // required
     Nan::Persistent<v8::Function> cb; // callback function type
     std::string phrase; // required
