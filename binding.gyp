@@ -28,7 +28,7 @@
       'target_name': '<(module_name)',
       'product_dir': '<(module_path)',
       'dependencies': [ 'action_before_build' ],
-      'sources': [ './src/hello_world.cpp' ],
+      'sources': [ './src/module.cpp', './src/hello.cpp' ],
       'include_dirs': [
         '<!(node -e \'require("nan")\')'
       ],
