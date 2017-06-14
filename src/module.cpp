@@ -1,5 +1,5 @@
 #include <nan.h>
-#include "hello.hpp"
+#include "standalone/hello.hpp"
 
 // target is magic var that nodejs passes into modules scope
 // When you write things to target, they become available to call from js
