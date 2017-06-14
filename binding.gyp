@@ -33,7 +33,11 @@
       # Running "make clean" helps to prevent this "mysterious error by cache" scenario
       # This also is where the benefits of using a glob come into play...
       # See: https://github.com/mapbox/node-cpp-skel/pull/44#discussion_r122050205
-      'sources': [ './src/module.cpp', './src/standalone/hello.cpp' ],
+      'sources': [ 
+        './src/module.cpp',
+        './src/hello_world.cpp',
+        './src/standalone/hello.cpp'
+      ],
       'include_dirs': [
         '<!(node -e \'require("nan")\')'
       ],
