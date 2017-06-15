@@ -16,7 +16,12 @@ module.exports = {
                 {
                   Action: ['s3:ListBucket'],
                   Effect: 'Allow',
-                  Resource: 'arn:aws:s3:::mapbox-node-binary/' + package_json.name
+                  Resource: 'arn:aws:s3:::mapbox-node-binary',
+                  Condition : {
+                    StringLike : {
+                      "s3:prefix": [ package_json.name + "/*"]
+                    }
+                  }
                 }
               ]
             }
