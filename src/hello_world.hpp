@@ -32,6 +32,7 @@ class HelloWorld: public Nan::ObjectWrap
         // constructor
         // This includes a Default Argument
         // If a paramter value is passed in, it takes priority over the default arg
+        // HelloWorld --> class
         HelloWorld(std::string name="hello");
 
     private:

@@ -25,8 +25,8 @@ clean:
 	rm -rf lib/binding
 	rm -rf build
 	# remove remains from running 'make coverage'
-	rm *.profraw
-	rm *.profdata
+	rm -f *.profraw
+	rm -f *.profdata
 	@echo "run 'make distclean' to also clear node_modules, mason_packages, and .mason directories"
 
 distclean: clean
