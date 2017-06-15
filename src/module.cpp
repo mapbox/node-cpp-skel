@@ -1,5 +1,6 @@
 #include <nan.h>
 #include "standalone/hello.hpp"
+#include "standalone_async/hello_async.hpp"
 #include "hello_world.hpp"
 
 // "target" is a magic var that nodejs passes into modules scope
@@ -9,6 +10,9 @@ static void init(v8::Local<v8::Object> target) {
     // expose hello method
     Nan::SetMethod(target, "hello", standalone::hello);
     
+    // expose hello method
+    Nan::SetMethod(target, "hello_async", standalone_async::hello_async);
+
     // expose hello_world class
     HelloWorld::Init(target);
 

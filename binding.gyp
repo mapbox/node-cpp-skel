@@ -36,6 +36,7 @@
       'sources': [ 
         './src/module.cpp',
         './src/standalone/hello.cpp',
+        './src/standalone_async/hello_async.cpp',
         './src/hello_world.cpp'
       ],
       'include_dirs': [
