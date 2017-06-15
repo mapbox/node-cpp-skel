@@ -68,8 +68,9 @@ If you're developing on macOS and have Xcode installed, you can also type `make 
 
 ### Standalone sync function
 ```javascript
-var module = require('../lib/index.js');
+var module = require('./path/to/lib/index.js');
 var check = module.hello();
+
 console.log(check); // => world
 ```
 
@@ -78,6 +79,7 @@ console.log(check); // => world
 var module = require('./path/to/lib/index.js');
 var HW = new module.HelloWorld();
 var hi = HW.wave();
+
 console.log(hi); // => howdy world!
 ```
 
