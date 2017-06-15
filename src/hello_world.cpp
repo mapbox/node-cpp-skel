@@ -275,9 +275,3 @@ NAN_MODULE_INIT(HelloWorld::Init)
     constructor().Reset(fn);
     Nan::Set(target, whoami, fn);
 }
-
-/*
- * This creates the module, started up with NAN_MODULE_INIT.
- * The naming/casing of the first argument is reflected in lib/hello_world.js
- */
-NODE_MODULE(HelloWorld, HelloWorld::Init);

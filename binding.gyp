@@ -35,7 +35,8 @@
       # See: https://github.com/mapbox/node-cpp-skel/pull/44#discussion_r122050205
       'sources': [ 
         './src/module.cpp',
-        './src/standalone/hello.cpp'
+        './src/standalone/hello.cpp',
+        './src/hello_world.cpp'
       ],
       'include_dirs': [
         '<!(node -e \'require("nan")\')'

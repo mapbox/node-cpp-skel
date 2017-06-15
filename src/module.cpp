@@ -10,7 +10,7 @@ static void init(v8::Local<v8::Object> target) {
     Nan::SetMethod(target, "hello", standalone::hello);
     
     // expose hello_world class
-    // HelloWorld::Init(target);
+    HelloWorld::Init(target);
 
     // add more methods below that youd like to use in node.js-world
     // then create a .cpp and .hpp file in /src for each new method
