@@ -35,6 +35,9 @@ namespace standalone_async {
       for (std::size_t i=0;i<work_to_do;++i) {
           std::string const& item = container[i];
           if (item != std::to_string(i)) {
+
+              // AsyncHelloWorker's Execute function will take care of this error 
+              // and return it to js-world via callback
               throw std::runtime_error("Uh oh, this should never happen");
           }
       }  

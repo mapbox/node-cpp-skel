@@ -74,6 +74,16 @@ var check = module.hello();
 console.log(check); // => world
 ```
 
+### Standalone async function
+```javascript
+var module = require('./path/to/lib/index.js');
+
+module.hello_async({ louder: true }, function(err, result) {
+  if (err) throw err;
+  console.log(hi); // => ...threads are busy async bees...world!!!!
+});
+```
+
 ### Object
 ```javascript
 var module = require('./path/to/lib/index.js');
@@ -87,7 +97,7 @@ console.log(hi); // => howdy world!
 `node-cpp-skel` was designed to make adding custom code simple and scalable, to form to whatever use-case you may need. Here's how!
 
 - Create a dir in `./src` to hold your custom code. See `./src/standalone` as an example.
-- Add your new method or class to `./src/module.cpp`
+- Add your new method or class to `./src/module.cpp`, and `#include` it at the top
 - Add your new file-to-be-compiled to the list of target sources in `./binding.gyp`
 
 # Publishing Binaries
