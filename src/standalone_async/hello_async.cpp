@@ -91,7 +91,6 @@ namespace standalone_async {
       const bool louder_;
   };  
 
-
   /**
   * This is a standalone function (async) that logs a string.
   * @name hello_async

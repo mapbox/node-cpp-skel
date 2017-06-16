@@ -2,7 +2,6 @@
 
 namespace standalone {
 
-
   /**
   * This is a standalone function (sync) that logs a string.
   * @name hello
