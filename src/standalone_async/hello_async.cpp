@@ -23,7 +23,7 @@ namespace standalone_async {
 
   // Expensive allocation of std::map, querying, and string comparison,
   // therefore threads are busy
-  std::string do_expensive_work(bool louder, Nan::Callback* callback) {  
+  std::string do_expensive_work(bool louder) {  
 
       std::map<std::size_t,std::string> container;  
       std::size_t work_to_do=100000;
@@ -35,7 +35,7 @@ namespace standalone_async {
       for (std::size_t i=0;i<work_to_do;++i) {
           std::string const& item = container[i];
           if (item != std::to_string(i)) {
-              return CallbackError("Uh oh, this should never happen", callback);
+              throw std::runtime_error("Uh oh, this should never happen");
           }
       }  
 
@@ -64,7 +64,7 @@ namespace standalone_async {
       // - You do not have access to Javascript v8 objects here.
       void Execute() override {
           try {
-              result_ = do_expensive_work(louder_, callback);
+              result_ = do_expensive_work(louder_);
           } catch (const std::exception& e) {
               SetErrorMessage(e.what());
           }
