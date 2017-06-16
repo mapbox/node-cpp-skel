@@ -27,15 +27,16 @@ Shout a phrase really loudly by adding an exclamation to the end, asynchronously
 
 **Parameters**
 
--   `phrase` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** to shout
--   `different` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** ways to shout
+-   `string` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** phrase to shout
+-   `args` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** different ways to shout
+    -   `args.louder` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** adds exclamation points to the string
 -   `callback` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** from whence the shout comes, returns a string
 
 **Examples**
 
 ```javascript
 var HW = new HelloWorld();
-HW.shout('rawr', {}, function(err, shout) {
+HW.shout('rawr', { louder: true }, function(err, shout) {
   if (err) throw err;
   console.log(shout); // => 'rawr!'
 });
@@ -60,7 +61,8 @@ This is a standalone function (async) that logs a string.
 
 **Parameters**
 
--   `different` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** ways to say hello
+-   `args` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** different ways to alter the string
+    -   `args.louder` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** adds exclamation points to the string
 -   `callback` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** from whence the hello comes, returns a string
 
 **Examples**
