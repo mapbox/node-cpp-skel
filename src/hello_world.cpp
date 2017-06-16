@@ -104,12 +104,13 @@ NAN_METHOD(HelloWorld::wave)
  *
  * @name shout
  * @memberof HelloWorld
- * @param {String} phrase to shout
- * @param {Object} different ways to shout
+ * @param {String} string - phrase to shout
+ * @param {Object} args - different ways to shout
+ * @param {boolean} args.louder - adds exclamation points to the string
  * @param {Function} callback - from whence the shout comes, returns a string
  * @example
  * var HW = new HelloWorld();
- * HW.shout('rawr', {}, function(err, shout) {
+ * HW.shout('rawr', { louder: true }, function(err, shout) {
  *   if (err) throw err;
  *   console.log(shout); // => 'rawr!'
  * });

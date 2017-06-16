@@ -8,7 +8,8 @@
 /**
  * This is a standalone function (async) that logs a string.
  * @name hello_async
- * @param {Object} different ways to say hello
+ * @param {Object} args - different ways to alter the string
+ * @param {boolean} args.louder - adds exclamation points to the string
  * @param {Function} callback - from whence the hello comes, returns a string
  * @returns {string} an ever-so-slightly customizable string
  * @example
