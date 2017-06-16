@@ -60,7 +60,7 @@ namespace standalone_async {
       using Base = Nan::AsyncWorker;  
 
       AsyncHelloWorker(bool louder, Nan::Callback* callback)
-          : Base(callback), louder_(louder) { }  
+          : Base(callback), result_{""}, louder_{louder} { }  
 
       // The Execute() function is getting called when the worker starts to run.
       // - You only have access to member variables stored in this worker.
