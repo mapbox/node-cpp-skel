@@ -35,9 +35,28 @@ Shout a phrase really loudly by adding an exclamation to the end, asynchronously
 **Examples**
 
 ```javascript
+// Shout
 var HW = new HelloWorld();
 HW.shout('rawr', {}, function(err, shout) {
   if (err) throw err;
-  console.log(shout); // => 'rawr!'
+  console.log(shout); // => 'rawr!...and just did a bunch of stuff'
+});
+```
+
+```javascript
+// Shout louder
+var HW = new HelloWorld();
+HW.shout('rawr', { louder: true }, function(err, shout) {
+  if (err) throw err;
+  console.log(shout); // => 'rawr!!!!!'
+});
+```
+
+```javascript
+// Shout then sleep for x seconds
+var HW = new HelloWorld();
+HW.shout('rawr', { sleep: 2 }, function(err, shout) {
+  if (err) throw err;
+  console.log(shout); // => 'rawr! zzzZZZ'
 });
 ```

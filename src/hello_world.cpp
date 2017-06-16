@@ -3,6 +3,15 @@
 #include <exception>
 #include <stdexcept>
 #include <iostream>
+#include <chrono> // time lib
+#include <thread> // sleep_for is a function within the thread lib
+#include <map>
+#include <mutex>
+
+// Global vars for demonstrating contentiousThreads()
+static std::uint32_t a = 0;
+static std::uint32_t b = 0;
+static std::mutex mutex;
 
 #include <protozero/pbf_reader.hpp>
 
@@ -126,12 +135,14 @@ class AsyncBaton
       cb(),
       phrase(),
       louder(false),
+      sleep(),
       error_name(),
       result() {}
     uv_work_t request; // required
     Nan::Persistent<v8::Function> cb; // callback function type
-    std::string phrase;
-    bool louder;
+    std::string phrase; // required
+    bool louder; // optional
+    std::uint32_t sleep; // optional (# of seconds)
     std::string error_name;
     std::string result;
 };
@@ -141,15 +152,15 @@ NAN_METHOD(HelloWorld::shout)
     std::string phrase = "";
     bool louder = false;
 
-    // check third argument, should be a 'callback' function.
+    // check last argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors
     // instead of throwing as well.
-    if (!info[2]->IsFunction()) 
+    if (info.Length() < 1 || !info[info.Length()-1]->IsFunction())
     {
-        Nan::ThrowTypeError("third arg 'callback' must be a function");
+        Nan::ThrowTypeError("last arg 'callback' must be a function");
         return;
     }
-    v8::Local<v8::Function> callback = info[2].As<v8::Function>();
+    v8::Local<v8::Function> callback = info[info.Length()-1].As<v8::Function>();
 
     // check first argument, should be a 'phrase' string
     if (!info[0]->IsString()) 
@@ -195,11 +206,205 @@ NAN_METHOD(HelloWorld::shout)
     3) operations to be executed within the threadpool
     4) operations to be executed after #3 is complete to pass into the callback
     */
-    uv_queue_work(uv_default_loop(), &baton->request, AsyncShout, (uv_after_work_cb)AfterShout);
+    uv_queue_work(uv_default_loop(), &baton->request, AsyncShout, (uv_after_work_cb)AfterAsync);
     return;
 }
 
-std::string do_expensive_work(std::string const& phrase, bool louder) {
+NAN_METHOD(HelloWorld::busyThreads)
+{
+    std::string phrase = "";
+
+    // check last argument, should be a 'callback' function.
+    // This allows us to set the callback so we can use it to return errors
+    // instead of throwing as well.
+    if (info.Length() < 1 || !info[info.Length()-1]->IsFunction())
+    {
+        Nan::ThrowTypeError("last arg 'callback' must be a function");
+        return;
+    }
+    v8::Local<v8::Function> callback = info[info.Length()-1].As<v8::Function>();
+
+    // check first argument, should be a 'phrase' string
+    if (!info[0]->IsString()) 
+    {
+        CallbackError("first arg 'phrase' must be a string", callback);
+        return;
+    }
+    phrase = *v8::String::Utf8Value((info[0])->ToString());
+
+    // set up the baton to pass into our threadpool
+    AsyncBaton *baton = new AsyncBaton();
+    baton->request.data = baton;
+    baton->phrase = phrase;
+    baton->cb.Reset(callback);
+
+    /*
+    `uv_queue_work` is the all-important way to pass info into the threadpool.
+    It cannot take v8 objects, so we need to do some manipulation above to convert into cpp objects
+    otherwise things get janky. It takes four arguments:
+
+    1) which loop to use, node only has one so we pass in a pointer to the default
+    2) the baton defined above, we use this to access information important for the method
+    3) operations to be executed within the threadpool
+    4) operations to be executed after #3 is complete to pass into the callback
+    */
+    uv_queue_work(uv_default_loop(), &baton->request, AsyncBusyThreads, (uv_after_work_cb)AfterAsync);
+    return;
+}
+
+NAN_METHOD(HelloWorld::sleepyThreads)
+{
+    std::string phrase = "";
+    std::uint32_t sleep = 0;
+
+    // check last argument, should be a 'callback' function.
+    // This allows us to set the callback so we can use it to return errors
+    // instead of throwing as well.
+    if (info.Length() < 1 || !info[info.Length()-1]->IsFunction())
+    {
+        Nan::ThrowTypeError("last arg 'callback' must be a function");
+        return;
+    }
+    v8::Local<v8::Function> callback = info[info.Length()-1].As<v8::Function>();
+
+    // check first argument, should be a 'phrase' string
+    if (!info[0]->IsString()) 
+    {
+        CallbackError("first arg 'phrase' must be a string", callback);
+        return;
+    }
+    phrase = *v8::String::Utf8Value((info[0])->ToString());
+
+    // check second argument, should be an 'options' object
+    if (!info[1]->IsObject()) 
+    {
+        CallbackError("second arg 'options' must be an object", callback);
+        return;
+    }
+    v8::Local<v8::Object> options = info[1].As<v8::Object>();
+
+    if (options->Has(Nan::New("sleep").ToLocalChecked())) 
+    {
+        v8::Local<v8::Value> sleep_val = options->Get(Nan::New("sleep").ToLocalChecked());
+        if (!sleep_val->IsUint32())
+        {
+            CallbackError("option 'sleep' must be a positive integer", callback);
+            return;
+        }
+        sleep = sleep_val->Uint32Value();
+    }
+
+    // set up the baton to pass into our threadpool
+    AsyncBaton *baton = new AsyncBaton();
+    baton->request.data = baton;
+    baton->phrase = phrase;
+    baton->sleep = sleep;
+    baton->cb.Reset(callback);
+
+    /*
+    `uv_queue_work` is the all-important way to pass info into the threadpool.
+    It cannot take v8 objects, so we need to do some manipulation above to convert into cpp objects
+    otherwise things get janky. It takes four arguments:
+
+    1) which loop to use, node only has one so we pass in a pointer to the default
+    2) the baton defined above, we use this to access information important for the method
+    3) operations to be executed within the threadpool
+    4) operations to be executed after #3 is complete to pass into the callback
+    */
+    uv_queue_work(uv_default_loop(), &baton->request, AsyncSleepyThreads, (uv_after_work_cb)AfterAsync);
+    return;
+}
+
+NAN_METHOD(HelloWorld::contentiousThreads)
+{
+    std::string phrase = "";
+
+    // check last argument, should be a 'callback' function.
+    // This allows us to set the callback so we can use it to return errors
+    // instead of throwing as well.
+    if (info.Length() < 1 || !info[info.Length()-1]->IsFunction())
+    {
+        Nan::ThrowTypeError("last arg 'callback' must be a function");
+        return;
+    }
+    v8::Local<v8::Function> callback = info[info.Length()-1].As<v8::Function>();
+
+    // check first argument, should be a 'phrase' string
+    if (!info[0]->IsString()) 
+    {
+        CallbackError("first arg 'phrase' must be a string", callback);
+        return;
+    }
+    phrase = *v8::String::Utf8Value((info[0])->ToString());
+
+    // set up the baton to pass into our threadpool
+    AsyncBaton *baton = new AsyncBaton();
+    baton->request.data = baton;
+    baton->phrase = phrase;
+    baton->cb.Reset(callback);
+
+    /*
+    `uv_queue_work` is the all-important way to pass info into the threadpool.
+    It cannot take v8 objects, so we need to do some manipulation above to convert into cpp objects
+    otherwise things get janky. It takes four arguments:
+
+    1) which loop to use, node only has one so we pass in a pointer to the default
+    2) the baton defined above, we use this to access information important for the method
+    3) operations to be executed within the threadpool
+    4) operations to be executed after #3 is complete to pass into the callback
+    */
+    uv_queue_work(uv_default_loop(), &baton->request, AsyncContentiousThreads, (uv_after_work_cb)AfterAsync);
+    return;
+}
+
+// expensive allocation of std::map, querying, and string comparison
+std::string do_expensive_work(std::string const& phrase, std::size_t work_to_do=100000) {
+
+    if (phrase != "rawr") {
+        throw std::runtime_error("we really would prefer rawr all the time");
+    }
+
+    std::map<std::size_t,std::string> container;
+
+    for (std::size_t i=0;i<work_to_do;++i) {
+        container.emplace(i,std::to_string(i));
+    }
+
+    for (std::size_t i=0;i<work_to_do;++i) {
+        std::string const& item = container[i];
+        if (item != std::to_string(i)) {
+            abort(); // should never get here
+        }
+    }
+
+    std::string result = phrase + "...threads are busy bees";
+
+    return result;
+}
+
+// contentious mutex locking keeping threads from doing work
+std::string do_contentious_work(std::string const& phrase) {
+
+    if (phrase != "rawr") {
+        throw std::runtime_error("we really would prefer rawr all the time");
+    }
+
+    // The first thread to lock this mutex is the only one that has access to a and b
+    std::lock_guard<decltype(mutex)> lock(mutex);
+    if (a != 0 || b != 0) {
+        abort(); // should never happen since the lock should synchronized access to these variables
+    }
+    a = 1;
+    b = 1;
+    do_expensive_work(phrase);
+    a = 0;
+    b = 0;
+    std::string result = phrase + "...threads are locked and contending with each other";
+
+    return result;
+}
+
+std::string do_sleepy_work(std::string const& phrase, uint32_t sleep) {
     std::string result;
 
     // This is purely for testing, to be able to simulate an unexpected throw
@@ -208,12 +413,16 @@ std::string do_expensive_work(std::string const& phrase, bool louder) {
         throw std::runtime_error("we really would prefer rawr all the time");
     }
 
-    result = phrase + "!";
-
-    if (louder)
-    {
-        result += "!!!!";
+    // suspends execution of the calling thread for (at least) # of seconds
+    if (sleep) {
+        // http://en.cppreference.com/w/cpp/chrono/duration
+        // duration type object that sleep_for accepts
+        std::chrono::seconds sec(sleep);
+ 
+        std::this_thread::sleep_for(sec);
+        result = phrase + " zzzZZZ";
     }
+
     return result;
 }
 
@@ -226,7 +435,24 @@ void HelloWorld::AsyncShout(uv_work_t* req)
     // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
     try
     {
-        baton->result = do_expensive_work(baton->phrase,baton->louder);
+        std::string result;
+        std::string phrase = baton->phrase;
+
+        // This is purely for testing, to be able to simulate an unexpected throw
+        // from a function you do not control and may throw an exception
+        if (phrase != "rawr") {
+            throw std::runtime_error("we really would prefer rawr all the time");
+        }
+
+        result = phrase + "!";
+
+        if (baton->louder)
+        {
+            result += "!!!!";
+        }
+
+        baton->result = result;
+
     }
     catch (std::exception const& ex)
     {
@@ -236,9 +462,9 @@ void HelloWorld::AsyncShout(uv_work_t* req)
 
 }
 
-// handle results from AsyncShout - if there are errors return those
+// handle results from Async function - if there are errors return those
 // otherwise return the type & info to our callback
-void HelloWorld::AfterShout(uv_work_t* req)
+void HelloWorld::AfterAsync(uv_work_t* req)
 {
     Nan::HandleScope scope;
 
@@ -259,6 +485,64 @@ void HelloWorld::AfterShout(uv_work_t* req)
     delete baton;
 }
 
+
+// this is where we actually set the bees to work
+void HelloWorld::AsyncBusyThreads(uv_work_t* req)
+{
+    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
+
+    /***************** custom code here ******************/
+    // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
+    try
+    {
+        baton->result = do_expensive_work(baton->phrase);
+    }
+    catch (std::exception const& ex)
+    {
+        baton->error_name = ex.what();
+    }
+    /***************** end custom code *******************/
+
+}
+
+// this is where we actually exclaim our shout phrase
+void HelloWorld::AsyncSleepyThreads(uv_work_t* req)
+{
+    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
+
+    /***************** custom code here ******************/
+    // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
+    try
+    {
+        baton->result = do_sleepy_work(baton->phrase,baton->sleep);
+    }
+    catch (std::exception const& ex)
+    {
+        baton->error_name = ex.what();
+    }
+    /***************** end custom code *******************/
+
+}
+
+// this is where we actually exclaim our shout phrase
+void HelloWorld::AsyncContentiousThreads(uv_work_t* req)
+{
+    AsyncBaton *baton = static_cast<AsyncBaton *>(req->data);
+
+    /***************** custom code here ******************/
+    // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
+    try
+    {
+        baton->result = do_contentious_work(baton->phrase);
+    }
+    catch (std::exception const& ex)
+    {
+        baton->error_name = ex.what();
+    }
+    /***************** end custom code *******************/
+
+}
+
 NAN_MODULE_INIT(HelloWorld::Init)
 {
     const auto whoami = Nan::New("HelloWorld").ToLocalChecked();
@@ -270,6 +554,9 @@ NAN_MODULE_INIT(HelloWorld::Init)
     // custom methods added here
     SetPrototypeMethod(fnTp, "wave", wave);
     SetPrototypeMethod(fnTp, "shout", shout);
+    SetPrototypeMethod(fnTp, "busyThreads", busyThreads);
+    SetPrototypeMethod(fnTp, "sleepyThreads", sleepyThreads);
+    SetPrototypeMethod(fnTp, "contentiousThreads", contentiousThreads);
 
     const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
     constructor().Reset(fn);

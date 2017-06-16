@@ -23,7 +23,10 @@
   "bundledDependencies":["node-pre-gyp"],
   "devDependencies": {
     "aws-sdk": "^2.4.7",
-    "tape": "^4.5.1"
+    "documentation": "^4.0.0-beta5",
+    "tape": "^4.5.1",
+    "d3-queue": "^3.0.1",
+    "minimist": "~1.2.0"
   },
   "binary": {
     "module_name": "module",
