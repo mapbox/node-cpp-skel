@@ -12,7 +12,7 @@
     "test": "tape test/*.test.js",
     "prepublish": "npm ls",
     "install": "node-pre-gyp install --fallback-to-build",
-    "docs": "npm install ^4.0.0-beta5 && documentation build src/*.cpp --polyglot -f md -o API.md"
+    "docs": "documentation build src/*.cpp src/standalone_async/*.cpp src/standalone/*.cpp --polyglot -f md -o API.md"
   },
   "author": "Mapbox",
   "license": "ISC",

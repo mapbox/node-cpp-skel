@@ -5,6 +5,20 @@
 #include <iostream>
 #include <map>
 
+/**
+ * This is a standalone function (async) that logs a string.
+ * @name hello_async
+ * @param {Object} args - different ways to alter the string
+ * @param {boolean} args.louder - adds exclamation points to the string
+ * @param {Function} callback - from whence the hello comes, returns a string
+ * @returns {string} an ever-so-slightly customizable string
+ * @example
+ * var module = require('./path/to/lib/index.js');
+ * module.hello_async({ louder: true }, function(err, result) {
+ *   if (err) throw err;
+ *   console.log(result); // => "...threads are busy async bees...world!!!!"
+ * });
+ */
 namespace standalone_async {
 
   /*
