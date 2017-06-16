@@ -91,6 +91,21 @@ namespace standalone_async {
       const bool louder_;
   };  
 
+
+  /**
+  * This is a standalone function (async) that logs a string.
+  * @name hello_async
+  * @param {Object} different ways to say hello
+  * @param {Function} callback - from whence the hello comes, returns a string
+  * @returns {string} an ever-so-slightly customizable string
+  * @example
+  * var module = require('./path/to/lib/index.js');
+  * module.hello_async({ louder: true }, function(err, result) {
+  *   if (err) throw err;
+  *   console.log(result); // => "...threads are busy async bees...world!!!!"
+  * });
+  */
+
   // hello_async is a "standalone function" because it's not a class.
   // If this function was not defined within a namespace ("standalone_async"), it would be in the global scope.
   NAN_METHOD(hello_async) {

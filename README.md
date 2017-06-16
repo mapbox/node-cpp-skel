@@ -80,7 +80,7 @@ var module = require('./path/to/lib/index.js');
 
 module.hello_async({ louder: true }, function(err, result) {
   if (err) throw err;
-  console.log(hi); // => ...threads are busy async bees...world!!!!
+  console.log(result); // => ...threads are busy async bees...world!!!!
 });
 ```
 
