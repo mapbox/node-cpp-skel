@@ -21,10 +21,12 @@ namespace standalone_async {
   	Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
   }
 
-  // expensive allocation of std::map, querying, and string comparison
-  std::string do_expensive_work(bool louder, std::size_t work_to_do=100000) {  
+  // Expensive allocation of std::map, querying, and string comparison,
+  // therefore threads are busy
+  std::string do_expensive_work(bool louder, Nan::Callback* callback) {  
 
       std::map<std::size_t,std::string> container;  
+      std::size_t work_to_do=100000;
 
       for (std::size_t i=0;i<work_to_do;++i) {
           container.emplace(i,std::to_string(i));
@@ -33,11 +35,11 @@ namespace standalone_async {
       for (std::size_t i=0;i<work_to_do;++i) {
           std::string const& item = container[i];
           if (item != std::to_string(i)) {
-              abort(); // should never get here
+              return CallbackError("Uh oh, this should never happen", callback);
           }
       }  
 
-      std::string result = "...threads are busy bees...world";
+      std::string result = "...threads are busy async bees...world";
  
       if (louder)
       {
@@ -50,6 +52,7 @@ namespace standalone_async {
 
   // This is the worker running asynchronously and calling a user-provided callback when done.
   // Consider storing all C++ objects you need by value or by shared_ptr to keep them alive until done.
+  // Nan AsyncWorker docs: https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
   struct AsyncHelloWorker : Nan::AsyncWorker {
       using Base = Nan::AsyncWorker;  
 
@@ -61,7 +64,7 @@ namespace standalone_async {
       // - You do not have access to Javascript v8 objects here.
       void Execute() override {
           try {
-              result_ = do_expensive_work(louder_);
+              result_ = do_expensive_work(louder_, callback);
           } catch (const std::exception& e) {
               SetErrorMessage(e.what());
           }
@@ -85,37 +88,35 @@ namespace standalone_async {
       const bool louder_;
   };  
 
-  // "hello" is a Standalone function because it's not a class.
-  // If this function was not defined within a namespace, it would be in the global scope.
+  // hello_async is a "standalone function" because it's not a class.
+  // If this function was not defined within a namespace ("standalone_async"), it would be in the global scope.
   NAN_METHOD(hello_async) {
 
     bool louder = false;
 
-    // check second argument, should be a 'callback' function.
-    // This allows us to set the callback so we can use it to return errors
-    // instead of throwing as well.
+    // Check second argument, should be a 'callback' function.
+    // This allows us to set the callback so we can use it to return errors instead of throwing.
+    // Also, "info" comes from the NAN_METHOD macro, which returns differently according to the version of node
     if (!info[1]->IsFunction())
     {
-        Nan::ThrowTypeError("second arg 'callback' must be a function");
-        return;
+        return Nan::ThrowTypeError("second arg 'callback' must be a function");
     }
     v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
-    // check first argument, should be an 'options' object
+    // Check first argument, should be an 'options' object
     if (!info[0]->IsObject())
     {
-        CallbackError("first arg 'options' must be an object", callback);
-        return;
+        return CallbackError("first arg 'options' must be an object", callback);
     }
     v8::Local<v8::Object> options = info[0].As<v8::Object>();
 
+    // Check options object for the "louder" property, which should be a boolean value
     if (options->Has(Nan::New("louder").ToLocalChecked()))
     {
         v8::Local<v8::Value> louder_val = options->Get(Nan::New("louder").ToLocalChecked());
         if (!louder_val->IsBoolean())
         {
-            CallbackError("option 'louder' must be a boolean", callback);
-            return;
+            return CallbackError("option 'louder' must be a boolean", callback);
         }
         louder = louder_val->BooleanValue();
     }
@@ -125,13 +126,9 @@ namespace standalone_async {
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes the pointer automatically.
     auto* worker = new AsyncHelloWorker{louder, new Nan::Callback{callback}};
     Nan::AsyncQueueWorker(worker);
-
-    // // "info" comes from the NAN_METHOD macro, which returns differently
-    // // according to the version of node
-    // info.GetReturnValue().Set(Nan::New<v8::String>("world").ToLocalChecked());
   
   }
 
-}
+} // namespace standalone_async
 
 
