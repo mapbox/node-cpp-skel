@@ -2,7 +2,7 @@
 
 namespace standalone {
 
-  // "hello" is a Standalone function because it's not a class.
+  // hello is a "standalone function" because it's not a class.
   // If this function was not defined within a namespace, it would be in the global scope.
   NAN_METHOD(hello) {
 
@@ -11,4 +11,4 @@ namespace standalone {
     info.GetReturnValue().Set(Nan::New<v8::String>("world").ToLocalChecked());
   
   }
-}
+} // namespace standalone
