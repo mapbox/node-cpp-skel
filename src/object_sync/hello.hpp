@@ -18,7 +18,7 @@ namespace object_sync {
             static NAN_METHOD(New);
             //static Nan::Persistent<v8::Function> &constructor();
 
-            // hello, custom sync method tied to module.cpp
+            // hello, custom sync method tied to Init of this class somehow...?
             // method's logic lives in hello.cpp
             static NAN_METHOD(hello);
 
