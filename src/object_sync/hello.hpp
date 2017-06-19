@@ -16,11 +16,11 @@ namespace object_sync {
 
             // methods required for the constructor
             static NAN_METHOD(New);
-            // static Nan::Persistent<v8::Function> &constructor();
+            //static Nan::Persistent<v8::Function> &constructor();
 
             // hello, custom sync method tied to module.cpp
             // method's logic lives in hello.cpp
-            NAN_METHOD(hello);
+            static NAN_METHOD(hello);
 
 	};
 

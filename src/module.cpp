@@ -17,9 +17,6 @@ static void init(v8::Local<v8::Object> target) {
     // expose HelloObject class
     object_sync::HelloObject::Init(target);
 
-    // expose hello method from HelloObject class
-    Nan::SetMethod(target, "hello", object_sync::HelloObject::hello);
-
     // add more methods/classes below that youd like to use in node.js-world
     // then create a .cpp and .hpp file in /src for each new method
 }

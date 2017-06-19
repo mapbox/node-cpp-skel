@@ -3,10 +3,9 @@
 namespace object_sync {
   
   // If this function was not defined within a namespace, it would be in the global scope.
-  NAN_METHOD(HelloObject::New) {
+  NAN_METHOD(HelloObject::New) {}
 
-  
-  }
+  // Add constructor?
 
   // If this function was not defined within a namespace, it would be in the global scope.
   NAN_METHOD(HelloObject::hello) {
