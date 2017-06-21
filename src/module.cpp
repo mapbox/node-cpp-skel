@@ -6,6 +6,7 @@
 
 // "target" is a magic var that nodejs passes into modules scope
 // When you write things to target, they become available to call from js
+// What exactly IS target?
 static void init(v8::Local<v8::Object> target) {
 
     // expose hello method
@@ -15,7 +16,7 @@ static void init(v8::Local<v8::Object> target) {
     Nan::SetMethod(target, "hello_async", standalone_async::hello_async);
 
     // expose HelloObject class
-    object_sync::HelloObject::Init(target);
+    object_sync::HelloObject::init(target);
 
     // Notice there are multiple "hello" functions as part of this module:
     // 1) standalone::hello
