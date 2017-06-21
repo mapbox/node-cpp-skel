@@ -12,7 +12,7 @@ namespace object_sync {
 
         public:
             // initializer
-            static NAN_MODULE_INIT(Init);
+            static void Init(v8::Local<v8::Object> target);
 
             // methods required for the constructor
             static NAN_METHOD(New);

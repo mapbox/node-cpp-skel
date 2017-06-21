@@ -7,3 +7,13 @@ test('success: prints expected string', function(t) {
   t.equal(check, '...initialized an object...world', 'returned expected string');
   t.end();
 });
+
+test('error: throws when missing "new"', function(t) {
+  try {
+    var H = module.HelloObject();
+  } catch(err) {
+    t.ok(err);
+    t.equal(err.message, 'Cannot call constructor as function, you need to use \'new\' keyword', 'expected error message')
+    t.end();
+  }
+});
