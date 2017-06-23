@@ -16,13 +16,16 @@ static void init(v8::Local<v8::Object> target) {
 
     // expose HelloObject class
     object_sync::HelloObject::Init(target);
+    
+   /**
+    * You may have noticed there are multiple "hello" functions as part of this module.
+    * They are both exposed a bit differently.
+    * 1) standalone::hello    // exposed above
+    * 2) HelloObject.hello    // exposed in object_sync/hello.cpp as part of HelloObject
+    */
 
-    // Notice there are multiple "hello" functions as part of this module:
-    // 1) standalone::hello
-    // 2) HelloObject.hello()...not really sure why this function doesnt have to be expliclty exposed
-
-    // add more methods/classes below that youd like to use in node.js-world
-    // then create a .cpp and .hpp file in /src for each new method
+    // add more methods/classes below that youd like to use in Javascript world
+    // then create a directory in /src with a .cpp and a .hpp file
 }
 
 NODE_MODULE(module, init)

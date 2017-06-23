@@ -44,7 +44,7 @@ NAN_METHOD(HelloWorld::New)
             }
             else {
                 auto *const self = new HelloWorld();
-                self->Wrap(info.This());
+                self->Wrap(info.This()); // Connects C++ object to Javascript object (this)
             } 
 
         }
@@ -64,6 +64,7 @@ NAN_METHOD(HelloWorld::New)
 
 Nan::Persistent<v8::Function> &HelloWorld::constructor()
 {
+
     static Nan::Persistent<v8::Function> init;
     return init;
 }
@@ -260,6 +261,7 @@ void HelloWorld::AfterShout(uv_work_t* req)
     delete baton;
 }
 
+// called when "require" in Javascript world
 NAN_MODULE_INIT(HelloWorld::Init)
 {
     const auto whoami = Nan::New("HelloWorld").ToLocalChecked();
@@ -271,8 +273,8 @@ NAN_MODULE_INIT(HelloWorld::Init)
     // custom methods added here
     SetPrototypeMethod(fnTp, "wave", wave);
     SetPrototypeMethod(fnTp, "shout", shout);
-
+    
     const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
-    constructor().Reset(fn);
+    constructor().Reset(fn); // calling the static &HelloWorld constructor method
     Nan::Set(target, whoami, fn);
 }

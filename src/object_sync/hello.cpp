@@ -1,12 +1,47 @@
 #include "hello.hpp"
 
-  // If this was not defined within a namespace, it would be in the global scope.
+// If this was not defined within a namespace, it would be in the global scope.
 namespace object_sync {
-  
-  // Default constructor
-  NAN_METHOD(HelloObject::New) {
 
-    if (!info.IsConstructCall())
+  // Custom constructor, assigns custom name passed in from Javascript world
+  HelloObject::HelloObject(std::string name) : 
+    name_(name) {
+    name = name_; // And how would I later use this name property in the hello method?
+  }
+
+  // Triggered from Javascript world when calling "new HelloObject()" or "new HelloObject(name)"
+  NAN_METHOD(HelloObject::New) {
+    if (info.IsConstructCall())
+    {
+        try
+        {   
+            if (info.Length() >= 1) {
+              if (info[0]->IsString()) 
+              {
+                std::string name = *v8::String::Utf8Value(info[0]->ToString());
+                auto *const self = new HelloObject(name);
+                self->Wrap(info.This());
+              }
+              else
+              {
+                return Nan::ThrowTypeError(
+                    "arg must be a string");
+              }
+            }
+            else {
+                auto *const self = new HelloObject();
+                self->Wrap(info.This());
+            } 
+
+        }
+        catch (const std::exception &ex)
+        {
+            return Nan::ThrowTypeError(ex.what());
+        }
+
+        info.GetReturnValue().Set(info.This());
+    }
+    else
     {
         return Nan::ThrowTypeError(
             "Cannot call constructor as function, you need to use 'new' keyword");
@@ -19,8 +54,15 @@ namespace object_sync {
 
     // "info" comes from the NAN_METHOD macro, which returns differently
     // according to the version of node
-    info.GetReturnValue().Set(Nan::New<v8::String>("...initialized an object...world").ToLocalChecked());
+    info.GetReturnValue().Set(Nan::New<v8::String>("...initialized an object..." + name_).ToLocalChecked()); // ???
   
+  }
+  
+  // Singleton...not really sure what to say about this
+  Nan::Persistent<v8::Function> &HelloObject::constructor()
+  {
+      static Nan::Persistent<v8::Function> init;
+      return init;
   }
 
   void HelloObject::Init(v8::Local<v8::Object> target)
@@ -31,11 +73,12 @@ namespace object_sync {
       const auto whoami = Nan::New("HelloObject").ToLocalChecked();  
        
       // Create the HelloObject
-      auto fnTp = Nan::New<v8::FunctionTemplate>(HelloObject::New); // Passing the HelloObject::New constructor above
+      auto fnTp = Nan::New<v8::FunctionTemplate>(HelloObject::New); // Passing the HelloObject::New method above
       fnTp->InstanceTemplate()->SetInternalFieldCount(1); // It's 1 when holding the ObjectWrap itself and nothing else
       fnTp->SetClassName(whoami); // Passing the Javascript string object above
 
       // Add custom methods here.
+      // This is how hello() is exposed as part of HelloObject.
       // This line is attaching the "hello" method to a JavaScript function prototype.
       // "hello" is therefore like a property of the fnTp object 
       // ex: console.log(HelloObject.hello) --> [Function: hello]
@@ -44,6 +87,7 @@ namespace object_sync {
       // Create an unique instance of the HelloObject function template,
       // then set this unique instance to the target
       const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
+      constructor().Reset(fn);  // calls the static &HelloObject::constructor method above. This ensures the instructions in this Init function are retained in memory even after this code block ends.
       Nan::Set(target, whoami, fn);
   }
 
