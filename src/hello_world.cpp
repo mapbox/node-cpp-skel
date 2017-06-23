@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <iostream>
 
+#include <protozero/pbf_reader.hpp>
+
 // Custom constructor added in order to test/cover throwing an error during initialization
 HelloWorld::HelloWorld(std::string name) : 
   name_(name) {
@@ -102,12 +104,13 @@ NAN_METHOD(HelloWorld::wave)
  *
  * @name shout
  * @memberof HelloWorld
- * @param {String} phrase to shout
- * @param {Object} different ways to shout
+ * @param {String} string - phrase to shout
+ * @param {Object} args - different ways to shout
+ * @param {boolean} args.louder - adds exclamation points to the string
  * @param {Function} callback - from whence the shout comes, returns a string
  * @example
  * var HW = new HelloWorld();
- * HW.shout('rawr', {}, function(err, shout) {
+ * HW.shout('rawr', { louder: true }, function(err, shout) {
  *   if (err) throw err;
  *   console.log(shout); // => 'rawr!'
  * });
@@ -119,6 +122,13 @@ NAN_METHOD(HelloWorld::wave)
 class AsyncBaton
 {
   public:
+    AsyncBaton() :
+      request(),
+      cb(),
+      phrase(),
+      louder(false),
+      error_name(),
+      result() {}
     uv_work_t request; // required
     Nan::Persistent<v8::Function> cb; // callback function type
     std::string phrase;
@@ -266,9 +276,3 @@ NAN_MODULE_INIT(HelloWorld::Init)
     constructor().Reset(fn);
     Nan::Set(target, whoami, fn);
 }
-
-/*
- * This creates the module, started up with NAN_MODULE_INIT.
- * The naming/casing of the first argument is reflected in lib/hello_world.js
- */
-NODE_MODULE(HelloWorld, HelloWorld::Init);

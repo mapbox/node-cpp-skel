@@ -23,9 +23,34 @@ This repository itself can be cloned and edited to your needs.
 ```
 git clone git@github.com:mapbox/node-cpp-skel.git
 cd node-cpp-skel
-make # build binaries
+
+# Build binaries. This looks to see if there were changes in the C++ code. This does not reinstall deps.
+make
+
+# Run tests
 make test
+
+# Cleans your current builds and removes potential cache
+make clean
+
+# Cleans everything, including the things you download from the network in order to compile (ex: npm packages).
+# This is useful if you want to nuke everything and start from scratch.
+# For example, it's super useful for making sure everything works for Travis, production, someone else's machine, etc
+make disclean
+
+# This skel uses documentation.js to auto-generate API docs.
+# If you'd like to generate docs for your code, you'll need to install documentation.js,
+# and then add your subdirectory to the docs command in package.json
+npm install -g documentation
 ```
+
+Note: by default the build errors on compiler warnings. To disable this do:
+
+```
+WERROR=false make
+```
+
+To build from scratch
 
 # Code coverage
 
@@ -46,12 +71,40 @@ If you're developing on macOS and have Xcode installed, you can also type `make 
 
 # Usage
 
+### Standalone sync function
 ```javascript
-var HelloWorld = require('./path/to/lib/index.js');
-var HW = new HelloWorld();
+var module = require('./path/to/lib/index.js');
+var check = module.hello();
+
+console.log(check); // => world
+```
+
+### Standalone async function
+```javascript
+var module = require('./path/to/lib/index.js');
+
+module.hello_async({ louder: true }, function(err, result) {
+  if (err) throw err;
+
+  console.log(result); // => "...threads are busy async bees...world!!!!""
+});
+```
+
+### Object
+```javascript
+var module = require('./path/to/lib/index.js');
+var HW = new module.HelloWorld();
 var hi = HW.wave();
+
 console.log(hi); // => howdy world!
 ```
+
+# Add Custom Code
+`node-cpp-skel` was designed to make adding custom code simple and scalable, to form to whatever use-case you may need. Here's how!
+
+- Create a dir in `./src` to hold your custom code. See `./src/standalone` as an example.
+- Add your new method or class to `./src/module.cpp`, and `#include` it at the top
+- Add your new file-to-be-compiled to the list of target sources in `./binding.gyp`
 
 # Publishing Binaries
 
