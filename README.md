@@ -130,10 +130,10 @@ You can do this two ways: 1) add the keys to the travis UI settings, or 2) encod
 - Go to https://travis-ci.org/<your user or org>/<your module>/settings
 - Scroll to the bottom and find the `Environment Variables` section
 - Add a variable called `AWS_ACCESS_KEY_ID` and put the value of the `AccessKeyId` in it
-- CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are now shown in the logs
+- CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are not shown in the logs
 - Click `Add`
 - Add a variable called `AWS_SECRET_ACCESS_KEY` and put the value of the `SecretAccessKey` in it
-- CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are now shown in the logs
+- CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are not shown in the logs
 - Click `Add`
 
 **Encoding keys in yml**
