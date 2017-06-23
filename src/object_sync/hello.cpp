@@ -52,9 +52,11 @@ namespace object_sync {
   // NAN_METHOD is applicable to methods you want to expose to JS world
   NAN_METHOD(HelloObject::hello) {
 
+    HelloObject* h = Nan::ObjectWrap::Unwrap<HelloObject>(info.Holder());
+
     // "info" comes from the NAN_METHOD macro, which returns differently
     // according to the version of node
-    info.GetReturnValue().Set(Nan::New<v8::String>("...initialized an object..." + name_).ToLocalChecked()); // ???
+    info.GetReturnValue().Set(Nan::New<v8::String>("...initialized an object..." + h->name_).ToLocalChecked()); // ???
   
   }
   
