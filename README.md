@@ -20,7 +20,7 @@ The skeleton prepares a C++ port to Node.js and provides the following for quick
 
 This repository itself can be cloned and edited to your needs.
 
-```
+```bash
 git clone git@github.com:mapbox/node-cpp-skel.git
 cd node-cpp-skel
 
@@ -195,7 +195,7 @@ Take the above `AccessKeyId` and `SecretAccessKey` variables and encode them int
 
 Then run:
 
-```
+```bash
 # https://github.com/mapbox/node-pre-gyp/#2-create-secure-variables
 travis encrypt node_pre_gyp_accessKeyId=${AccessKeyId}
 travis encrypt node_pre_gyp_secretAccessKey=${SecretAccessKey}
@@ -214,8 +214,8 @@ The strings can be quoted but do not need to be quoted.
 
 Once set, these values will be propagated to the build environment in a secure way. If you look at your travis logs you see:
 
-```
-Setting environment variables from .travis.yml
+```bash
+# Setting environment variables from .travis.yml
 $ export node_pre_gyp_accessKeyId=[secure]
 $ export node_pre_gyp_secretAccessKey=[secure]
 ```
