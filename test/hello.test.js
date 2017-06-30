@@ -3,7 +3,7 @@ var module = require('../lib/index.js');
 
 test('prints world', function(t) {
   var check = module.hello();
-  t.equal(check, 'world', 'returned world');
+  t.equal(check, 'hello world', 'returned world');
   t.end();
 });
 

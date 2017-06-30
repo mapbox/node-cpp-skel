@@ -17,7 +17,7 @@ namespace standalone {
 
     // "info" comes from the NAN_METHOD macro, which returns differently
     // according to the version of node
-    info.GetReturnValue().Set(Nan::New<v8::String>("world").ToLocalChecked());
+    info.GetReturnValue().Set(Nan::New<v8::String>("hello world").ToLocalChecked());
   
   }
 } // namespace standalone
