@@ -51,7 +51,7 @@ namespace object_sync {
   // If this function was not defined within a namespace, it would be in the global scope.
   // NAN_METHOD is applicable to methods you want to expose to JS world
   NAN_METHOD(HelloObject::hello) {
-
+    // Note: a HandleScope is automatically included inside NAN_METHOD (TODO: confirm/find link to this)
     HelloObject* h = Nan::ObjectWrap::Unwrap<HelloObject>(info.Holder());
 
     // "info" comes from the NAN_METHOD macro, which returns differently
@@ -61,7 +61,7 @@ namespace object_sync {
   }
   
   // Singleton...not really sure what to say about this
-  Nan::Persistent<v8::Function> &HelloObject::constructor()
+  Nan::Persistent<v8::Function> &HelloObject::create_once()
   {
       static Nan::Persistent<v8::Function> init;
       return init;
@@ -69,10 +69,10 @@ namespace object_sync {
 
   void HelloObject::Init(v8::Local<v8::Object> target)
   {
-  	  // This is saying: 
-  	  // "Node, please allocate a new Javascript string object 
-  	  // inside the V8 memory space, with the value 'HelloObject' "
-      const auto whoami = Nan::New("HelloObject").ToLocalChecked();  
+      // This is saying:
+      // "Node, please allocate a new Javascript string object
+      // inside the V8 local memory space, with the value 'HelloObject' "
+      v8::Local<v8::String> whoami = Nan::New("HelloObject").ToLocalChecked();
        
       // Create the HelloObject
       auto fnTp = Nan::New<v8::FunctionTemplate>(HelloObject::New); // Passing the HelloObject::New method above
@@ -89,7 +89,7 @@ namespace object_sync {
       // Create an unique instance of the HelloObject function template,
       // then set this unique instance to the target
       const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
-      constructor().Reset(fn);  // calls the static &HelloObject::constructor method above. This ensures the instructions in this Init function are retained in memory even after this code block ends.
+      create_once().Reset(fn);  // calls the static &HelloObject::constructor method above. This ensures the instructions in this Init function are retained in memory even after this code block ends.
       Nan::Set(target, whoami, fn);
   }
 

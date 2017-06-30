@@ -16,7 +16,7 @@ namespace object_sync {
 
             // methods required for the V8 constructor (?)
             static NAN_METHOD(New);
-            static Nan::Persistent<v8::Function> &constructor();
+            static Nan::Persistent<v8::Function> &create_once();
 
             // hello, custom sync method tied to Init of this class
             // method's logic lives in ./hello.cpp
