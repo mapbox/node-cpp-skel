@@ -37,7 +37,7 @@
         './src/module.cpp',
         './src/standalone/hello.cpp',
         './src/standalone_async/hello_async.cpp',
-        './src/hello_world.cpp'
+        './src/object_sync/hello.cpp'
       ],
       'include_dirs': [
         '<!(node -e \'require("nan")\')'
