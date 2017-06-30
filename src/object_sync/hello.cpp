@@ -51,7 +51,10 @@ namespace object_sync {
   // If this function was not defined within a namespace, it would be in the global scope.
   // NAN_METHOD is applicable to methods you want to expose to JS world
   NAN_METHOD(HelloObject::hello) {
-    // Note: a HandleScope is automatically included inside NAN_METHOD (TODO: confirm/find link to this)
+    // Note: a HandleScope is automatically included inside NAN_METHOD (See the docs at NAN that say:
+    // 'Note that an implicit HandleScope is created for you on JavaScript-accessible methods so you do not need to insert one yourself.'
+    // at https://github.com/nodejs/nan/blob/2dfc5c2d19c8066903a19ced6a72c06d2c825dec/doc/scopes.md#nanhandlescope
+
     HelloObject* h = Nan::ObjectWrap::Unwrap<HelloObject>(info.Holder());
 
     // "info" comes from the NAN_METHOD macro, which returns differently
@@ -69,6 +72,12 @@ namespace object_sync {
 
   void HelloObject::Init(v8::Local<v8::Object> target)
   {
+      // A handlescope is needed so that v8 objects created in the local memory space (this function in this case)
+      // are cleaned up when the function is done running (and the handlescope is destroyed)
+      // Fun trivia: forgetting a handlescope is one of the most common causes of memory leaks in node.js core
+      // https://www.joyent.com/blog/walmart-node-js-memory-leak
+      Nan::HandleScope scope;
+
       // This is saying:
       // "Node, please allocate a new Javascript string object
       // inside the V8 local memory space, with the value 'HelloObject' "
