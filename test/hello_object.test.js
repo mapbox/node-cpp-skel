@@ -4,7 +4,14 @@ var module = require('../lib/index.js');
 test('success: prints expected string', function(t) {
   var H = new module.HelloObject();
   var check = H.hello();
-  t.equal(check, '...initialized an object...world', 'returned expected string');
+  t.equal(check, '...initialized an object...hello world', 'returned expected string');
+  t.end();
+});
+
+test('success: prints expected string', function(t) {
+  var H = new module.HelloObject('carol');
+  var check = H.hello();
+  t.equal(check, '...initialized an object...hello carol', 'returned expected string');
   t.end();
 });
 

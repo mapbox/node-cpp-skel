@@ -56,7 +56,7 @@ namespace object_sync {
 
     // "info" comes from the NAN_METHOD macro, which returns differently
     // according to the version of node
-    info.GetReturnValue().Set(Nan::New<v8::String>("...initialized an object..." + h->name_).ToLocalChecked()); // ???
+    info.GetReturnValue().Set(Nan::New<v8::String>("...initialized an object...hello " + h->name_).ToLocalChecked()); // ???
   
   }
   
