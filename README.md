@@ -122,8 +122,20 @@ console.log(hi); // => "...initialized an object...hello world"
 - Add your new file-to-be-compiled to the list of target sources in `./binding.gyp`
 
 # Build and Config Conventions
-- Something about Mason?
-- What is binding.gyp?
+
+### What does "build" mean?
+When you "build" your module, you are creating a binary file that allows Node.js to read your C++ module. This binary file is what `require()` points to within Node.js. In node-cpp-skel, `require()` uses [`lib/index.js`](https://github.com/mapbox/node-cpp-skel/blob/2c4e2e10ca074e59c45819a9b45641f0603fa59d/lib/index.js#L3) to specify the binary file. Also, the build process will create a couple directories:
+
+`/build` : Not sure what all of this dir's files are for. What are the most important ones?
+- `/build/Release` : contains the compiled binary file (`module.node`). This is the file that `require()` will point to in Node.js...? But what about `var MODULE = module.exports = require('./binding/module.node');` ?
+
+`lib/binding` : ??? Not sure where this is configured
+- `module.node` : ??? Not sure how this gets here
+
+You can configure how to build your module by using a file called `binding.gyp`.
+
+### What is binding.gyp?
+`bindying.gyp` is a JSON-like configuration file. It tells [node-gyp](https://github.com/nodejs/node-gyp) how to "build" your module, or compile your module into a binary file.
 
 ### Setup
 - Makefile
@@ -131,6 +143,12 @@ console.log(hi); // => "...initialized an object...hello world"
 - `/scripts/setup.sh` --> Sets up the local environment, Mason and the clang toolchain(?). This is where all the magic happens.
 - "sanitizer" --> additional checking built into clang/gcc that finds C++ bugs and requires flags/custom libs to be linked (build node module instrumented with the sanitizer). Sanitizers are a great way to catch bugs, but really painful to setup, so this configured in .travis.yml
 - memory leak sanitizer
+
+### Mason and Clang
+[Mason](https://github.com/mapbox/mason): C++ package manager. Is there anything specific to node-cpp-skels build process that we should re: Mason? Or just link to C++ glossary?
+
+[Clang](https://clang.llvm.org/docs/CommandGuide/clang.html): Open source compiler. Is there anything specific to node-cpp-skels build process that we should re: Mason? [Or just link to C++ glossary](https://github.com/mapbox/cpp/blob/master/glossary.md#clang)?
+
 
 # Publishing Binaries
 
