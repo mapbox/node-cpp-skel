@@ -120,6 +120,17 @@ console.log(hi); // => "...initialized an object...hello world"
 - Add your new method or class to `./src/module.cpp`, and `#include` it at the top
 - Add your new file-to-be-compiled to the list of target sources in `./binding.gyp`
 
+# Build and Config Conventions
+- Something about Mason?
+- What is binding.gyp?
+
+### Setup
+- Makefile
+- .travis.yml
+- `/scripts/setup.sh` --> Sets up the local environment, Mason and the clang toolchain(?). This is where all the magic happens.
+- "sanitizer" --> additional checking built into clang/gcc that finds C++ bugs and requires flags/custom libs to be linked (build node module instrumented with the sanitizer). Sanitizers are a great way to catch bugs, but really painful to setup, so this configured in .travis.yml
+- memory leak sanitizer
+
 # Publishing Binaries
 
 It's a good idea to publish pre-built binaries of your module if you want others to be able to easily install it on their system without needing to install a compiler like g++ or clang++. Node-pre-gyp does a lot of the heavy lifting for us (like detecting which system you are building on and deploying to s3) but you'll need a few things configured to get started.
