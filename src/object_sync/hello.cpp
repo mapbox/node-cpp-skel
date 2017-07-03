@@ -1,5 +1,26 @@
 #include "hello.hpp"
 
+/**
+ * Main class, called HelloObject
+ * @class HelloObject
+ * @example
+ * var module = require('index.js');
+ * var Obj1 = new module.HelloObject();
+ *          OR
+ * var Obj2 = new module.HelloObject('greg');
+ */
+
+/**
+ * Say hello
+ * 
+ * @name hello
+ * @memberof HelloObject
+ * @returns {String}
+ * @example
+ * var x = Obj2.hello();
+ * console.log(x); // => '...initialized an object...hello greg'
+ */
+
 // If this was not defined within a namespace, it would be in the global scope. 
 // Namespaces are used because C++ has no notion of scoped modules, so all of the code you write in any file could conflict with other code.
 // Namespaces are generally a great idea in C++ because it helps scale and clearly organize your application. 
@@ -12,15 +33,6 @@ namespace object_sync {
     name_(name) {}
 
 
-  /**
-   * Main class, called HelloObject
-   * @class HelloObject
-   * @example
-   * var module = require('index.js');
-   * var Obj1 = new module.HelloObject();
-   *          OR
-   * var Obj2 = new module.HelloObject('greg');
-   */
   NAN_METHOD(HelloObject::New) {
     if (info.IsConstructCall())
     {
@@ -59,18 +71,8 @@ namespace object_sync {
     }
   }
 
-  
-  /**
-   * Say hello
-   * 
-   * @name hello
-   * @memberof HelloObject
-   * @returns {String}
-   * @example
-   * var x = Obj2.hello();
-   * console.log(x); // => '...initialized an object...hello greg'
-   */
-  NAN_METHOD(HelloObject::hello) {    // NAN_METHOD is applicable to methods you want to expose to JS world
+  // NAN_METHOD is applicable to methods you want to expose to JS world
+  NAN_METHOD(HelloObject::hello) {
 
     // Note: a HandleScope is automatically included inside NAN_METHOD (See the docs at NAN that say:
     // 'Note that an implicit HandleScope is created for you on JavaScript-accessible methods so you do not need to insert one yourself.'
