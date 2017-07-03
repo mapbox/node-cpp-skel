@@ -121,7 +121,7 @@ console.log(hi); // => "...initialized an object...hello world"
 - Add your new method or class to `./src/module.cpp`, and `#include` it at the top
 - Add your new file-to-be-compiled to the list of target sources in `./binding.gyp`
 
-# Build and Config Conventions
+# Builds
 
 ### What does "build" mean?
 When you "build" your module, you are creating a binary file that allows Node.js to read your C++ module. This binary file is what `require()` points to within Node.js. In node-cpp-skel, `require()` uses [`lib/index.js`](https://github.com/mapbox/node-cpp-skel/blob/2c4e2e10ca074e59c45819a9b45641f0603fa59d/lib/index.js#L3) to specify the binary file. Also, the build process will create a couple directories:
@@ -137,18 +137,19 @@ You can configure how to build your module by using a file called `binding.gyp`.
 ### What is binding.gyp?
 `bindying.gyp` is a JSON-like configuration file. It tells [node-gyp](https://github.com/nodejs/node-gyp) how to "build" your module, or compile your module into a binary file.
 
-### Setup
+### Conventions
 - Makefile
 - .travis.yml
 - `/scripts/setup.sh` --> Sets up the local environment, Mason and the clang toolchain(?). This is where all the magic happens.
 - "sanitizer" --> additional checking built into clang/gcc that finds C++ bugs and requires flags/custom libs to be linked (build node module instrumented with the sanitizer). Sanitizers are a great way to catch bugs, but really painful to setup, so this configured in .travis.yml
 - memory leak sanitizer
 
-### Mason and Clang
+### Mason and Clang (is this needed?)
 [Mason](https://github.com/mapbox/mason): C++ package manager. Is there anything specific to node-cpp-skels build process that we should re: Mason? Or just link to C++ glossary?
 
 [Clang](https://clang.llvm.org/docs/CommandGuide/clang.html): Open source compiler. Is there anything specific to node-cpp-skels build process that we should re: Mason? [Or just link to C++ glossary](https://github.com/mapbox/cpp/blob/master/glossary.md#clang)?
 
+Check out [the c++ glossary with more terms related to builds](https://github.com/mapbox/cpp/blob/master/glossary.md#building-c)
 
 # Publishing Binaries
 
