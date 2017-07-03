@@ -16,10 +16,14 @@
  * var module = require('./path/to/lib/index.js');
  * module.hello_async({ louder: true }, function(err, result) {
  *   if (err) throw err;
- *   console.log(result); // => "...threads are busy async bees...world!!!!"
+ *   console.log(result); // => "...threads are busy async bees...hello world!!!!"
  * });
  */
 namespace standalone_async {
+// If this was not defined within a namespace, it would be in the global scope. 
+// Namespaces are used because C++ has no notion of scoped modules, so all of the code you write in any file could conflict with other code.
+// Namespaces are generally a great idea in C++ because it helps scale and clearly organize your application. 
+
 
   /*
   * This is an internal function used to return callback error messages instead of

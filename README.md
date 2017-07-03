@@ -79,6 +79,9 @@ var check = module.hello();
 console.log(check); // => world
 ```
 
+#### When would you use a standalone synchronous function?
+...
+
 ### Standalone async function
 ```javascript
 var module = require('./path/to/lib/index.js');
@@ -90,14 +93,25 @@ module.hello_async({ louder: true }, function(err, result) {
 });
 ```
 
+#### When would you use a standalone async function?
+...
+
 ### Object
 ```javascript
 var module = require('./path/to/lib/index.js');
-var HW = new module.HelloWorld();
-var hi = HW.wave();
+var Obj = new module.HelloObject();
+var hi = Obj.hello();
 
-console.log(hi); // => howdy world!
+console.log(hi); // => "...initialized an object...hello world"
 ```
+
+#### When would you use an object or class?
+- You need to do some preprocessing of data before going into the thread pool. So you're writing the code that makes sense to do that preprocessing once as a separate operation, then going through to the thread pool after the object is ready. Examples:
+  - [vt-shaver](https://github.com/mapbox/vt-shaver-cpp/blob/a5908ccf61c04d54c0b01415ec986d736f5c6c4f/src/filters.hpp#L10): we create the Filter once, then pass the Filter object into Shaver multiple times. 
+  - [node-mapnik](https://github.com/mapnik/node-mapnik/blob/fe80ce5d79c0e90cfbb5a2b992bf0ae2b8f88198/src/mapnik_map.hpp#L20): we create a Map object once, then use the object multiple times for rendering each vector tile.
+- Classes are useful when you start doing more complex operations and need to consider performance more heavily, when performance constraints start to matter. Use classes to compute the value of something once, rather than every time you call a function.
+- Another [example](https://github.com/nodejs/node-addon-examples/tree/master/6_object_wrap/nan)
+- Say something about ObjectWrap?
 
 # Add Custom Code
 `node-cpp-skel` was designed to make adding custom code simple and scalable, to form to whatever use-case you may need. Here's how!
