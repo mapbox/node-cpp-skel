@@ -42,6 +42,7 @@ make disclean
 # If you'd like to generate docs for your code, you'll need to install documentation.js,
 # and then add your subdirectory to the docs command in package.json
 npm install -g documentation
+documentation build src/your_dir/*.cpp --polyglot -f md -o API.md
 ```
 
 Note: by default the build errors on compiler warnings. To disable this do:
