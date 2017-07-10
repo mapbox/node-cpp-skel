@@ -36,7 +36,7 @@ make clean
 # Cleans everything, including the things you download from the network in order to compile (ex: npm packages).
 # This is useful if you want to nuke everything and start from scratch.
 # For example, it's super useful for making sure everything works for Travis, production, someone else's machine, etc
-make disclean
+make distclean
 
 # This skel uses documentation.js to auto-generate API docs.
 # If you'd like to generate docs for your code, you'll need to install documentation.js,
@@ -50,8 +50,6 @@ Note: by default the build errors on compiler warnings. To disable this do:
 ```
 WERROR=false make
 ```
-
-To build from scratch
 
 # Code coverage
 
@@ -124,7 +122,7 @@ console.log(hi); // => "...initialized an object...hello world"
 # Builds
 
 ### What does "build" mean?
-When you "build" your module, you are creating a binary file that allows Node.js to read your C++ module. This binary file is what `require()` points to within Node.js. In node-cpp-skel, `require()` uses [`lib/index.js`](https://github.com/mapbox/node-cpp-skel/blob/2c4e2e10ca074e59c45819a9b45641f0603fa59d/lib/index.js#L3) to specify the binary file. Also, the build process will create a couple directories:
+When you "build" your module, you are creating a binary file that allows Node.js to read your C++ module. This binary file is what `require()` points to within Node.js. In node-cpp-skel, `require()` uses [`lib/index.js`](https://github.com/mapbox/node-cpp-skel/blob/2c4e2e10ca074e59c45819a9b45641f0603fa59d/lib/index.js#L3) to specify the path to the binary file. Also, the build process will create a couple directories:
 
 `/build` : Not sure what all of this dir's files are for. What are the most important ones?
 - `/build/Release` : contains the compiled binary file (`module.node`). This is the file that `require()` will point to in Node.js...? But what about `var MODULE = module.exports = require('./binding/module.node');` ?
@@ -135,7 +133,7 @@ When you "build" your module, you are creating a binary file that allows Node.js
 You can configure how to build your module by using a file called `binding.gyp`.
 
 ### What is binding.gyp?
-`bindying.gyp` is a JSON-like configuration file. It tells [node-gyp](https://github.com/nodejs/node-gyp) how to "build" your module, or compile your module into a binary file.
+`binding.gyp` is a JSON-like configuration file. It tells [node-gyp](https://github.com/nodejs/node-gyp) how to "build" your module, or compile your module into a binary file.
 
 ### Conventions
 - Makefile
