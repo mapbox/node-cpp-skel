@@ -48,7 +48,6 @@ namespace object_sync {
     }
   }
 
-  // If this function was not defined within a namespace, it would be in the global scope.
   // NAN_METHOD is applicable to methods you want to expose to JS world
   NAN_METHOD(HelloObject::hello) {
     // Note: a HandleScope is automatically included inside NAN_METHOD (See the docs at NAN that say:
