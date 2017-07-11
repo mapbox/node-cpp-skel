@@ -32,8 +32,18 @@ test('error: throws when missing "new"', function(t) {
   try {
     var H = module.HelloObjectAsync();
   } catch(err) {
-    t.ok(err);
+    t.ok(err, 'expected error');
     t.equal(err.message, 'Cannot call constructor as function, you need to use \'new\' keyword', 'expected error message')
+    t.end();
+  }
+});
+
+test('fail: handles non-string arg within constructor', function(t) {
+  try {
+    var H = new module.HelloObjectAsync(24);
+  } catch(err) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf('arg must be a string') > -1, 'expected error message');
     t.end();
   }
 });

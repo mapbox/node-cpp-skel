@@ -8,7 +8,6 @@
 // If this was not defined within a namespace, it would be in the global scope.
 namespace object_async {
 
-
   // Custom constructor, assigns custom name passed in from Javascript world.
   // This constructor uses member init list via the semicolon, aka "direct initialization" 
   // which is more efficient than using assignment operators.
@@ -141,13 +140,11 @@ namespace object_async {
       std::string name_;
   };  
 
-  // hello_async is a "standalone function" because it's not a class.
-  // If this function was not defined within a namespace ("standalone_async"), it would be in the global scope.
-  NAN_METHOD(HelloObjectAsync::hello_async) {
 
-    // Note: a HandleScope is automatically included inside NAN_METHOD (See the docs at NAN that say:
-    // 'Note that an implicit HandleScope is created for you on JavaScript-accessible methods so you do not need to insert one yourself.'
-    // at https://github.com/nodejs/nan/blob/2dfc5c2d19c8066903a19ced6a72c06d2c825dec/doc/scopes.md#nanhandlescope
+  NAN_METHOD(HelloObjectAsync::hello_async) {
+    // "info" comes from the NAN_METHOD macro, which returns differently
+    // according to the version of node
+    // Mention anything about "Unwrap"?
     HelloObjectAsync* h = Nan::ObjectWrap::Unwrap<HelloObjectAsync>(info.Holder());
 
     std::string name = h->name_;
@@ -205,7 +202,7 @@ namespace object_async {
 
       // This is saying:
       // "Node, please allocate a new Javascript string object
-      // inside the V8 local memory space, with the value 'HelloObject' "
+      // inside the V8 local memory space, with the value 'HelloObjectAsync' "
       v8::Local<v8::String> whoami = Nan::New("HelloObjectAsync").ToLocalChecked();
        
       // Create the HelloObject
@@ -223,7 +220,7 @@ namespace object_async {
       // Create an unique instance of the HelloObject function template,
       // then set this unique instance to the target
       const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
-      create_once().Reset(fn);  // calls the static &HelloObject::constructor method above. This ensures the instructions in this Init function are retained in memory even after this code block ends.
+      create_once().Reset(fn);  // calls the static &HelloObjectAsync::create_once method above. This ensures the instructions in this Init function are retained in memory even after this code block ends.
       Nan::Set(target, whoami, fn);
   }
 
