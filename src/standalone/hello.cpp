@@ -10,6 +10,10 @@
  * console.log(check); // => "world"
  */
 namespace standalone {
+// If this was not defined within a namespace, it would be in the global scope. 
+// Namespaces are used because C++ has no notion of scoped modules, so all of the code you write in any file could conflict with other code.
+// Namespaces are generally a great idea in C++ because it helps scale and clearly organize your application. 
+
 
   // hello is a "standalone function" because it's not a class.
   // If this function was not defined within a namespace, it would be in the global scope.
