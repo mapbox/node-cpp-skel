@@ -77,7 +77,6 @@ var check = module.hello();
 
 console.log(check); // => world
 ```
-...
 
 ### Standalone async function
 ```javascript
@@ -89,7 +88,6 @@ module.hello_async({ louder: true }, function(err, result) {
   console.log(result); // => "...threads are busy async bees...world!!!!""
 });
 ```
-...
 
 ### Object
 ```javascript
