@@ -42,7 +42,7 @@ make distclean
 # If you'd like to generate docs for your code, you'll need to install documentation.js,
 # and then add your subdirectory to the docs command in package.json
 npm install -g documentation
-documentation build src/your_dir/*.cpp --polyglot -f md -o API.md
+npm run docs
 ```
 
 Note: by default the build errors on compiler warnings. To disable this do:
@@ -106,7 +106,6 @@ console.log(hi); // => "...initialized an object...hello world"
 
 #### When would you use an object or class?
 - You need to do some preprocessing of data before going into the thread pool. So you're writing the code that makes sense to do that preprocessing once as a separate operation, then going through to the thread pool after the object is ready. Examples:
-  - [vt-shaver](https://github.com/mapbox/vt-shaver-cpp/blob/a5908ccf61c04d54c0b01415ec986d736f5c6c4f/src/filters.hpp#L10): we create the Filter once, then pass the Filter object into Shaver multiple times. 
   - [node-mapnik](https://github.com/mapnik/node-mapnik/blob/fe80ce5d79c0e90cfbb5a2b992bf0ae2b8f88198/src/mapnik_map.hpp#L20): we create a Map object once, then use the object multiple times for rendering each vector tile.
 - Classes are useful when you start doing more complex operations and need to consider performance more heavily, when performance constraints start to matter. Use classes to compute the value of something once, rather than every time you call a function.
 - Another [example](https://github.com/nodejs/node-addon-examples/tree/master/6_object_wrap/nan)
