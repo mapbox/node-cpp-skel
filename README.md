@@ -77,8 +77,6 @@ var check = module.hello();
 
 console.log(check); // => world
 ```
-
-#### When would you use a standalone synchronous function?
 ...
 
 ### Standalone async function
@@ -91,8 +89,6 @@ module.hello_async({ louder: true }, function(err, result) {
   console.log(result); // => "...threads are busy async bees...world!!!!""
 });
 ```
-
-#### When would you use a standalone async function?
 ...
 
 ### Object
