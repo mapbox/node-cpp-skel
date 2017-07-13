@@ -1,6 +1,29 @@
 #include "hello.hpp"
 
-// If this was not defined within a namespace, it would be in the global scope.
+/**
+ * Main class, called HelloObject
+ * @class HelloObject
+ * @example
+ * var module = require('index.js');
+ * var Obj1 = new module.HelloObject();
+ *          OR
+ * var Obj2 = new module.HelloObject('greg');
+ */
+
+/**
+ * Say hello
+ * 
+ * @name hello
+ * @memberof HelloObject
+ * @returns {String}
+ * @example
+ * var x = Obj2.hello();
+ * console.log(x); // => '...initialized an object...hello greg'
+ */
+
+// If this was not defined within a namespace, it would be in the global scope. 
+// Namespaces are used because C++ has no notion of scoped modules, so all of the code you write in any file could conflict with other code.
+// Namespaces are generally a great idea in C++ because it helps scale and clearly organize your application. 
 namespace object_sync {
 
   // Custom constructor, assigns custom name passed in from Javascript world.
@@ -9,7 +32,7 @@ namespace object_sync {
   HelloObject::HelloObject(std::string name) : 
     name_(name) {}
 
-  // Triggered from Javascript world when calling "new HelloObject()" or "new HelloObject(name)"
+
   NAN_METHOD(HelloObject::New) {
     if (info.IsConstructCall())
     {
@@ -50,6 +73,7 @@ namespace object_sync {
 
   // NAN_METHOD is applicable to methods you want to expose to JS world
   NAN_METHOD(HelloObject::hello) {
+
     // Note: a HandleScope is automatically included inside NAN_METHOD (See the docs at NAN that say:
     // 'Note that an implicit HandleScope is created for you on JavaScript-accessible methods so you do not need to insert one yourself.'
     // at https://github.com/nodejs/nan/blob/2dfc5c2d19c8066903a19ced6a72c06d2c825dec/doc/scopes.md#nanhandlescope
@@ -62,7 +86,7 @@ namespace object_sync {
   
   }
   
-  // Singleton...not really sure what to say about this
+  // This is a Singleton, which is a general programming design concept for creating an instance once within a process.
   Nan::Persistent<v8::Function> &HelloObject::create_once()
   {
       static Nan::Persistent<v8::Function> init;
@@ -97,7 +121,7 @@ namespace object_sync {
       // Create an unique instance of the HelloObject function template,
       // then set this unique instance to the target
       const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
-      create_once().Reset(fn);  // calls the static &HelloObject::constructor method above. This ensures the instructions in this Init function are retained in memory even after this code block ends.
+      create_once().Reset(fn);  // calls the static &HelloObject::create_once method above. This ensures the instructions in this Init function are retained in memory even after this code block ends.
       Nan::Set(target, whoami, fn);
   }
 

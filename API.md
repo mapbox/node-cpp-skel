@@ -2,58 +2,36 @@
 
 ### Table of Contents
 
--   [HelloWorld](#helloworld)
-    -   [shout](#shout)
-    -   [wave](#wave)
+-   [HelloObject](#helloobject)
+    -   [hello](#hello)
 -   [hello_async](#hello_async)
--   [hello](#hello)
+-   [hello](#hello-1)
 
-## HelloWorld
+## HelloObject
 
-Main class, called HelloWorld
+Main class, called HelloObject
 
 **Examples**
 
 ```javascript
-var HelloWorld = require('index.js');
-var HW = new HelloWorld();
+var module = require('index.js');
+var Obj1 = new module.HelloObject();
          OR
-var HW = new HelloWorld('yo');
+var Obj2 = new module.HelloObject('greg');
 ```
 
-### shout
+### hello
 
-Shout a phrase really loudly by adding an exclamation to the end, asynchronously
-
-**Parameters**
-
--   `string` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** phrase to shout
--   `args` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** different ways to shout
-    -   `args.louder` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** adds exclamation points to the string
--   `callback` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** from whence the shout comes, returns a string
+Say hello
 
 **Examples**
 
 ```javascript
-var HW = new HelloWorld();
-HW.shout('rawr', { louder: true }, function(err, shout) {
-  if (err) throw err;
-  console.log(shout); // => 'rawr!'
-});
+var x = Obj2.hello();
+console.log(x); // => '...initialized an object...hello greg'
 ```
 
-### wave
-
-Say howdy to the world
-
-**Examples**
-
-```javascript
-var wave = HW.wave();
-console.log(wave); // => 'howdy world!'
-```
-
-Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** a happy-go-lucky string saying hi
+Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 ## hello_async
 
@@ -71,7 +49,7 @@ This is a standalone function (async) that logs a string.
 var module = require('./path/to/lib/index.js');
 module.hello_async({ louder: true }, function(err, result) {
   if (err) throw err;
-  console.log(result); // => "...threads are busy async bees...world!!!!"
+  console.log(result); // => "...threads are busy async bees...hello world!!!!"
 });
 ```
 
