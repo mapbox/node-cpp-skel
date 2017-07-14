@@ -1,4 +1,5 @@
 #include "hello_async.hpp"
+#include "../module_utils.hpp"
 
 #include <exception>
 #include <stdexcept>
@@ -51,20 +52,6 @@ namespace object_async {
         return Nan::ThrowTypeError(
             "Cannot call constructor as function, you need to use 'new' keyword");
     }
-  }
-
-  /*
-  * This is an internal function used to return callback error messages instead of
-  * throwing errors.
-  * Usage:
-  *
-  * v8::Local<v8::Function> callback;
-  * CallbackError("error message", callback);
-  * return; // this is important to prevent duplicate callbacks from being fired!
-  */
-  inline void CallbackError(std::string message, v8::Local<v8::Function> callback) {
-  	v8::Local<v8::Value> argv[1] = { Nan::Error(message.c_str()) };
-  	Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
   }
 
 
@@ -162,7 +149,7 @@ namespace object_async {
     // Check first argument, should be an 'options' object
     if (!info[0]->IsObject())
     {
-        return CallbackError("first arg 'options' must be an object", callback);
+        return utils::CallbackError("first arg 'options' must be an object", callback);
     }
     v8::Local<v8::Object> options = info[0].As<v8::Object>();
 
@@ -172,7 +159,7 @@ namespace object_async {
         v8::Local<v8::Value> louder_val = options->Get(Nan::New("louder").ToLocalChecked());
         if (!louder_val->IsBoolean())
         {
-            return CallbackError("option 'louder' must be a boolean", callback);
+            return utils::CallbackError("option 'louder' must be a boolean", callback);
         }
         louder = louder_val->BooleanValue();
     }
