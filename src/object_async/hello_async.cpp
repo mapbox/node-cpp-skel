@@ -142,9 +142,11 @@ namespace object_async {
 
 
   NAN_METHOD(HelloObjectAsync::hello_async) {
-    // "info" comes from the NAN_METHOD macro, which returns differently
-    // according to the version of node
-    // Mention anything about "Unwrap"?
+    // "info" comes from the NAN_METHOD macro, which returns differently according to the Node version
+    // "What is node::ObjectWrap???" The short version is that node::ObjectWrap and wrapping/unwrapping objects 
+    // is the somewhat clumsy way it is possible to bind Node and C++. The main points to remember:
+    // - To access a class instance inside a C++ static method, you must unwrap the object.
+    // - The C++ methods must be static to make them available at startup across the language boundary (JS <-> C++).
     HelloObjectAsync* h = Nan::ObjectWrap::Unwrap<HelloObjectAsync>(info.Holder());
 
     bool louder = false;

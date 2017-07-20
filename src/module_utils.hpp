@@ -11,6 +11,11 @@ namespace utils {
   * v8::Local<v8::Function> callback;
   * return CallbackError("error message", callback);  // "return" is important to prevent duplicate callbacks from being fired!
   * 
+  *
+  * "inline" is important here as well. See for more contex:
+  * - https://github.com/mapbox/node-cpp-skel/pull/52#discussion_r126847394 for context
+  * - https://github.com/mapbox/cpp/pull/29 ...eventually point this to glossary when it merges
+  * 
   */
   inline void CallbackError(std::string message, v8::Local<v8::Function> callback) {
   	v8::Local<v8::Value> argv[1] = { Nan::Error(message.c_str()) };
