@@ -23,9 +23,8 @@ namespace object_async {
             static NAN_METHOD(hello_async);
 
             // C++ Constructor
-            // This includes a Default Argument
-            // If a parameter value is passed in, it takes priority over the default arg
-            HelloObjectAsync(std::string name="world");
+            // Passing the arg by rvalue reference (&&)
+            HelloObjectAsync(std::string&& name);
 
         private:
             // member variable

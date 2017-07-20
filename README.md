@@ -102,8 +102,15 @@ console.log(hi); // => "...initialized an object...hello world"
 - You need to do some preprocessing of data before going into the thread pool. So you're writing the code that makes sense to do that preprocessing once as a separate operation, then going through to the thread pool after the object is ready. Examples:
   - [node-mapnik](https://github.com/mapnik/node-mapnik/blob/fe80ce5d79c0e90cfbb5a2b992bf0ae2b8f88198/src/mapnik_map.hpp#L20): we create a Map object once, then use the object multiple times for rendering each vector tile.
 - Classes are useful when you start doing more complex operations and need to consider performance more heavily, when performance constraints start to matter. Use classes to compute the value of something once, rather than every time you call a function.
-- Another [example](https://github.com/nodejs/node-addon-examples/tree/master/6_object_wrap/nan)
-- Say something about ObjectWrap?
+- Also check out [node-addon-examples](https://github.com/nodejs/node-addon-examples/tree/master/6_object_wrap/nan)
+
+#### When would you use an asynchronous object or class?
+Once step further is using an asynchronous object or class, so you can pass data into threadpool in the most efficient way possible. That is the main aim of the `HelloObjectAsync` example in this skel.
+- **Move semantics**: `HelloObjectAsync` is using move semantics to limit unnecessary memory allocation. Memory allocation can be super expensive and generally is one of the main bottle necks of applications. Other scearios can also cause bottle necks in your code, but memory allocation is the best-case bottle neck to have because you can either control or avoid it altogether. Basically, move semantics avoid data being copied (allocating memory) and are most useful when working with big data.
+
+Other thoughts related to move semantics:
+- Always best to use move semantics with object like `std::string` instead of passing object by reference.
+- Relatedly, best to use [`std::unique_ptr`](http://en.cppreference.com/w/cpp/memory/unique_ptr) instead of using `std::shared_ptr` because `std::unique_ptr` is non-copyable. So you're forced to avoid copying, which is a good practice.
 
 # Add Custom Code
 `node-cpp-skel` was designed to make adding custom code simple and scalable, to form to whatever use-case you may need. Here's how!

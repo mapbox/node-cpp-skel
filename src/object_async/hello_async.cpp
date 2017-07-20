@@ -9,13 +9,15 @@
 // If this was not defined within a namespace, it would be in the global scope.
 namespace object_async {
 
-  // Custom constructor, assigns custom name passed in from Javascript world.
-  // This constructor uses member init list via the semicolon, aka "direct initialization" 
-  // which is more efficient than using assignment operators.
-  HelloObjectAsync::HelloObjectAsync(std::string name) : 
-    name_(name) {}
+  // Custom constructor, assigns custom name arg passed in from Javascript world.
+  // This constructor uses member init list via the colon, aka "direct initialization", which is more efficient than using assignment operators.
+  // This constructor is using move semantics to literally "move" the value of name to a new place in memory (to the "name_" variable).
+  // This avoids copying the value and duplicating memory allocation, which can negatively affect performance.
+  HelloObjectAsync::HelloObjectAsync(std::string && name) : 
+    name_(std::move(name)) {} 
 
-  // Triggered from Javascript world when calling "new HelloObjectAsync()" or "new HelloObjectAsync(name)"
+
+  // Triggered from Javascript world when calling "new HelloObjectAsync(name)"
   NAN_METHOD(HelloObjectAsync::New) {
     if (info.IsConstructCall())
     {
@@ -24,8 +26,19 @@ namespace object_async {
             if (info.Length() >= 1) {
               if (info[0]->IsString()) 
               {
+                // This line converts a V8 string to a C++ std::string.
+                // In the background, it triggers memory allocation (stack allocating, but std:string is also dynamically allocating memory in the heap)
+                // We want to avoid heap allocation to ensure more performant code.
+                // See https://github.com/mapbox/cpp/blob/master/glossary.md#stack-allocation
+                // and https://stackoverflow.com/questions/79923/what-and-where-are-the-stack-and-heap/80113#80113
                 std::string name = *v8::String::Utf8Value(info[0]->ToString());
-                auto *const self = new HelloObjectAsync(name);
+                
+                // This line is where HelloObjectAsync takes ownership of "name" with the use of move semantics.
+                // Then all later usage of "name" are passed by reference (const&), but the acutal home or address in memory 
+                // will always be owned by this instance of HelloObjectAsync. Generally important to know what has ownership of an object. 
+                // When a object/value is a member of a class (like "name"), we know the class (HelloObjectAsync) has full control of the scope of the object/value. 
+                // This avoids the scenario of an object/value being destroyed or becoming out of scope.
+                auto *const self = new HelloObjectAsync(std::move(name));
                 self->Wrap(info.This());
               }
               else
@@ -33,11 +46,10 @@ namespace object_async {
                 return Nan::ThrowTypeError(
                     "arg must be a string");
               }
+            } else {
+              return Nan::ThrowTypeError(
+                    "must provide string arg");
             }
-            else {
-                auto *const self = new HelloObjectAsync();
-                self->Wrap(info.This());
-            } 
 
         }
         catch (const std::exception &ex)
@@ -55,9 +67,9 @@ namespace object_async {
   }
 
 
-  // Expensive allocation of std::map, querying, and string comparison,
-  // therefore threads are busy
-  std::string do_expensive_work(bool louder, std::string name) {  
+  // This function performs expensive allocation of std::map, querying, and string comparison, therefore threads are nice & busy.
+  // Also, notice that name is passed by reference (std::string const& name)
+  std::string do_expensive_work(bool louder, std::string const& name) {  
 
       std::map<std::size_t,std::string> container;  
       std::size_t work_to_do=100000;
@@ -94,7 +106,7 @@ namespace object_async {
 
       using Base = Nan::AsyncWorker;  
 
-      AsyncHelloWorker(bool louder, std::string name, Nan::Callback* callback)
+      AsyncHelloWorker(bool louder, std::string const& name, Nan::Callback* callback)
           : Base(callback), result_{""}, louder_{louder}, name_{name} { }  
 
       // The Execute() function is getting called when the worker starts to run.
@@ -124,7 +136,8 @@ namespace object_async {
 
       std::string result_;
       const bool louder_;
-      std::string name_;
+      // We are taking a reference to the name instance passed in from instantiating HelloObjectAsync above (HelloObjectAsync::New)
+      std::string const& name_;
   };  
 
 
@@ -134,7 +147,6 @@ namespace object_async {
     // Mention anything about "Unwrap"?
     HelloObjectAsync* h = Nan::ObjectWrap::Unwrap<HelloObjectAsync>(info.Holder());
 
-    std::string name = h->name_;
     bool louder = false;
 
     // Check second argument, should be a 'callback' function.
@@ -167,12 +179,12 @@ namespace object_async {
     // Create a worker instance and queues it to run asynchronously invoking the callback when done.
     // - Nan::AsyncWorker takes a pointer to a Nan::Callback and deletes the pointer automatically.
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes the pointer automatically.
-    auto* worker = new AsyncHelloWorker{louder, name, new Nan::Callback{callback}};
+    auto* worker = new AsyncHelloWorker{louder, h->name_, new Nan::Callback{callback}};
     Nan::AsyncQueueWorker(worker);
   
   }
 
-  // Singleton...not really sure what to say about this
+  // Singleton
   Nan::Persistent<v8::Function> &HelloObjectAsync::create_once()
   {
       static Nan::Persistent<v8::Function> init;
