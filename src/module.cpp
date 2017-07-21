@@ -2,6 +2,7 @@
 #include "standalone/hello.hpp"
 #include "standalone_async/hello_async.hpp"
 #include "object_sync/hello.hpp"
+#include "object_async/hello_async.hpp"
 // #include "your_code.hpp"
 
 // "target" is a magic var that nodejs passes into modules scope
@@ -12,11 +13,14 @@ static void init(v8::Local<v8::Object> target) {
     Nan::SetMethod(target, "hello", standalone::hello);
     
     // expose hello_async method
-    Nan::SetMethod(target, "hello_async", standalone_async::hello_async);
+    Nan::SetMethod(target, "helloAsync", standalone_async::hello_async);
 
     // expose HelloObject class
     object_sync::HelloObject::Init(target);
     
+    // expose HelloObject class
+    object_async::HelloObjectAsync::Init(target);
+
    /**
     * You may have noticed there are multiple "hello" functions as part of this module.
     * They are both exposed a bit differently.
