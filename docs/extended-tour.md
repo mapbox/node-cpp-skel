@@ -12,10 +12,10 @@ Welcome to the extended tour of node-cpp-skel. This documentation is especially 
 # Walkthrough example code
 
 This skeleton includes a few examples of how you might design your application, including standalone functions and creating Objects/Classes. Both the synchronous and asynchronous versions of each are included to give an iterative example of what the progression from sync to async looks like. Let's run through reasons why you'd design your code in these ways:
-1. Standalone function
-2. Standalone asynchronous function
-3. Object/Class
-4. Asynchronous Object/Class
+1. [Standalone function](API.md#hello-1)
+2. [Standalone asynchronous function](../API.md#hello_async)
+3. [Object/Class](../API.md#helloobject)
+4. [Asynchronous Object/Class](../API.md#helloobjectasync)
 
 
 #### When would you use a standalone function?

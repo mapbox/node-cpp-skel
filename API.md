@@ -51,9 +51,7 @@ Main class, called HelloObject
 
 ```javascript
 var module = require('index.js');
-var Obj1 = new module.HelloObject();
-         OR
-var Obj2 = new module.HelloObject('greg');
+var Obj = new module.HelloObject('greg');
 ```
 
 ### hello
@@ -63,7 +61,7 @@ Say hello
 **Examples**
 
 ```javascript
-var x = Obj2.hello();
+var x = Obj.hello();
 console.log(x); // => '...initialized an object...hello greg'
 ```
 
