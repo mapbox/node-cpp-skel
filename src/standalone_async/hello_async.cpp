@@ -20,10 +20,11 @@
  *   console.log(result); // => "...threads are busy async bees...hello world!!!!"
  * });
  */
-namespace standalone_async {
+
 // If this was not defined within a namespace, it would be in the global scope. 
 // Namespaces are used because C++ has no notion of scoped modules, so all of the code you write in any file could conflict with other code.
 // Namespaces are generally a great idea in C++ because it helps scale and clearly organize your application. 
+namespace standalone_async {
 
   // Expensive allocation of std::map, querying, and string comparison,
   // therefore threads are busy
@@ -96,7 +97,7 @@ namespace standalone_async {
   };  
 
   // hello_async is a "standalone function" because it's not a class.
-  // If this function was not defined within a namespace ("standalone_async"), it would be in the global scope.
+  // If this function was not defined within a namespace ("standalone_async" specified above), it would be in the global scope.
   NAN_METHOD(hello_async) {
 
     bool louder = false;
@@ -128,7 +129,7 @@ namespace standalone_async {
         louder = louder_val->BooleanValue();
     }
 
-    // Create a worker instance and queues it to run asynchronously invoking the callback when done.
+    // Creates a worker instance and queues it to run asynchronously, invoking the callback when done.
     // - Nan::AsyncWorker takes a pointer to a Nan::Callback and deletes the pointer automatically.
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes the pointer automatically.
     auto* worker = new AsyncHelloWorker{louder, new Nan::Callback{callback}};

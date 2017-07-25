@@ -2,10 +2,46 @@
 
 ### Table of Contents
 
+-   [HelloObjectAsync](#helloobjectasync)
+    -   [helloAsync](#helloasync)
 -   [HelloObject](#helloobject)
     -   [hello](#hello)
 -   [hello_async](#hello_async)
 -   [hello](#hello-1)
+
+## HelloObjectAsync
+
+Main class, called HelloObjectAsync
+
+**Examples**
+
+```javascript
+var module = require('index.js');
+var Obj = new module.HelloObjectAsync('greg');
+```
+
+### helloAsync
+
+Say hello while doing expensive work in threads
+
+**Parameters**
+
+-   `args` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** different ways to alter the string
+    -   `args.louder` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** adds exclamation points to the string
+-   `callback` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** from whence the hello comes, returns a string
+
+**Examples**
+
+```javascript
+var module = require('index.js');
+var Obj = new module.HelloObjectAsync('greg');
+Obj.helloAsync({ louder: true }, function(err, result) {
+  if (err) throw err;
+  console.log(result); // => '...threads are busy async bees...hello greg!!!'
+});
+```
+
+Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 ## HelloObject
 

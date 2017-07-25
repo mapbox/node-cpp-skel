@@ -11,7 +11,7 @@ Welcome to the extended tour of node-cpp-skel. This documentation is especially 
 
 # Walkthrough example code
 
-This skeleton includes a few examples of how you might design your application (insert link to each in API.md). We'll runthough reasons why you'd design your code in a variety of ways:
+This skeleton includes a few examples of how you might design your application, including standalone functions and creating Objects/Classes. Both the synchronous and asynchronous versions of each are included to give an iterative example of what the progression from sync to async looks like. Let's run through reasons why you'd design your code in these ways:
 1. Standalone function
 2. Standalone asynchronous function
 3. Object/Class
@@ -19,17 +19,16 @@ This skeleton includes a few examples of how you might design your application (
 
 
 #### When would you use a standalone function?
-
-[WIP] Async vs Sync
+Standalone functions are simple and useful when your code is doing some kind of basic operation. They avoid the need for a class, since creating a class in this situation would add unnecessary complexity. Creating an asynchronous standalone function can be powerful if your code has a specific, yet expensive operation to do and would benefit from the use of multiple threads at one time to do that expensive work.
 
 #### When would you use an object/class?
-- When you need to do some preprocessing of data before going into the thread pool. So it's best to write your code so that the preprocessing happens _once_ as a separate operation, then continues through to the thread pool after the preprocessing is finished and the object is ready. Examples:
+Create an object/class when you need to do some kind of data preprocessing before going into the thread pool. It's best to write your code so that the preprocessing happens _once_ as a separate operation, then continues through to the thread pool after the preprocessing is finished and the object is ready. Examples:
   - [node-mapnik](https://github.com/mapnik/node-mapnik/blob/fe80ce5d79c0e90cfbb5a2b992bf0ae2b8f88198/src/mapnik_map.hpp#L20): we create a Map object once, then use the object multiple times for rendering each vector tile.
 - Classes are useful when you start doing more complex operations and need to consider performance more heavily, when performance constraints start to matter. Use classes to compute the value of something once, rather than every time you call a function.
 - Also check out [node-addon-examples](https://github.com/nodejs/node-addon-examples/tree/master/6_object_wrap/nan)
 
 #### When would you use an asynchronous object/class?
-One step further is using an asynchronous object or class, so you can pass data into the threadpool in the most efficient way possible. This is the main goal of the `HelloObjectAsync` example in this skel.
+One step further is using an asynchronous object or class, which enables you to pass data into the threadpool in the most efficient way possible. This is the main goal of the `HelloObjectAsync` example in this skel.
 - **Move semantics**: move semantics avoid data being copied (allocating memory) and are most useful when working with big data. `HelloObjectAsync` is using move semantics to limit unnecessary memory allocation, which can be super expensive and generally is one of the main bottle necks of C++ applications. Other scenarios can also cause bottle necks in your code, but memory allocation is the best-case bottle neck to have because you can either control or avoid it altogether.
 
 Other thoughts related to move semantics:

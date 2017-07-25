@@ -6,6 +6,32 @@
 #include <iostream>
 #include <map>
 
+/**
+ * Main class, called HelloObjectAsync
+ * @class HelloObjectAsync
+ * @example
+ * var module = require('index.js');
+ * var Obj = new module.HelloObjectAsync('greg');
+ */
+
+/**
+ * Say hello while doing expensive work in threads
+ * 
+ * @name helloAsync
+ * @memberof HelloObjectAsync
+ * @param {Object} args - different ways to alter the string
+ * @param {boolean} args.louder - adds exclamation points to the string
+ * @param {Function} callback - from whence the hello comes, returns a string
+ * @returns {String}
+ * @example
+ * var module = require('index.js');
+ * var Obj = new module.HelloObjectAsync('greg');
+ * Obj.helloAsync({ louder: true }, function(err, result) {
+ *   if (err) throw err;
+ *   console.log(result); // => '...threads are busy async bees...hello greg!!!'
+ * });
+ */
+
 // If this was not defined within a namespace, it would be in the global scope.
 namespace object_async {
 
@@ -39,7 +65,7 @@ namespace object_async {
                 // When a object/value is a member of a class (like "name"), we know the class (HelloObjectAsync) has full control of the scope of the object/value. 
                 // This avoids the scenario of an object/value being destroyed or becoming out of scope.
                 auto *const self = new HelloObjectAsync(std::move(name));
-                self->Wrap(info.This());
+                self->Wrap(info.This());  // Connects C++ object to Javascript object (this)
               }
               else
               {

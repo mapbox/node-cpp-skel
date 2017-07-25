@@ -1,25 +1,25 @@
-A skeleton for binding C++ libraries to Node.js using [Nan](https://github.com/nodejs/nan). This is a small, helper repository that generates a Javascript constructor called `HelloWorld`. `HelloWorld` has a number of methods to demonstrate different ways to use Nan for building particular types of functionality (i.e. asynchronous functions).
+A skeleton for binding C++ libraries to Node.js using [Nan](https://github.com/nodejs/nan). This is a small, helper repository that generates simple `HelloWorld` Javascript example constructors. The examples have a number of methods to demonstrate different ways to use Nan for building particular types of functionality (i.e. asynchronous functions). Use this repo as both a template for your own code as well as a learning tool if you're just starting to develop Node/C++ Addons.
 
-Nan is used in many C++ => Node.js port projects, such as [node-mapnik](https://github.com/mapnik/node-mapnik), [node-osrm](https://github.com/Project-OSRM/node-osrm), and [node-osmium](https://github.com/osmcode/node-osmium). More examples of how to port C++ libraries to node can be found at [nodejs.org/api/addons.html](https://nodejs.org/api/addons.html). See https://nodesource.com/blog/c-add-ons-for-nodejs-v4/ for a detailed summary of the origins of Nan.
+**Why port C++ to Node.js?**. That's a great question! C++ is a high performance language that allows you to execute operations without clogging up the event loop. Node.js is single-threaded, which blocks execution. Even in highly optimized javascript code it may be impossible to improve performance. Passing heavy operations into C++ and subsequently into C++ workers can greatly improve the overall runtime of the code. Porting C++ code to Node.js is also referred to as creating an "Addon".
 
-**Why port C++ to Node.js?**. That's a great question! C++ is a high performance language that allows you to execute operations without clogging up the event loop. Node.js is single-threaded, which blocks execution. Even in highly optimized javascript code it may be impossible to improve performance. Passing heavy operations into C++ and subsequently into C++ workers can greatly improve the overall runtime of the code.
+**Nan**: Nan is used in many C++ => Node.js port projects, such as [node-mapnik](https://github.com/mapnik/node-mapnik), [node-osrm](https://github.com/Project-OSRM/node-osrm), and [node-osmium](https://github.com/osmcode/node-osmium). More examples of how to port C++ libraries to node can be found at [nodejs.org/api/addons.html](https://nodejs.org/api/addons.html). See https://nodesource.com/blog/c-add-ons-for-nodejs-v4/ for a detailed summary of the origins of Nan.
 
 [![Build Status](https://travis-ci.org/mapbox/node-cpp-skel.svg?branch=master)](https://travis-ci.org/mapbox/node-cpp-skel)
 [![codecov](https://codecov.io/gh/mapbox/node-cpp-skel/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/node-cpp-skel)
 
 # What's in the box? :package:
 
-The skeleton prepares a C++ port to Node.js and provides the following for quick development:
+This repository itself can be cloned and edited to your needs. The skeleton prepares a C++ port to Node.js and provides the following for quick development:
 
 * **Tests**: created with [Tape](https://github.com/substack/tape) in the `test/` directory. Travis CI file is prepared to build and test your project on every push.
-* **Documentation**: uses [documentation.js](http://documentation.js.org/) to generate API documentation from JSDOC comments in the `.cpp` files. Docs are located in `API.md`.
+* **Documentation**: use this README as a template and customize for your own project. Also, this skeleton uses [documentation.js](http://documentation.js.org/) to generate API documentation from JSDOC comments in the `.cpp` files. Docs are located in `API.md`.
 * **Build system**: [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) generates binaries with the proper system architecture flags
 * **Publishing**: Structured as a node module with a `package.json` that can be deployed to NPM's registry.
-* **Add-on 101**: Learn more about Node Add-on development and C++ code tips in the [extended tour](./docs/extended-tour.md)
+* **Learning resources**: Read the detailed inline comments within the example code to learn exactly what is happening behind the scenes. Also, check out the [extended tour](./docs/extended-tour.md) to learn more about Node/C++ Addon development, builds, and more specifics about the configuration of this skeleton.
 
 # Installation
 
-This repository itself can be cloned and edited to your needs.
+Each `make` command is specified in [`Makefile`](./Makefile)
 
 ```bash
 git clone git@github.com:mapbox/node-cpp-skel.git
@@ -71,9 +71,9 @@ If you're developing on macOS and have Xcode installed, you can also type `make 
 
 
 # Add Custom Code
-`node-cpp-skel` was designed to make adding custom code simple and scalable, to form to whatever use-case you may need. Here's how!
+`node-cpp-skel` was designed to make adding custom code simple and scalable, to form to whatever usecase you may need. Here's how:
 
-- Create a dir in `./src` to hold your custom code. See `./src/standalone` as an example.
+- Create a dir in `./src` to hold your custom code. See the example code within `/src` for reference.
 - Add your new method or class to `./src/module.cpp`, and `#include` it at the top
 - Add your new file-to-be-compiled to the list of target sources in `./binding.gyp`
 
