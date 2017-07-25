@@ -15,6 +15,7 @@ The skeleton prepares a C++ port to Node.js and provides the following for quick
 * **Documentation**: uses [documentation.js](http://documentation.js.org/) to generate API documentation from JSDOC comments in the `.cpp` files. Docs are located in `API.md`.
 * **Build system**: [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) generates binaries with the proper system architecture flags
 * **Publishing**: Structured as a node module with a `package.json` that can be deployed to NPM's registry.
+* **Add-on 101**: Learn more about Node Add-on development and C++ code tips in the extended tour
 
 # Installation
 
