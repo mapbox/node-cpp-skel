@@ -7,7 +7,7 @@
 #include <map>
 
 /**
- * Main class, called HelloObjectAsync
+ * Asynchronous class, called HelloObjectAsync
  * @class HelloObjectAsync
  * @example
  * var module = require('index.js');

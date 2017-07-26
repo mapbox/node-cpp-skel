@@ -7,12 +7,12 @@
 #include <map>
 
 /**
- * This is a standalone function (async) that logs a string.
+ * This is an asynchronous standalone function that logs a string.
  * @name helloAsync
  * @param {Object} args - different ways to alter the string
  * @param {boolean} args.louder - adds exclamation points to the string
  * @param {Function} callback - from whence the hello comes, returns a string
- * @returns {string} an ever-so-slightly customizable string
+ * @returns {string}
  * @example
  * var module = require('./path/to/lib/index.js');
  * module.helloAsync({ louder: true }, function(err, result) {
@@ -47,7 +47,7 @@ namespace standalone_async {
           }
       }  
 
-      std::string result = "...threads are busy async bees...world";
+      std::string result = "...threads are busy async bees...hello world";
  
       if (louder)
       {

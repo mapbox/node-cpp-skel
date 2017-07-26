@@ -11,7 +11,7 @@
 
 ## HelloObjectAsync
 
-Main class, called HelloObjectAsync
+Asynchronous class, called HelloObjectAsync
 
 **Examples**
 
@@ -45,7 +45,7 @@ Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
 
 ## HelloObject
 
-Main class, called HelloObject
+Synchronous class, called HelloObject
 
 **Examples**
 
@@ -69,7 +69,7 @@ Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
 
 ## helloAsync
 
-This is a standalone function (async) that logs a string.
+This is an asynchronous standalone function that logs a string.
 
 **Parameters**
 
@@ -87,18 +87,18 @@ module.helloAsync({ louder: true }, function(err, result) {
 });
 ```
 
-Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** an ever-so-slightly customizable string
+Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 ## hello
 
-This is a standalone function (sync) that logs a string.
+This is a synchronous standalone function that logs a string.
 
 **Examples**
 
 ```javascript
 var module = require('./path/to/lib/index.js');
 var check = module.hello();
-console.log(check); // => "world"
+console.log(check); // => "hello world"
 ```
 
-Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** "world"
+Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 

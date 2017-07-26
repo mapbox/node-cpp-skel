@@ -1,7 +1,7 @@
 #include "hello.hpp"
 
 /**
- * Main class, called HelloObject
+ * Synchronous class, called HelloObject
  * @class HelloObject
  * @example
  * var module = require('index.js');
