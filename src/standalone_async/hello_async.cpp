@@ -8,14 +8,14 @@
 
 /**
  * This is a standalone function (async) that logs a string.
- * @name hello_async
+ * @name helloAsync
  * @param {Object} args - different ways to alter the string
  * @param {boolean} args.louder - adds exclamation points to the string
  * @param {Function} callback - from whence the hello comes, returns a string
  * @returns {string} an ever-so-slightly customizable string
  * @example
  * var module = require('./path/to/lib/index.js');
- * module.hello_async({ louder: true }, function(err, result) {
+ * module.helloAsync({ louder: true }, function(err, result) {
  *   if (err) throw err;
  *   console.log(result); // => "...threads are busy async bees...hello world!!!!"
  * });
@@ -96,9 +96,9 @@ namespace standalone_async {
       const bool louder_;
   };  
 
-  // hello_async is a "standalone function" because it's not a class.
+  // helloAsync is a "standalone function" because it's not a class.
   // If this function was not defined within a namespace ("standalone_async" specified above), it would be in the global scope.
-  NAN_METHOD(hello_async) {
+  NAN_METHOD(helloAsync) {
 
     bool louder = false;
 

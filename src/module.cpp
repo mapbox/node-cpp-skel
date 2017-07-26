@@ -13,7 +13,7 @@ static void init(v8::Local<v8::Object> target) {
     Nan::SetMethod(target, "hello", standalone::hello);
     
     // expose hello_async method
-    Nan::SetMethod(target, "helloAsync", standalone_async::hello_async);
+    Nan::SetMethod(target, "helloAsync", standalone_async::helloAsync);
 
     // expose HelloObject class
     object_sync::HelloObject::Init(target);

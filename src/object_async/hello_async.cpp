@@ -167,7 +167,7 @@ namespace object_async {
   };  
 
 
-  NAN_METHOD(HelloObjectAsync::hello_async) {
+  NAN_METHOD(HelloObjectAsync::helloAsync) {
     // "info" comes from the NAN_METHOD macro, which returns differently according to the Node version
     // "What is node::ObjectWrap???" The short version is that node::ObjectWrap and wrapping/unwrapping objects 
     // is the somewhat clumsy way it is possible to bind Node and C++. The main points to remember:
@@ -242,7 +242,7 @@ namespace object_async {
       // This line is attaching the "helloAsync" method to a JavaScript function prototype.
       // "helloAsync" is therefore like a property of the fnTp object 
       // ex: console.log(HelloObjectAsync.helloAsync) --> [Function: helloAsync]
-      SetPrototypeMethod(fnTp, "helloAsync", hello_async);
+      SetPrototypeMethod(fnTp, "helloAsync", helloAsync);
 
       // Create an unique instance of the HelloObject function template,
       // then set this unique instance to the target

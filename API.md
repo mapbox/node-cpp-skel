@@ -6,7 +6,7 @@
     -   [helloAsync](#helloasync)
 -   [HelloObject](#helloobject)
     -   [hello](#hello)
--   [hello_async](#hello_async)
+-   [helloAsync](#helloasync-1)
 -   [hello](#hello-1)
 
 ## HelloObjectAsync
@@ -67,7 +67,7 @@ console.log(x); // => '...initialized an object...hello greg'
 
 Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
-## hello_async
+## helloAsync
 
 This is a standalone function (async) that logs a string.
 
@@ -81,7 +81,7 @@ This is a standalone function (async) that logs a string.
 
 ```javascript
 var module = require('./path/to/lib/index.js');
-module.hello_async({ louder: true }, function(err, result) {
+module.helloAsync({ louder: true }, function(err, result) {
   if (err) throw err;
   console.log(result); // => "...threads are busy async bees...hello world!!!!"
 });
