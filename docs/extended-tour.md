@@ -1,5 +1,5 @@
 # Extended Tour
-Welcome to the extended tour of node-cpp-skel. This documentation is especially handy if you're just starting out with building Node Addon-ons or C++ :tada:
+Welcome to the extended tour of node-cpp-skel. This documentation is especially handy if you're just starting out with building [Node Addon-ons](https://github.com/mapbox/cpp/blob/master/node-cpp.md) or writing C++ :tada:
 
 ## Table of Contents:
 - [Walkthrough of example code](extended-tour.md#walkthrough-example-code)

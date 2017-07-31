@@ -71,6 +71,7 @@ namespace standalone_async {
       // - You only have access to member variables stored in this worker.
       // - You do not have access to Javascript v8 objects here.
       void Execute() override {
+          // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
           try {
               result_ = do_expensive_work(louder_);
           } catch (const std::exception& e) {
