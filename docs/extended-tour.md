@@ -12,14 +12,17 @@ Welcome to the extended tour of node-cpp-skel. This documentation is especially 
 # Walkthrough example code
 
 This skeleton includes a few examples of how you might design your application, including standalone functions and creating Objects/Classes. Both the synchronous and asynchronous versions of each are included to give an iterative example of what the progression from sync to async looks like. Let's run through reasons why you'd design your code in these ways:
-1. [Standalone function](API.md#hello-1)
-2. [Standalone asynchronous function](../API.md#hello_async)
+1. [Standalone function](../API.md#hello-1)
+2. [Standalone asynchronous function](../API.md#helloasync-1)
 3. [Object/Class](../API.md#helloobject)
 4. [Asynchronous Object/Class](../API.md#helloobjectasync)
 
 
 ### When would you use a standalone function?
-Standalone functions are simple and useful when your code is doing some kind of basic operation. They avoid the need for a class, since creating a class in this situation would add unnecessary complexity. Creating an asynchronous standalone function can be powerful if your code has a specific, yet expensive operation to do and would benefit from the use of multiple threads at one time to do that expensive work.
+Standalone functions are simple and useful when your code is doing some kind of basic operation. They avoid the need for a class, since creating a class in this situation would add unnecessary complexity. Example:
+  - [vtinfo](https://github.com/mapbox/vtinfo/blob/master/src/vtinfo.cpp): A synchronous standalone function that is simply getting info about a single vector tile buffer.
+
+Creating an asynchronous standalone function can be powerful if your code has a specific, yet expensive operation to do and would benefit from the use of multiple threads at one time to do that expensive work. 
 
 ### When would you use an object/class?
 Create an object/class when you need to do some kind of data preprocessing before going into the thread pool. It's best to write your code so that the preprocessing happens _once_ as a separate operation, then continues through to the thread pool after the preprocessing is finished and the object is ready. Examples:
@@ -63,7 +66,7 @@ Learn more about node-pre-gyp [here](https://github.com/mapbox/node-pre-gyp)
 
 node-gyp is a javascript command line tool used in this project as a [front end](https://github.com/mapbox/cpp/blob/master/glossary.md#front-end) to [gyp](#gyp).
 
-node-gyp is bundled inside [npm](#npm) and does not need to be installed separately. Although, if installed in [package.json](./package.json), that version will be used by [node-pre-gyp](#node-pre-gyp).
+node-gyp is bundled inside [npm](#npm) and does not need to be installed separately. Although, if installed in [package.json](../package.json), that version will be used by [node-pre-gyp](#node-pre-gyp).
 
 Learn more about node-gyp [here](https://github.com/nodejs/node-gyp)
 
@@ -96,15 +99,15 @@ The command line program able to link C++ source code, in this case also `clang+
 
 Files you will find inside this repo and their purpose. For more info look inside each file for detailed comments.
 
-- [Makefile](./Makefile) - entry point to building from source. This is invoked when you type `make` in the root directory. By default the `default` target is run which maps to the `release` target. See the comments inside the Makefile for more detail.
-- [binding.gyp](./binding.gyp) - JSON configuration file for [node-gyp](#node-gyp). Must be named `binding.gyp` and present in the root directory so that `npm` detects it. Will be passed to [gyp](#gyp) by [node-gyp](#node-gyp). Because [gyp](#gyp) is python and has less strict JSON parsing rules, code comments with `#` are allowed (this would not be the case if parsed with node.js).
+- [Makefile](../Makefile) - entry point to building from source. This is invoked when you type `make` in the root directory. By default the `default` target is run which maps to the `release` target. See the comments inside the Makefile for more detail.
+- [binding.gyp](../binding.gyp) - JSON configuration file for [node-gyp](#node-gyp). Must be named `binding.gyp` and present in the root directory so that `npm` detects it. Will be passed to [gyp](#gyp) by [node-gyp](#node-gyp). Because [gyp](#gyp) is python and has less strict JSON parsing rules, code comments with `#` are allowed (this would not be the case if parsed with node.js).
 - [common.gypi](../common.gypi) - "gypi" stands for gyp include file. This is referenced by the [binding.gyp](../binding.gyp)
 - [package.json](../package.json) - configuration file for npm. But it also contains a custom `binary` object that is the configuration for [node-pre-gyp](#node-pre-gyp).
 - [lib/index.js](../lib/index.js) - entry point for the javascript module. Referenced in the `main` property in the [package.json](../package.json). This is the file that is run when the module is loaded by `require` from another module.
 - [scripts/setup.sh](../scripts/setup.sh) - script used to 1) install [Mason](https://github.com/mapbox/cpp/blob/master/glossary.md#mason) and [clang++](https://github.com/mapbox/cpp/blob/master/glossary.md#clang-1) and 2) create a `local.env` that can be sourced in `bash` in order to set up [Mason](https://github.com/mapbox/cpp/blob/master/glossary.md#mason) and [clang++](https://github.com/mapbox/cpp/blob/master/glossary.md#clang-1) on your PATH.
 - [scripts/install_deps.sh](../scripts/install_deps.sh) - script that invokes [Mason](https://github.com/mapbox/cpp/blob/master/glossary.md#mason) to install mason packages
 - [scripts/publish.sh](../scripts/publish.sh) - script to publish the C++ binary module with [node-pre-gyp](#node-pre-gyp). Designed to be run on [travisci.org](https://travis-ci.org/)
-- [.travis.yml](..travis.yml) - configuration for this module on [travisci.org](https://travis-ci.org/). Used to test the code and publish binaries for various node versions and compiler options.
+- [.travis.yml](../.travis.yml) - configuration for this module on [travisci.org](https://travis-ci.org/). Used to test the code and publish binaries for various node versions and compiler options.
 
 ### Autogenerated files
 
@@ -153,7 +156,7 @@ User of your module runs 'npm install'
  -> npm notices an 'install' target that calls out to node-pre-gyp
   -> node-pre-gyp downloads the C++ binary from remote url (as specified in the node-pre-gyp config in the package.json)
    -> node-pre-gyp places the C++ binary at the ['module_path']('../lib/binding/module.node')
-    -> the index.js reads './lib/binding/module.node'
+    -> the index.js reads '../lib/binding/module.node'
 ```
 
-This binary file `./lib/binding/module.node` is what `require()` points to within Node.js.
+This binary file `../lib/binding/module.node` is what `require()` points to within Node.js.
