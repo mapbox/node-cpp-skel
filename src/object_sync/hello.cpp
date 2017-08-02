@@ -74,7 +74,6 @@ namespace object_sync {
     // Note: a HandleScope is automatically included inside NAN_METHOD. See the docs at NAN that say:
     // 'Note that an implicit HandleScope is created for you on JavaScript-accessible methods so you do not need to insert one yourself.'
     // at https://github.com/nodejs/nan/blob/2dfc5c2d19c8066903a19ced6a72c06d2c825dec/doc/scopes.md#nanhandlescope
-    // .....is this comment still relevant? Or does it belong below in Init where the Handlescope is created?
 
     // "What is node::ObjectWrap???" The short version is that node::ObjectWrap and wrapping/unwrapping objects 
     // is the somewhat clumsy way it is possible to bind Node and C++. The main points to remember:

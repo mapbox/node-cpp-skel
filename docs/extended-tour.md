@@ -20,9 +20,9 @@ This skeleton includes a few examples of how you might design your application, 
 
 
 ### When would you use a standalone function?
-A standalone function is a function that exists at the top level of the module scope rather than as a member of an object that is instantiated. So if your module is `wonderful`, a standalone function would be called like `wonderful.callme()`. A standalone function makes sense when the only data needed by the function can be easily passed as arguments. When it is not easy or clean to pass data as arguments then you should consider encapsulation, for example, exposing a function as a member of an object.
+A standalone function is a function that exists at the top level of the module scope rather than as a member of an object that is instantiated. So if your module is `wonderful`, a standalone function would be called like `wonderful.callme()`. 
 
-One of the benefits of creating a standalone function is that it can help [separate concerns](https://en.wikipedia.org/wiki/Separation_of_concerns). This is mainly a stylistic design decision.
+A standalone function makes sense when the only data needed by the function can be easily passed as arguments. When it is not easy or clean to pass data as arguments then you should consider encapsulation, for example, exposing a function as a member of an object. One of the benefits of creating a standalone function is that it can help [separate concerns](https://en.wikipedia.org/wiki/Separation_of_concerns), which is mainly a stylistic design decision.
 
 Example:
   - [vtinfo](https://github.com/mapbox/vtinfo/blob/master/src/vtinfo.cpp): A synchronous standalone function that is simply getting info about a single vector tile buffer.
@@ -35,7 +35,7 @@ Create an object/class when you need to do some kind of data preprocessing befor
 
 Objects/Classes are useful when you start doing more complex operations and need to consider performance more heavily, when performance constraints start to matter. Use classes to compute the value of something once, rather than every time you call a function.
 
-One step further is using an asynchronous object or class, which enables you to pass data into the threadpool. The aim is to process data in the threadpool in the most efficient way possible. ["Efficiency"](https://github.com/mapbox/cpp/blob/master/glossary.md#efficiency) and high performance are the main goals of the `HelloObjectAsync` example in this skel. The `HelloObjectAsync` example demonstrates high load, when _many_ objects in _many_ threads are being allocated. This scenario is where reducing unnecessary allocations really pays off, and is also why this example uses "move semantics" for even better performance.
+One step further is using an asynchronous object or class, which enables you to pass data into the threadpool. The aim is to process data in the threadpool in the most efficient way possible. [Efficiency](https://github.com/mapbox/cpp/blob/master/glossary.md#efficiency) and high performance are the main goals of the `HelloObjectAsync` example in this skel. The `HelloObjectAsync` example demonstrates high load, when _many_ objects in _many_ threads are being allocated. This scenario is where reducing unnecessary allocations really pays off, and is also why this example uses "move semantics" for even better performance.
 - **Move semantics**: move semantics avoid data being copied (allocating memory), to limit unnecessary memory allocation, and are most useful when working with big data. 
 
 Other thoughts related to move semantics:
