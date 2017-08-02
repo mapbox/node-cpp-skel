@@ -19,7 +19,9 @@ This skeleton includes a few examples of how you might design your application, 
 
 
 ### When would you use a standalone function?
-Standalone functions are simple and useful when your code is doing some kind of basic operation. They avoid the need for a class, since creating a class in this situation would add unnecessary complexity. Example:
+A standalone function is a function that exists at the top level of the module scope rather than as a member of an object that is instantiated. So if your module is `wonderful`, a standalone function would be called like `wonderful.callme()`. A standalone function makes sense when the only data needed by the function can be easily passed as arguments. When it is not easy or clean to pass data as arguments then you should consider encapsulation, an example of which would be exposing a function as a member of an object.
+
+Example:
   - [vtinfo](https://github.com/mapbox/vtinfo/blob/master/src/vtinfo.cpp): A synchronous standalone function that is simply getting info about a single vector tile buffer.
 
 Creating an asynchronous standalone function can be powerful if your code has a specific, yet expensive operation to do and would benefit from the use of multiple threads at one time to do that expensive work. 
