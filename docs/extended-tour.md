@@ -24,7 +24,6 @@ A standalone function is a function that exists at the top level of the module s
 Example:
   - [vtinfo](https://github.com/mapbox/vtinfo/blob/master/src/vtinfo.cpp): A synchronous standalone function that is simply getting info about a single vector tile buffer.
 
-Creating an asynchronous standalone function can be powerful if your code has a specific, yet expensive operation to do and would benefit from the use of multiple threads at one time to do that expensive work. 
 
 ### When would you use an object/class?
 Create an object/class when you need to do some kind of data preprocessing before going into the thread pool. It's best to write your code so that the preprocessing happens _once_ as a separate operation, then continues through to the thread pool after the preprocessing is finished and the object is ready. Examples:
