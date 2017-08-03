@@ -4,7 +4,7 @@ var module = require('../lib/index.js');
 test('success: prints loud busy world', function(t) {
   module.helloAsync({ louder: true }, function(err, result) {
     if (err) throw err;
-    t.equal(result, '...threads are busy async bees...world!!!!');
+    t.equal(result, '...threads are busy async bees...hello world!!!!');
     t.end();
   });
 });
@@ -12,7 +12,7 @@ test('success: prints loud busy world', function(t) {
 test('success: prints regular busy world', function(t) {
   module.helloAsync({ louder: false }, function(err, result) {
     if (err) throw err;
-    t.equal(result, '...threads are busy async bees...world');
+    t.equal(result, '...threads are busy async bees...hello world');
     t.end();
   });
 });

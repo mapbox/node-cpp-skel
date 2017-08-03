@@ -1,7 +1,7 @@
 #pragma once
 #include <nan.h>
-// carrots, ex: <nan.h> --> look for header in global
-// quotes, ex: "hello.hpp" --> look for header in location relative to this file
+// specify #include with carrots, ex: <nan.h> --> look for header in global
+// specify #include with quotes, ex: "hello.hpp" --> look for header in location relative to this file
 
 /*
 

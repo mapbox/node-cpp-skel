@@ -1,13 +1,13 @@
 #include "hello.hpp"
 
 /**
- * This is a standalone function (sync) that logs a string.
+ * This is a synchronous standalone function that logs a string.
  * @name hello
- * @returns {string} "world"
+ * @returns {string}
  * @example
  * var module = require('./path/to/lib/index.js');
  * var check = module.hello();
- * console.log(check); // => "world"
+ * console.log(check); // => "hello world"
  */
 namespace standalone {
 // If this was not defined within a namespace, it would be in the global scope. 

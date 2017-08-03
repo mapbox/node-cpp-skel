@@ -2,22 +2,56 @@
 
 ### Table of Contents
 
+-   [HelloObjectAsync](#helloobjectasync)
+    -   [helloAsync](#helloasync)
 -   [HelloObject](#helloobject)
     -   [hello](#hello)
--   [hello_async](#hello_async)
+-   [helloAsync](#helloasync-1)
 -   [hello](#hello-1)
 
-## HelloObject
+## HelloObjectAsync
 
-Main class, called HelloObject
+Asynchronous class, called HelloObjectAsync
 
 **Examples**
 
 ```javascript
 var module = require('index.js');
-var Obj1 = new module.HelloObject();
-         OR
-var Obj2 = new module.HelloObject('greg');
+var Obj = new module.HelloObjectAsync('greg');
+```
+
+### helloAsync
+
+Say hello while doing expensive work in threads
+
+**Parameters**
+
+-   `args` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** different ways to alter the string
+    -   `args.louder` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** adds exclamation points to the string
+-   `callback` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** from whence the hello comes, returns a string
+
+**Examples**
+
+```javascript
+var module = require('index.js');
+var Obj = new module.HelloObjectAsync('greg');
+Obj.helloAsync({ louder: true }, function(err, result) {
+  if (err) throw err;
+  console.log(result); // => '...threads are busy async bees...hello greg!!!'
+});
+```
+
+Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+
+## HelloObject
+
+Synchronous class, called HelloObject
+
+**Examples**
+
+```javascript
+var module = require('index.js');
+var Obj = new module.HelloObject('greg');
 ```
 
 ### hello
@@ -27,15 +61,15 @@ Say hello
 **Examples**
 
 ```javascript
-var x = Obj2.hello();
+var x = Obj.hello();
 console.log(x); // => '...initialized an object...hello greg'
 ```
 
 Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
-## hello_async
+## helloAsync
 
-This is a standalone function (async) that logs a string.
+This is an asynchronous standalone function that logs a string.
 
 **Parameters**
 
@@ -47,24 +81,24 @@ This is a standalone function (async) that logs a string.
 
 ```javascript
 var module = require('./path/to/lib/index.js');
-module.hello_async({ louder: true }, function(err, result) {
+module.helloAsync({ louder: true }, function(err, result) {
   if (err) throw err;
   console.log(result); // => "...threads are busy async bees...hello world!!!!"
 });
 ```
 
-Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** an ever-so-slightly customizable string
+Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 ## hello
 
-This is a standalone function (sync) that logs a string.
+This is a synchronous standalone function that logs a string.
 
 **Examples**
 
 ```javascript
 var module = require('./path/to/lib/index.js');
 var check = module.hello();
-console.log(check); // => "world"
+console.log(check); // => "hello world"
 ```
 
-Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** "world"
+Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 

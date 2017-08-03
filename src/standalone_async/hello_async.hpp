@@ -25,6 +25,6 @@ namespace standalone_async {
 
 	// hello, custom sync method tied to module.cpp
 	// method's logic lives in hello.cpp
-	NAN_METHOD(hello_async);
+	NAN_METHOD(helloAsync);
 
 }

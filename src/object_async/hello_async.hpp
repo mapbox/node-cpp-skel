@@ -18,9 +18,9 @@ namespace object_async {
             static NAN_METHOD(New);
             static Nan::Persistent<v8::Function> &create_once();
 
-            // hello_async, custom async method tied to Init of this class
+            // helloAsync, custom async method tied to Init of this class
             // method's logic lives in ./hello.cpp
-            static NAN_METHOD(hello_async);
+            static NAN_METHOD(helloAsync);
 
             // C++ Constructor
             // Passing the arg by rvalue reference (&&)

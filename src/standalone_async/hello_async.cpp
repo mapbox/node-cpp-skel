@@ -7,23 +7,24 @@
 #include <map>
 
 /**
- * This is a standalone function (async) that logs a string.
- * @name hello_async
+ * This is an asynchronous standalone function that logs a string.
+ * @name helloAsync
  * @param {Object} args - different ways to alter the string
  * @param {boolean} args.louder - adds exclamation points to the string
  * @param {Function} callback - from whence the hello comes, returns a string
- * @returns {string} an ever-so-slightly customizable string
+ * @returns {string}
  * @example
  * var module = require('./path/to/lib/index.js');
- * module.hello_async({ louder: true }, function(err, result) {
+ * module.helloAsync({ louder: true }, function(err, result) {
  *   if (err) throw err;
  *   console.log(result); // => "...threads are busy async bees...hello world!!!!"
  * });
  */
-namespace standalone_async {
+
 // If this was not defined within a namespace, it would be in the global scope. 
 // Namespaces are used because C++ has no notion of scoped modules, so all of the code you write in any file could conflict with other code.
 // Namespaces are generally a great idea in C++ because it helps scale and clearly organize your application. 
+namespace standalone_async {
 
   // Expensive allocation of std::map, querying, and string comparison,
   // therefore threads are busy
@@ -46,7 +47,7 @@ namespace standalone_async {
           }
       }  
 
-      std::string result = "...threads are busy async bees...world";
+      std::string result = "...threads are busy async bees...hello world";
  
       if (louder)
       {
@@ -70,6 +71,7 @@ namespace standalone_async {
       // - You only have access to member variables stored in this worker.
       // - You do not have access to Javascript v8 objects here.
       void Execute() override {
+          // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
           try {
               result_ = do_expensive_work(louder_);
           } catch (const std::exception& e) {
@@ -95,9 +97,9 @@ namespace standalone_async {
       const bool louder_;
   };  
 
-  // hello_async is a "standalone function" because it's not a class.
-  // If this function was not defined within a namespace ("standalone_async"), it would be in the global scope.
-  NAN_METHOD(hello_async) {
+  // helloAsync is a "standalone function" because it's not a class.
+  // If this function was not defined within a namespace ("standalone_async" specified above), it would be in the global scope.
+  NAN_METHOD(helloAsync) {
 
     bool louder = false;
 
@@ -128,7 +130,7 @@ namespace standalone_async {
         louder = louder_val->BooleanValue();
     }
 
-    // Create a worker instance and queues it to run asynchronously invoking the callback when done.
+    // Creates a worker instance and queues it to run asynchronously, invoking the callback when done.
     // - Nan::AsyncWorker takes a pointer to a Nan::Callback and deletes the pointer automatically.
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes the pointer automatically.
     auto* worker = new AsyncHelloWorker{louder, new Nan::Callback{callback}};
