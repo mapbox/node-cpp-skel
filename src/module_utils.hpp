@@ -18,8 +18,11 @@ namespace utils {
   * 
   */
   inline void CallbackError(std::string message, v8::Local<v8::Function> callback) {
-  	v8::Local<v8::Value> argv[1] = { Nan::Error(message.c_str()) };
-  	Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
+    v8::Local<v8::Value> err = Nan::Error(message.c_str());
+    v8::Local<v8::Object> err_obj = err->ToObject();
+    err_obj->Set(Nan::New("code").ToLocalChecked(),Nan::New("EHELLOERROR").ToLocalChecked());
+    v8::Local<v8::Value> argv[1] = { err };
+    Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
   }
 
 }
