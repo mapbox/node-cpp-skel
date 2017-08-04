@@ -27,10 +27,10 @@ namespace object_sync {
   // Custom constructor, assigns custom name passed in from Javascript world.
   // This constructor uses member init list via the semicolon, aka "direct initialization" 
   // which is more efficient than using assignment operators.
-  HelloObject::HelloObject(std::string name) : 
-    name_(name) {}
+  HelloObject::HelloObject(std::string && name) : 
+    name_(std::move(name)) {}
 
-  // Triggered from Javascript world when calling "new HelloObjectAsync(name)"
+  // Triggered from Javascript world when calling "new HelloObject(name)"
   NAN_METHOD(HelloObject::New) {
     if (info.IsConstructCall())
     {
@@ -54,7 +54,13 @@ namespace object_sync {
                 // Also, providing the length allows the std::string constructor to avoid calculating the length internally 
                 // and should be faster since it skips an operation. 
                 std::string name(*utf8_value, len);
-                auto *const self = new HelloObject(name);
+                
+                // This line is where HelloObject takes ownership of "name" with the use of move semantics.
+                // Then all later usage of "name" are passed by reference (const&), but the acutal home or address in memory 
+                // will always be owned by this instance of HelloObject. Generally important to know what has ownership of an object. 
+                // When a object/value is a member of a class (like "name"), we know the class has full control of the scope of the object/value. 
+                // This avoids the scenario of an object/value being destroyed or becoming out of scope.
+                auto *const self = new HelloObject(std::move(name));
                 self->Wrap(info.This()); // Connects C++ object to Javascript object (this)
               }
               else

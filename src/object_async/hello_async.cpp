@@ -69,7 +69,7 @@ namespace object_async {
                 std::string name(*utf8_value, len);
                 
                 // This line is where HelloObjectAsync takes ownership of "name" with the use of move semantics.
-                // Then all later usage of "name" are passed by reference (const&), but the acutal home or address in memory 
+                // Then all later usage of "name" are passed by reference (const&), but the actual home or address in memory 
                 // will always be owned by this instance of HelloObjectAsync. Generally important to know what has ownership of an object. 
                 // When a object/value is a member of a class (like "name"), we know the class (HelloObjectAsync) has full control of the scope of the object/value. 
                 // This avoids the scenario of an object/value being destroyed or becoming out of scope.
