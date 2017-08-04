@@ -23,9 +23,8 @@ namespace object_sync {
             static NAN_METHOD(hello);
 
             // C++ Constructor
-            // This includes a Default Argument
-            // If a parameter value is passed in, it takes priority over the default arg
-            HelloObject(std::string name="world");
+            // Passing the arg by rvalue reference (&&)
+            HelloObject(std::string&& name);
 
         private:
             // member variable

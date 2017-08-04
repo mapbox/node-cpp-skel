@@ -8,6 +8,16 @@ test('success: prints expected string', function(t) {
   t.end();
 });
 
+test('error: throws when passing empty string', function(t) {
+  try {
+    var H = new module.HelloObject('');
+  } catch(err) {
+    t.ok(err, 'expected error');
+    t.equal(err.message, 'arg must be a non-empty string', 'expected error message')
+    t.end();
+  }
+});
+
 test('error: throws when missing "new"', function(t) {
   try {
     var H = module.HelloObject();
@@ -18,7 +28,7 @@ test('error: throws when missing "new"', function(t) {
   }
 });
 
-test('fail: handles non-string arg within constructor', function(t) {
+test('error: handles non-string arg within constructor', function(t) {
   try {
     var H = new module.HelloObject(24);
   } catch(err) {
@@ -28,7 +38,7 @@ test('fail: handles non-string arg within constructor', function(t) {
   }
 });
 
-test('fail: handles missing arg', function(t) {
+test('error: handles missing arg', function(t) {
   try {
     var H = new module.HelloObject();
   } catch (err) {

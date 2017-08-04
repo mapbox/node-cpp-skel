@@ -17,7 +17,7 @@ test('success: prints regular busy world', function(t) {
   });
 });
 
-test('fail: handles invalid louder value', function(t) {
+test('error: handles invalid louder value', function(t) {
   module.helloAsync({ louder: 'oops' }, function(err, result) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('option \'louder\' must be a boolean') > -1, 'expected error message');
@@ -25,7 +25,7 @@ test('fail: handles invalid louder value', function(t) {
   });
 });
 
-test('fail: handles invalid options value', function(t) {
+test('error: handles invalid options value', function(t) {
   module.helloAsync('oops', function(err, result) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('first arg \'options\' must be an object') > -1, 'expected error message');
@@ -33,7 +33,7 @@ test('fail: handles invalid options value', function(t) {
   });
 });
 
-test('fail: handles missing callback', function(t) {
+test('error: handles missing callback', function(t) {
   try {
     module.helloAsync({ louder: 'oops' }, {});
   } catch (err) {

@@ -19,6 +19,16 @@ test('success: prints loud busy world', function(t) {
   });
 });
 
+test('error: throws when passing empty string', function(t) {
+  try {
+    var H = new module.HelloObjectAsync('');
+  } catch(err) {
+    t.ok(err, 'expected error');
+    t.equal(err.message, 'arg must be a non-empty string', 'expected error message')
+    t.end();
+  }
+});
+
 test('error: throws when missing "new"', function(t) {
   try {
     var H = module.HelloObjectAsync('world');
@@ -29,7 +39,7 @@ test('error: throws when missing "new"', function(t) {
   }
 });
 
-test('fail: handles non-string arg within constructor', function(t) {
+test('error: handles non-string arg within constructor', function(t) {
   try {
     var H = new module.HelloObjectAsync(24);
   } catch(err) {
@@ -39,7 +49,7 @@ test('fail: handles non-string arg within constructor', function(t) {
   }
 });
 
-test('fail: handles invalid louder value', function(t) {
+test('error: handles invalid louder value', function(t) {
   var H = new module.HelloObjectAsync('world');
   H.helloAsync({ louder: 'oops' }, function(err, result) {
     t.ok(err, 'expected error');
@@ -48,7 +58,7 @@ test('fail: handles invalid louder value', function(t) {
   });
 });
 
-test('fail: handles invalid options value', function(t) {
+test('error: handles invalid options value', function(t) {
   var H = new module.HelloObjectAsync('world');
   H.helloAsync('oops', function(err, result) {
     t.ok(err, 'expected error');
@@ -57,7 +67,7 @@ test('fail: handles invalid options value', function(t) {
   });
 });
 
-test('fail: handles missing callback', function(t) {
+test('error: handles missing callback', function(t) {
   var H = new module.HelloObjectAsync('world');
   try {
     H.helloAsync({ louder: false}, {});
@@ -68,7 +78,7 @@ test('fail: handles missing callback', function(t) {
   }
 });
 
-test('fail: handles missing arg', function(t) {
+test('error: handles missing arg', function(t) {
   try {
     var H = new module.HelloObjectAsync();
   } catch (err) {

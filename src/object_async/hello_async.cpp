@@ -52,15 +52,24 @@ namespace object_async {
             if (info.Length() >= 1) {
               if (info[0]->IsString()) 
               {
+                // Don't want to risk passing a null string around, which might create unpredictable behavior.
+                Nan::Utf8String utf8_value(info[0]);
+                int len = utf8_value.length();
+                if (len <= 0) {
+                   return Nan::ThrowTypeError("arg must be a non-empty string");
+                }
+
                 // This line converts a V8 string to a C++ std::string.
                 // In the background, it triggers memory allocation (stack allocating, but std:string is also dynamically allocating memory in the heap)
                 // We want to avoid heap allocation to ensure more performant code.
                 // See https://github.com/mapbox/cpp/blob/master/glossary.md#stack-allocation
                 // and https://stackoverflow.com/questions/79923/what-and-where-are-the-stack-and-heap/80113#80113
-                std::string name = *v8::String::Utf8Value(info[0]->ToString());
+                // Also, providing the length allows the std::string constructor to avoid calculating the length internally 
+                // and should be faster since it skips an operation. 
+                std::string name(*utf8_value, len);
                 
                 // This line is where HelloObjectAsync takes ownership of "name" with the use of move semantics.
-                // Then all later usage of "name" are passed by reference (const&), but the acutal home or address in memory 
+                // Then all later usage of "name" are passed by reference (const&), but the actual home or address in memory 
                 // will always be owned by this instance of HelloObjectAsync. Generally important to know what has ownership of an object. 
                 // When a object/value is a member of a class (like "name"), we know the class (HelloObjectAsync) has full control of the scope of the object/value. 
                 // This avoids the scenario of an object/value being destroyed or becoming out of scope.
