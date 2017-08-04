@@ -20,9 +20,12 @@ source local.env
 # Add clang-format as a dep
 mason install clang-format ${MASON_LLVM_RELEASE}
 mason link clang-format ${MASON_LLVM_RELEASE}
+
+# Run clang-format on all cpp and hpp files in the /src directory
 find src/ -type f -name '*.hpp' -o -name '*.cpp' \
  | xargs -I{} clang-format -i -style=file {}
 
+# Print list of modified files
 dirty=$(git ls-files --modified)
 
 if [[ $dirty ]]; then
