@@ -21,6 +21,16 @@ test('error: handles invalid louder value', function(t) {
   module.helloAsync({ louder: 'oops' }, function(err, result) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('option \'louder\' must be a boolean') > -1, 'expected error message');
+    t.equals(err.code, 'EHELLOERROR', 'expected custom error code');
+    t.end();
+  });
+});
+
+test('fail: handles throwing error inside threadpool', function(t) {
+  module.helloAsync({ throw_in_threadpool: true }, function(err, result) {
+    t.ok(err, 'expected error');
+    t.equals(err.message,'error thrown inside threadpool','expected error message');
+    t.equals(err.code, 'EHELLOERROR', 'expected custom error code');
     t.end();
   });
 });

@@ -28,7 +28,11 @@ namespace standalone_async {
 
   // Expensive allocation of std::map, querying, and string comparison,
   // therefore threads are busy
-  std::string do_expensive_work(bool louder) {  
+  std::string do_expensive_work(bool louder, bool throw_in_threadpool) {
+
+      if (throw_in_threadpool) {
+          throw std::runtime_error("error thrown inside threadpool");
+      }
 
       std::map<std::size_t,std::string> container;  
       std::size_t work_to_do=100000;
@@ -64,8 +68,8 @@ namespace standalone_async {
   struct AsyncHelloWorker : Nan::AsyncWorker {
       using Base = Nan::AsyncWorker;  
 
-      AsyncHelloWorker(bool louder, Nan::Callback* callback)
-          : Base(callback), result_{""}, louder_{louder} { }  
+      AsyncHelloWorker(bool louder, bool throw_in_threadpool, Nan::Callback* callback)
+          : Base(callback), result_{""}, throw_in_threadpool_(throw_in_threadpool), louder_{louder} { }
 
       // The Execute() function is getting called when the worker starts to run.
       // - You only have access to member variables stored in this worker.
@@ -73,11 +77,20 @@ namespace standalone_async {
       void Execute() override {
           // The try/catch is critical here: if code was added that could throw an unhandled error INSIDE the threadpool, it would be disasterous
           try {
-              result_ = do_expensive_work(louder_);
+              result_ = do_expensive_work(louder_,throw_in_threadpool_);
           } catch (const std::exception& e) {
               SetErrorMessage(e.what());
           }
       }  
+
+      void HandleErrorCallback() override {
+        Nan::HandleScope scope;
+        v8::Local<v8::Value> err = Nan::Error(ErrorMessage());
+        v8::Local<v8::Object> err_obj = err->ToObject();
+        err_obj->Set(Nan::New("code").ToLocalChecked(),Nan::New("EHELLOERROR").ToLocalChecked());
+        v8::Local<v8::Value> argv[1] = { err };
+        callback->Call(1, argv);
+      }
 
       // The HandleOKCallback() is getting called when Execute() successfully completed.
       // - In case Execute() invoked SetErrorMessage("") this function is not getting called.
@@ -94,6 +107,7 @@ namespace standalone_async {
       }  
 
       std::string result_;
+      const bool throw_in_threadpool_;
       const bool louder_;
   };  
 
@@ -102,6 +116,7 @@ namespace standalone_async {
   NAN_METHOD(helloAsync) {
 
     bool louder = false;
+    bool throw_in_threadpool = false;
 
     // Check second argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors instead of throwing.
@@ -130,10 +145,20 @@ namespace standalone_async {
         louder = louder_val->BooleanValue();
     }
 
+    // Check options object for the "louder" property, which should be a boolean value
+    if (options->Has(Nan::New("throw_in_threadpool").ToLocalChecked()))
+    {
+        v8::Local<v8::Value> throw_val = options->Get(Nan::New("throw_in_threadpool").ToLocalChecked());
+        if (!throw_val->IsBoolean())
+        {
+            return utils::CallbackError("option 'throw_in_threadpool' must be a boolean", callback);
+        }
+        throw_in_threadpool = throw_val->BooleanValue();
+    }
     // Creates a worker instance and queues it to run asynchronously, invoking the callback when done.
     // - Nan::AsyncWorker takes a pointer to a Nan::Callback and deletes the pointer automatically.
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes the pointer automatically.
-    auto* worker = new AsyncHelloWorker{louder, new Nan::Callback{callback}};
+    auto* worker = new AsyncHelloWorker{louder, throw_in_threadpool, new Nan::Callback{callback}};
     Nan::AsyncQueueWorker(worker);
   
   }
