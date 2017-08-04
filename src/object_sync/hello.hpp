@@ -4,12 +4,10 @@
 namespace object_sync {
 
 /**
- * HelloObject class
- * This is in a header file so we can access it across other .cpp files if
- * necessary
- * Also, this class adheres to the rule of Zero because we define no custom
- * destructor or copy constructor
- */
+     * HelloObject class
+     * This is in a header file so we can access it across other .cpp files if necessary
+     * Also, this class adheres to the rule of Zero because we define no custom destructor or copy constructor
+     */
 class HelloObject : public Nan::ObjectWrap
 {
 
@@ -26,9 +24,8 @@ class HelloObject : public Nan::ObjectWrap
     static NAN_METHOD(hello);
 
     // C++ Constructor
-    // This includes a Default Argument
-    // If a parameter value is passed in, it takes priority over the default arg
-    HelloObject(std::string name = "world");
+    // Passing the arg by rvalue reference (&&)
+    HelloObject(std::string&& name);
 
   private:
     // member variable
