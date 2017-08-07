@@ -115,8 +115,11 @@ matrix:
         - ./codecov -x "llvm-cov gcov" -Z
     # Clang format build
     - os: linux
+      language: generic
       env: BUILDTYPE=debug
       node_js: 4
-      # Overrides `script` to run clang-format
-      before_script:
+      # Overrides `install` to avoid initializing clang toolchain
+      install: 
         - ./scripts/format.sh
+      # Overrides `script`, no need to run tests
+      before_script:
