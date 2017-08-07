@@ -113,3 +113,10 @@ matrix:
         - curl -S -f https://codecov.io/bash -o codecov
         - chmod +x codecov
         - ./codecov -x "llvm-cov gcov" -Z
+    # Clang format build
+    - os: linux
+      env: BUILDTYPE=debug
+      node_js: 4
+      # Overrides `script` to run clang-format
+      before_script:
+        - ./scripts/format.sh
