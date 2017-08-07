@@ -26,7 +26,7 @@ find src/ -type f -name '*.hpp' -o -name '*.cpp' \
  | xargs -I{} clang-format -i -style=file {}
 
 # Print list of modified files
-dirty=$(git ls-files --modified)
+dirty=$(git ls-files --modified src/)
 
 if [[ $dirty ]]; then
     echo "The following files have been modified:"
