@@ -182,7 +182,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker
     // - Finally, you call the user's callback with your results
     void HandleOKCallback() override
     {
-        Nan::HandleScope scope;
+        //Nan::HandleScope scope;
 
         const auto argc = 2u;
         v8::Local<v8::Value> argv[argc] = {
@@ -275,7 +275,7 @@ void HelloObjectAsync::Init(v8::Local<v8::Object> target)
     // Fun trivia: forgetting a handlescope is one of the most common causes of
     // memory leaks in node.js core
     // https://www.joyent.com/blog/walmart-node-js-memory-leak
-    Nan::HandleScope scope;
+    //Nan::HandleScope scope;
 
     // This is saying:
     // "Node, please allocate a new Javascript string object
