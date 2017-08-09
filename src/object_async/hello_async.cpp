@@ -125,11 +125,10 @@ std::string do_expensive_work(bool louder, std::string const& name)
     {
         std::string const& item = container[i];
 
-        // double free
+
+        // memory leak
         char *x = (char*)malloc(10 * sizeof(char*));
         x += 1;
-        free(x);
-        free(x);
 
         if (item != std::to_string(i))
         {
