@@ -85,7 +85,7 @@ NAN_METHOD(HelloObjectAsync::New)
                     * Also, we're using "new" here to create a custom C++ class, based on node::ObjectWrap since this is a node addon.
                     * In this case, "new" allocates a C++ object (dynamically on the heap) and then passes ownership (control of when it gets deleted) 
                     * to V8, the javascript engine which decides when to clean up the object based on how its’ garbage collector works.
-                    * In other words, the memory of HelloObjectAsync is expliclty deleted via NodeObjectWrap when it's gone out of scope 
+                    * In other words, the memory of HelloObjectAsync is expliclty deleted via node::ObjectWrap when it's gone out of scope 
                     * (the object needs to stay alive until the V8 garbage collector has decided it's done):
                     * https://github.com/nodejs/node/blob/7ec28a0a506efe9d1c03240fd028bea4a3d350da/src/node_object_wrap.h#L124
                     **/
