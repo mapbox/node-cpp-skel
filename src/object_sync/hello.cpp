@@ -50,20 +50,31 @@ NAN_METHOD(HelloObject::New)
                         return Nan::ThrowTypeError("arg must be a non-empty string");
                     }
 
-                    // This line converts a V8 string to a C++ std::string.
-                    // In the background, it triggers memory allocation (stack allocating, but std:string is also dynamically allocating memory in the heap)
-                    // We want to avoid heap allocation to ensure more performant code.
-                    // See https://github.com/mapbox/cpp/blob/master/glossary.md#stack-allocation
-                    // and https://stackoverflow.com/questions/79923/what-and-where-are-the-stack-and-heap/80113#80113
-                    // Also, providing the length allows the std::string constructor to avoid calculating the length internally
-                    // and should be faster since it skips an operation.
+                    /**
+                     * This line converts a V8 string to a C++ std::string.
+                     * In the background, it triggers memory allocation (stack allocating, but std:string is also dynamically allocating memory in the heap)
+                     * We want to avoid heap allocation to ensure more performant code.
+                     * See https://github.com/mapbox/cpp/blob/master/glossary.md#stack-allocation
+                     * and https://stackoverflow.com/questions/79923/what-and-where-are-the-stack-and-heap/80113#80113
+                     * Also, providing the length allows the std::string constructor to avoid calculating the length internally
+                     * and should be faster since it skips an operation.
+                     */
                     std::string name(*utf8_value, len);
 
-                    // This line is where HelloObject takes ownership of "name" with the use of move semantics.
-                    // Then all later usage of "name" are passed by reference (const&), but the acutal home or address in memory
-                    // will always be owned by this instance of HelloObject. Generally important to know what has ownership of an object.
-                    // When a object/value is a member of a class (like "name"), we know the class has full control of the scope of the object/value.
-                    // This avoids the scenario of an object/value being destroyed or becoming out of scope.
+                    /** 
+                     * This line is where HelloObjectAsync takes ownership of "name" with the use of move semantics.
+                     * Then all later usage of "name" are passed by reference (const&), but the actual home or address in memory
+                     * will always be owned by this instance of HelloObjectAsync. Generally important to know what has ownership of an object.
+                     * When a object/value is a member of a class (like "name"), we know the class (HelloObjectAsync) has full control of the scope of the object/value.
+                     * This avoids the scenario of "name" being destroyed or becoming out of scope.
+                     * 
+                     * Also, we're using "new" here to create a custom C++ class, based on node::ObjectWrap since this is a node addon.
+                     * In this case, "new" allocates a C++ object (dynamically on the heap) and then passes ownership (control of when it gets deleted) 
+                     * to V8, the javascript engine which decides when to clean up the object based on how its’ garbage collector works.
+                     * In other words, the memory of HelloObjectAsync is expliclty deleted via NodeObjectWrap when it's gone out of scope 
+                     * (the object needs to stay alive until the V8 garbage collector has decided it's done):
+                     * https://github.com/nodejs/node/blob/7ec28a0a506efe9d1c03240fd028bea4a3d350da/src/node_object_wrap.h#L124
+                     */
                     auto* const self = new HelloObject(std::move(name));
                     self->Wrap(info.This()); // Connects C++ object to Javascript object (this)
                 }
@@ -96,22 +107,23 @@ NAN_METHOD(HelloObject::New)
 // NAN_METHOD is applicable to methods you want to expose to JS world
 NAN_METHOD(HelloObject::hello)
 {
+    /**
+     * Note: a HandleScope is automatically included inside NAN_METHOD. See the
+     * docs at NAN that say:
+     * 'Note that an implicit HandleScope is created for you on
+     * JavaScript-accessible methods so you do not need to insert one yourself.'
+     * at
+     * https://github.com/nodejs/nan/blob/2dfc5c2d19c8066903a19ced6a72c06d2c825dec/doc/scopes.md#nanhandlescope
 
-    // Note: a HandleScope is automatically included inside NAN_METHOD. See the
-    // docs at NAN that say:
-    // 'Note that an implicit HandleScope is created for you on
-    // JavaScript-accessible methods so you do not need to insert one yourself.'
-    // at
-    // https://github.com/nodejs/nan/blob/2dfc5c2d19c8066903a19ced6a72c06d2c825dec/doc/scopes.md#nanhandlescope
-
-    // "What is node::ObjectWrap???" The short version is that node::ObjectWrap
-    // and wrapping/unwrapping objects
-    // is the somewhat clumsy way it is possible to bind Node and C++. The main
-    // points to remember:
-    // - To access a class instance inside a C++ static method, you must unwrap
-    // the object.
-    // - The C++ methods must be static to make them available at startup across
-    // the language boundary (JS <-> C++).
+     * "What is node::ObjectWrap???" The short version is that node::ObjectWrap
+     * and wrapping/unwrapping objects
+     * is the somewhat clumsy way it is possible to bind Node and C++. The main
+     * points to remember:
+     *   - To access a class instance inside a C++ static method, you must unwrap
+     * the object.
+     *   - The C++ methods must be static to make them available at startup across
+     * the language boundary (JS <-> C++).
+     */
     HelloObject* h = Nan::ObjectWrap::Unwrap<HelloObject>(info.Holder());
 
     // "info" comes from the NAN_METHOD macro, which returns differently
