@@ -13,6 +13,7 @@ This repository itself can be cloned and edited to your needs. The skeleton prep
 
 * **Tests**: created with [Tape](https://github.com/substack/tape) in the `test/` directory. Travis CI file is prepared to build and test your project on every push.
 * **Documentation**: use this README as a template and customize for your own project. Also, this skeleton uses [documentation.js](http://documentation.js.org/) to generate API documentation from JSDOC comments in the `.cpp` files. Docs are located in `API.md`.
+* **[Benchmarking](./docs/benchmarking.md)**: Easily test the performance of your code using the built-in benchmark tests provided in this skeleton.
 * **Build system**: [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) generates binaries with the proper system architecture flags
 * **[Publishing](./docs/publishing-binaries.md)**: Structured as a node module with a `package.json` that can be deployed to NPM's registry.
 * **Learning resources**: Read the detailed inline comments within the example code to learn exactly what is happening behind the scenes. Also, check out the [extended tour](./docs/extended-tour.md) to learn more about Node/C++ Addon development, builds, Xcode, and more details about the configuration of this skeleton.
@@ -69,31 +70,3 @@ make coverage
 ```
 
 For more details about what `make coverage` is doing under the hood see https://github.com/mapbox/cpp#code-coverage
-
-# Benchmarking
-
-This project includes [bench tests](https://github.com/mapbox/node-cpp-skel/tree/master/bench) you can use to experiment with and measure performance. We've included two bench tests for the async examples, demonstrating the affects of concurrency and threads within a process or processes.
-
-For example, you can run:
-
-```
-node bench/hello_async.bench.js --iterations 50 --concurrency 10
-```
-
-This will run a bunch of calls to the module's `helloAsync()` function. You can control two things:
-
-- iterations: number of times to call `helloAsync()`
-- concurrency: max number of threads the test can utilize, by setting `UV_THREADPOOL_SIZE`. When running the bench script, you can see this number of threads reflected in your [Activity Monitor](https://github.com/springmeyer/profiling-guide#activity-monitorapp-on-os-x)/[htop window](https://hisham.hm/htop/). 
-
-Note: These bench tests are not completely "realworld" yet since the code does not do much. Their main benefit is allowing you to adapt them to your custom code and enabling you to monitor the performance of your code.
-
-### Ideal Benchmarks
-
-**Ideally, you want your workers to run your code ~99% of the time.** This reflects a healthy node c++ addon and what you would expect to see when you've picked a good problem to solve with node.
-
-The bench tests and async functions that come with `node-cpp-skel` out of the box demonstrate this behaviour:
-- An async function that is CPU intensive and takes a while to finish (expensive creation and querying of a `std::map` and string comparisons). 
-- Worker threads are busy doing a lot of work, and the main loop is relatively idle. Depending on how many threads (concurrency) you enable, you may see your CPU% sky-rocket and your cores max out. Yeaahhh!!!
-- If you bump up `--iterations` to 500 and profile in Activity Monitor.app, you'll see the main loop is idle as expected since the threads are doing all the work. You'll also see the threads busy doing work in AsyncHelloWorker roughly 99% of the time :tada:
-
-![](https://user-images.githubusercontent.com/1209162/29333300-e7c483e2-81c8-11e7-8253-1beb12173841.png)
