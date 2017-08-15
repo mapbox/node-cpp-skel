@@ -20,10 +20,14 @@
     "nan": "~2.5.1",
     "node-pre-gyp": "~0.6.32"
   },
-  "bundledDependencies":["node-pre-gyp"],
+  "bundledDependencies": [
+    "node-pre-gyp"
+  ],
   "devDependencies": {
     "aws-sdk": "^2.4.7",
-    "tape": "^4.5.1"
+    "tape": "^4.5.1",
+    "d3-queue": "^3.0.1",
+    "minimist": "~1.2.0"
   },
   "binary": {
     "module_name": "module",
