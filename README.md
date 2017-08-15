@@ -70,7 +70,7 @@ make coverage
 
 For more details about what `make coverage` is doing under the hood see https://github.com/mapbox/cpp#code-coverage
 
-# Benchmark Performance
+# Benchmarking
 
 This project includes [bench tests](https://github.com/mapbox/node-cpp-skel/tree/master/bench) you can use to experiment with and measure performance. We've included two bench tests for the async examples, demonstrating the affects of concurrency and threads within a process or processes.
 
@@ -84,6 +84,8 @@ This will run a bunch of calls to the module's `helloAsync()` function. You can 
 
 - iterations: number of times to call `helloAsync()`
 - concurrency: max number of threads the test can utilize, by setting `UV_THREADPOOL_SIZE`. When running the bench script, you can see this number of threads reflected in your [Activity Monitor](https://github.com/springmeyer/profiling-guide#activity-monitorapp-on-os-x)/[htop window](https://hisham.hm/htop/). 
+
+Note: These bench tests are not completely "realworld" yet since the code does not do much. Their main benefit is allowing you to adapt them to your custom code and enabling you to monitor the performance of your code.
 
 ### Ideal Benchmarks
 
