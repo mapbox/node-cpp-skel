@@ -20,7 +20,7 @@ var d3_queue = require('d3-queue');
 var module = require('../lib/index.js');
 
 var H = new module.HelloObjectAsync('park bench');
-var queue = d3_queue.queue(argv.concurrency);
+var queue = d3_queue.queue();
 var runs = 0;
 
 function run(cb) {
@@ -33,11 +33,14 @@ function run(cb) {
     });
 }
 
+// Start monitoring time before async work begins within the defer iterator below.
+// AsyncWorkers will kick off actual work before the defer iterator is finished, 
+// and we want to make sure we capture the time of the work of that initial cycle.
+var time = +(new Date());
+
 for (var i = 0; i < argv.iterations; i++) {
     queue.defer(run);
 }
-
-var time = +(new Date());
 
 queue.awaitAll(function(error) {
   if (error) throw error;
