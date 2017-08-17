@@ -200,7 +200,8 @@ struct AsyncHelloWorker : Nan::AsyncWorker
         v8::Local<v8::Value> argv[argc] = {
             Nan::Null(), Nan::New<v8::String>(result_).ToLocalChecked()};
 
-        callback->Call(argc, argv);
+        // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
+        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
     }
 
     std::string result_;
