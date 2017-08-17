@@ -166,7 +166,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker
 
     using Base = Nan::AsyncWorker;
 
-    AsyncHelloWorker(bool louder, std::string const& name,
+    AsyncHelloWorker(bool louder, const std::string * name,
                      Nan::Callback* callback)
         : Base(callback), result_{""}, louder_{louder}, name_{name} {}
 
@@ -177,7 +177,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker
     {
         try
         {
-            result_ = do_expensive_work(louder_, name_);
+            result_ = do_expensive_work(louder_, *name_);
         }
         catch (const std::exception& e)
         {
@@ -206,9 +206,12 @@ struct AsyncHelloWorker : Nan::AsyncWorker
 
     std::string result_;
     const bool louder_;
-    // We are taking a reference to the name instance passed in from instantiating
-    // HelloObjectAsync above (HelloObjectAsync::New)
-    std::string const& name_;
+    // We use a pointer here to avoid copying the string data.
+    // This works because we know that the original string we are
+    // pointing to will be kept in scope/alive for the time while AsyncHelloWorker
+    // is using it. If we could not guarantee this then we would need to either
+    // copy the string or pass a shared_ptr<std::string>.
+    const std::string * name_;
 };
 
 NAN_METHOD(HelloObjectAsync::helloAsync)
@@ -268,7 +271,7 @@ NAN_METHOD(HelloObjectAsync::helloAsync)
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
     auto* worker =
-        new AsyncHelloWorker{louder, h->name_, new Nan::Callback{callback}};
+        new AsyncHelloWorker{louder, &h->name_, new Nan::Callback{callback}};
     Nan::AsyncQueueWorker(worker);
 }
 
