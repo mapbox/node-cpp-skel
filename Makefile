@@ -24,6 +24,9 @@ coverage:
 tidy:
 	./scripts/clang-tidy.sh
 
+format:
+	./scripts/format.sh
+
 clean:
 	rm -rf lib/binding
 	rm -rf build

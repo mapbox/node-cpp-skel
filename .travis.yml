@@ -123,7 +123,15 @@ matrix:
       env: BUILDTYPE=debug
       node_js: 4
       # Overrides `install` to avoid initializing clang toolchain
-      install: 
-        - ./scripts/format.sh
+      install:
+        # First run the clang-tidy target
+        # This target does not currently return non-zero when problems
+        # are fixed, but rather it fixes automatically. Changed files
+        # will be detected by the format target and will trigger an error
+        - make tidy
+        # Now we run the clang-format script. Any code formatting changes
+        # will trigger the build to fail (idea here is to get us to pay attention
+        # and get in the habit of running these locally before committing)
+        - make format
       # Overrides `script`, no need to run tests
       before_script:
