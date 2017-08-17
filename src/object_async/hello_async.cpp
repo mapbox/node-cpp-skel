@@ -222,7 +222,7 @@ NAN_METHOD(HelloObjectAsync::helloAsync)
     // the object.
     // - The C++ methods must be static to make them available at startup across
     // the language boundary (JS <-> C++).
-    HelloObjectAsync* h =
+    auto* h =
         Nan::ObjectWrap::Unwrap<HelloObjectAsync>(info.Holder());
 
     bool louder = false;
@@ -318,4 +318,4 @@ void HelloObjectAsync::Init(v8::Local<v8::Object> target)
                              // after this code block ends.
     Nan::Set(target, whoami, fn);
 }
-}
+}  // namespace object_async
