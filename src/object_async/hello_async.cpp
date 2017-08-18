@@ -169,10 +169,10 @@ struct AsyncHelloWorker : Nan::AsyncWorker
 
     using Base = Nan::AsyncWorker;
     // Make this class noncopyable
-    AsyncHelloWorker( AsyncHelloWorker const& ) = delete;
-    AsyncHelloWorker& operator=(AsyncHelloWorker const& ) = delete;
+    AsyncHelloWorker(AsyncHelloWorker const&) = delete;
+    AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
 
-    AsyncHelloWorker(bool louder, const std::string * name,
+    AsyncHelloWorker(bool louder, const std::string* name,
                      Nan::Callback* callback)
         : Base(callback), result_{""}, louder_{louder}, name_{name} {}
 
@@ -217,7 +217,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker
     // pointing to will be kept in scope/alive for the time while AsyncHelloWorker
     // is using it. If we could not guarantee this then we would need to either
     // copy the string or pass a shared_ptr<std::string>.
-    const std::string * name_;
+    const std::string* name_;
 };
 
 NAN_METHOD(HelloObjectAsync::helloAsync)
@@ -328,4 +328,4 @@ void HelloObjectAsync::Init(v8::Local<v8::Object> target)
                              // after this code block ends.
     Nan::Set(target, whoami, fn);
 }
-}  // namespace object_async
+} // namespace object_async
