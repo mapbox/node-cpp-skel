@@ -168,6 +168,9 @@ struct AsyncHelloWorker : Nan::AsyncWorker
 {
 
     using Base = Nan::AsyncWorker;
+    // Make this class noncopyable
+    AsyncHelloWorker( AsyncHelloWorker const& ) = delete;
+    AsyncHelloWorker& operator=(AsyncHelloWorker const& ) = delete;
 
     AsyncHelloWorker(bool louder, const std::string * name,
                      Nan::Callback* callback)
