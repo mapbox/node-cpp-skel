@@ -26,4 +26,14 @@ inline void CallbackError(std::string message,
     v8::Local<v8::Value> argv[1] = {Nan::Error(message.c_str())};
     Nan::MakeCallback(Nan::GetCurrentContext()->Global(), callback, 1, argv);
 }
+
+class noncopyable
+{
+protected:
+    constexpr noncopyable() = default;
+    ~noncopyable() = default;
+    noncopyable( noncopyable const& ) = delete;
+    noncopyable& operator=(noncopyable const& ) = delete;
+};
+
 }
