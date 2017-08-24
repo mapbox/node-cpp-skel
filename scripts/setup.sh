@@ -3,8 +3,8 @@
 set -eu
 set -o pipefail
 
-export MASON_RELEASE="${MASON_RELEASE:-v0.9.0}"
-export MASON_LLVM_RELEASE="${MASON_LLVM_RELEASE:-4.0.0}"
+export MASON_RELEASE="${MASON_RELEASE:-v0.14.1}"
+export MASON_LLVM_RELEASE="${MASON_LLVM_RELEASE:-4.0.1}"
 
 PLATFORM=$(uname | tr A-Z a-z)
 if [[ ${PLATFORM} == 'darwin' ]]; then
@@ -69,7 +69,7 @@ function run() {
     #
 
     echo "export PATH=${llvm_toolchain_dir}/bin:$(pwd)/.mason:$(pwd)/mason_packages/.link/bin:"'${PATH}' > ${config}
-    echo "export CXX=${llvm_toolchain_dir}/bin/clang++" >> ${config}
+    echo "export CXX=${CXX:-${llvm_toolchain_dir}/bin/clang++}" >> ${config}
     echo "export MASON_RELEASE=${MASON_RELEASE}" >> ${config}
     echo "export MASON_LLVM_RELEASE=${MASON_LLVM_RELEASE}" >> ${config}
     # https://github.com/google/sanitizers/wiki/AddressSanitizerAsDso
