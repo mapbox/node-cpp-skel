@@ -164,7 +164,7 @@ std::string do_expensive_work(bool louder, std::string const& name)
 // them alive until done.
 // Nan AsyncWorker docs:
 // https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
-struct AsyncHelloWorker : Nan::AsyncWorker
+struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguidelines-special-member-functions
 {
 
     using Base = Nan::AsyncWorker;
