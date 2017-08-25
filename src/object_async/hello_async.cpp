@@ -141,7 +141,10 @@ std::string do_expensive_work(bool louder, std::string const& name)
 
             // AsyncHelloWorker's Execute function will take care of this error
             // and return it to js-world via callback
-            throw std::runtime_error("Uh oh, this should never happen");
+            // Marked NOLINT to avoid clang-tidy cert-err60-cpp error which we cannot
+            // avoid on some linux distros where std::runtime_error is not properly
+            // marked noexcept. Details at https://www.securecoding.cert.org/confluence/display/cplusplus/ERR60-CPP.+Exception+objects+must+be+nothrow+copy+constructible
+            throw std::runtime_error("Uh oh, this should never happen"); // NOLINT
         }
     }
 
@@ -165,8 +168,11 @@ struct AsyncHelloWorker : Nan::AsyncWorker
 {
 
     using Base = Nan::AsyncWorker;
+    // Make this class noncopyable
+    AsyncHelloWorker(AsyncHelloWorker const&) = delete;
+    AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
 
-    AsyncHelloWorker(bool louder, std::string const& name,
+    AsyncHelloWorker(bool louder, const std::string* name,
                      Nan::Callback* callback)
         : Base(callback), result_{""}, louder_{louder}, name_{name} {}
 
@@ -177,7 +183,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker
     {
         try
         {
-            result_ = do_expensive_work(louder_, name_);
+            result_ = do_expensive_work(louder_, *name_);
         }
         catch (const std::exception& e)
         {
@@ -200,14 +206,18 @@ struct AsyncHelloWorker : Nan::AsyncWorker
         v8::Local<v8::Value> argv[argc] = {
             Nan::Null(), Nan::New<v8::String>(result_).ToLocalChecked()};
 
-        callback->Call(argc, argv);
+        // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
+        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
     }
 
     std::string result_;
     const bool louder_;
-    // We are taking a reference to the name instance passed in from instantiating
-    // HelloObjectAsync above (HelloObjectAsync::New)
-    std::string const& name_;
+    // We use a pointer here to avoid copying the string data.
+    // This works because we know that the original string we are
+    // pointing to will be kept in scope/alive for the time while AsyncHelloWorker
+    // is using it. If we could not guarantee this then we would need to either
+    // copy the string or pass a shared_ptr<std::string>.
+    const std::string* name_;
 };
 
 NAN_METHOD(HelloObjectAsync::helloAsync)
@@ -222,7 +232,7 @@ NAN_METHOD(HelloObjectAsync::helloAsync)
     // the object.
     // - The C++ methods must be static to make them available at startup across
     // the language boundary (JS <-> C++).
-    HelloObjectAsync* h =
+    auto* h =
         Nan::ObjectWrap::Unwrap<HelloObjectAsync>(info.Holder());
 
     bool louder = false;
@@ -267,7 +277,7 @@ NAN_METHOD(HelloObjectAsync::helloAsync)
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
     auto* worker =
-        new AsyncHelloWorker{louder, h->name_, new Nan::Callback{callback}};
+        new AsyncHelloWorker{louder, &h->name_, new Nan::Callback{callback}};
     Nan::AsyncQueueWorker(worker);
 }
 
@@ -318,4 +328,4 @@ void HelloObjectAsync::Init(v8::Local<v8::Object> target)
                              // after this code block ends.
     Nan::Set(target, whoami, fn);
 }
-}
+} // namespace object_async
