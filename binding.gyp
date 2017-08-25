@@ -53,9 +53,6 @@
         './src/object_sync/hello.cpp',
         './src/object_async/hello_async.cpp'
       ],
-      'include_dirs': [
-        '<!(node -e \'require("nan")\')'
-      ],
       'ldflags': [
         '-Wl,-z,now',
       ],

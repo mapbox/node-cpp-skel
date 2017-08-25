@@ -50,7 +50,10 @@ std::string do_expensive_work(bool louder)
 
             // AsyncHelloWorker's Execute function will take care of this error
             // and return it to js-world via callback
-            throw std::runtime_error("Uh oh, this should never happen");
+            // Marked NOLINT to avoid clang-tidy cert-err60-cpp error which we cannot
+            // avoid on some linux distros where std::runtime_error is not properly
+            // marked noexcept. Details at https://www.securecoding.cert.org/confluence/display/cplusplus/ERR60-CPP.+Exception+objects+must+be+nothrow+copy+constructible
+            throw std::runtime_error("Uh oh, this should never happen"); // NOLINT
         }
     }
 
@@ -109,7 +112,8 @@ struct AsyncHelloWorker : Nan::AsyncWorker
         v8::Local<v8::Value> argv[argc] = {
             Nan::Null(), Nan::New<v8::String>(result_).ToLocalChecked()};
 
-        callback->Call(argc, argv);
+        // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
+        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
     }
 
     std::string result_;

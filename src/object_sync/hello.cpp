@@ -124,7 +124,7 @@ NAN_METHOD(HelloObject::hello)
      *   - The C++ methods must be static to make them available at startup across
      * the language boundary (JS <-> C++).
      */
-    HelloObject* h = Nan::ObjectWrap::Unwrap<HelloObject>(info.Holder());
+    auto* h = Nan::ObjectWrap::Unwrap<HelloObject>(info.Holder());
 
     // "info" comes from the NAN_METHOD macro, which returns differently
     // according to the version of node
