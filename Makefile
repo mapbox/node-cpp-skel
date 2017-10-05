@@ -25,7 +25,7 @@ tidy:
 	./scripts/clang-tidy.sh
 
 format:
-	./scripts/format.sh
+	./scripts/clang-format.sh
 
 clean:
 	rm -rf lib/binding
