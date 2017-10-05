@@ -5,6 +5,21 @@ set -o pipefail
 
 # https://clang.llvm.org/extra/clang-tidy/
 
+: '
+
+Runs clang-tidy on the code in src/
+
+Return `1` if there are files automatically fixed by clang-tidy.
+
+Returns `0` if no fixes by clang-tidy.
+
+TODO: should also return non-zero if clang-tidy emits warnings
+or errors about things it cannot automatically fix. However I cannot
+figure out how to get this working yet as it seems that clang-tidy
+always returns 0 even on errors.
+
+'
+
 # to speed up re-runs, only re-create environment if needed
 if [[ ! -f local.env ]]; then
     # automatically setup environment
@@ -42,4 +57,16 @@ fi
 # at the right paths (since this is where the actual build happens)
 cd build
 ${PATH_TO_CLANG_TIDY_SCRIPT} -fix
+
+# Print list of modified files
+dirty=$(git ls-files --modified src/)
+
+if [[ $dirty ]]; then
+    echo "The following files have been modified:"
+    echo $dirty
+    git diff
+    exit 1
+else
+    exit 0
+fi
 
