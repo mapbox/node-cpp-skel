@@ -10,7 +10,7 @@
   },
   "scripts": {
     "test": "tape test/*.test.js",
-    "prepublish": "npm ls",
+    "prepublishOnly": "npm ls",
     "install": "node-pre-gyp install --fallback-to-build",
     "docs": "documentation build src/standalone_async/*.cpp src/standalone/*.cpp src/object_sync/*.cpp src/object_async/*.cpp --polyglot -f md -o API.md"
   },
