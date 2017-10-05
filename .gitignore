@@ -3,3 +3,5 @@ node_modules
 build
 mason_packages
 .mason
+.toolchain
+local.env
