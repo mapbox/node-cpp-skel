@@ -57,6 +57,7 @@ fi
 # at the right paths (since this is where the actual build happens)
 cd build
 ${PATH_TO_CLANG_TIDY_SCRIPT} -fix
+cd ../
 
 # Print list of modified files
 dirty=$(git ls-files --modified src/)
