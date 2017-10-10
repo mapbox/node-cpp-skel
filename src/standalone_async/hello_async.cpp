@@ -31,22 +31,18 @@ namespace standalone_async {
 
 // Expensive allocation of std::map, querying, and string comparison,
 // therefore threads are busy
-std::string do_expensive_work(bool louder)
-{
+std::string do_expensive_work(bool louder) {
 
     std::map<std::size_t, std::string> container;
     std::size_t work_to_do = 100000;
 
-    for (std::size_t i = 0; i < work_to_do; ++i)
-    {
+    for (std::size_t i = 0; i < work_to_do; ++i) {
         container.emplace(i, std::to_string(i));
     }
 
-    for (std::size_t i = 0; i < work_to_do; ++i)
-    {
+    for (std::size_t i = 0; i < work_to_do; ++i) {
         std::string const& item = container[i];
-        if (item != std::to_string(i))
-        {
+        if (item != std::to_string(i)) {
 
             // AsyncHelloWorker's Execute function will take care of this error
             // and return it to js-world via callback
@@ -59,8 +55,7 @@ std::string do_expensive_work(bool louder)
 
     std::string result = "...threads are busy async bees...hello world";
 
-    if (louder)
-    {
+    if (louder) {
         result += "!!!!";
     }
 
@@ -73,8 +68,7 @@ std::string do_expensive_work(bool louder)
 // them alive until done.
 // Nan AsyncWorker docs:
 // https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
-struct AsyncHelloWorker : Nan::AsyncWorker
-{
+struct AsyncHelloWorker : Nan::AsyncWorker {
     using Base = Nan::AsyncWorker;
 
     AsyncHelloWorker(bool louder, Nan::Callback* callback)
@@ -83,16 +77,12 @@ struct AsyncHelloWorker : Nan::AsyncWorker
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
     // - You do not have access to Javascript v8 objects here.
-    void Execute() override
-    {
+    void Execute() override {
         // The try/catch is critical here: if code was added that could throw an
         // unhandled error INSIDE the threadpool, it would be disasterous
-        try
-        {
+        try {
             result_ = do_expensive_work(louder_);
-        }
-        catch (const std::exception& e)
-        {
+        } catch (const std::exception& e) {
             SetErrorMessage(e.what());
         }
     }
@@ -104,8 +94,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker
     // - You have access to Javascript v8 objects again
     // - You have to translate from C++ member variables to Javascript v8 objects
     // - Finally, you call the user's callback with your results
-    void HandleOKCallback() override
-    {
+    void HandleOKCallback() override {
         Nan::HandleScope scope;
 
         const auto argc = 2u;
@@ -123,8 +112,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker
 // helloAsync is a "standalone function" because it's not a class.
 // If this function was not defined within a namespace ("standalone_async"
 // specified above), it would be in the global scope.
-NAN_METHOD(helloAsync)
-{
+NAN_METHOD(helloAsync) {
 
     bool louder = false;
 
@@ -133,15 +121,13 @@ NAN_METHOD(helloAsync)
     // instead of throwing.
     // Also, "info" comes from the NAN_METHOD macro, which returns differently
     // according to the version of node
-    if (!info[1]->IsFunction())
-    {
+    if (!info[1]->IsFunction()) {
         return Nan::ThrowTypeError("second arg 'callback' must be a function");
     }
     v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
     // Check first argument, should be an 'options' object
-    if (!info[0]->IsObject())
-    {
+    if (!info[0]->IsObject()) {
         return utils::CallbackError("first arg 'options' must be an object",
                                     callback);
     }
@@ -149,12 +135,10 @@ NAN_METHOD(helloAsync)
 
     // Check options object for the "louder" property, which should be a boolean
     // value
-    if (options->Has(Nan::New("louder").ToLocalChecked()))
-    {
+    if (options->Has(Nan::New("louder").ToLocalChecked())) {
         v8::Local<v8::Value> louder_val =
             options->Get(Nan::New("louder").ToLocalChecked());
-        if (!louder_val->IsBoolean())
-        {
+        if (!louder_val->IsBoolean()) {
             return utils::CallbackError("option 'louder' must be a boolean",
                                         callback);
         }

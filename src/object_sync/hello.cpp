@@ -32,21 +32,15 @@ namespace object_sync {
 HelloObject::HelloObject(std::string&& name) : name_(std::move(name)) {}
 
 // Triggered from Javascript world when calling "new HelloObject(name)"
-NAN_METHOD(HelloObject::New)
-{
-    if (info.IsConstructCall())
-    {
-        try
-        {
-            if (info.Length() >= 1)
-            {
-                if (info[0]->IsString())
-                {
+NAN_METHOD(HelloObject::New) {
+    if (info.IsConstructCall()) {
+        try {
+            if (info.Length() >= 1) {
+                if (info[0]->IsString()) {
                     // Don't want to risk passing a null string around, which might create unpredictable behavior.
                     Nan::Utf8String utf8_value(info[0]);
                     int len = utf8_value.length();
-                    if (len <= 0)
-                    {
+                    if (len <= 0) {
                         return Nan::ThrowTypeError("arg must be a non-empty string");
                     }
 
@@ -77,36 +71,27 @@ NAN_METHOD(HelloObject::New)
                      */
                     auto* const self = new HelloObject(std::move(name));
                     self->Wrap(info.This()); // Connects C++ object to Javascript object (this)
-                }
-                else
-                {
+                } else {
                     return Nan::ThrowTypeError(
                         "arg must be a string");
                 }
-            }
-            else
-            {
+            } else {
                 return Nan::ThrowTypeError(
                     "must provide string arg");
             }
-        }
-        catch (const std::exception& ex)
-        {
+        } catch (const std::exception& ex) {
             return Nan::ThrowTypeError(ex.what());
         }
 
         info.GetReturnValue().Set(info.This());
-    }
-    else
-    {
+    } else {
         return Nan::ThrowTypeError(
             "Cannot call constructor as function, you need to use 'new' keyword");
     }
 }
 
 // NAN_METHOD is applicable to methods you want to expose to JS world
-NAN_METHOD(HelloObject::hello)
-{
+NAN_METHOD(HelloObject::hello) {
     /**
      * Note: a HandleScope is automatically included inside NAN_METHOD. See the
      * docs at NAN that say:
@@ -135,14 +120,12 @@ NAN_METHOD(HelloObject::hello)
 
 // This is a Singleton, which is a general programming design concept for
 // creating an instance once within a process.
-Nan::Persistent<v8::Function>& HelloObject::create_once()
-{
+Nan::Persistent<v8::Function>& HelloObject::create_once() {
     static Nan::Persistent<v8::Function> init;
     return init;
 }
 
-void HelloObject::Init(v8::Local<v8::Object> target)
-{
+void HelloObject::Init(v8::Local<v8::Object> target) {
     // A handlescope is needed so that v8 objects created in the local memory
     // space (this function in this case)
     // are cleaned up when the function is done running (and the handlescope is

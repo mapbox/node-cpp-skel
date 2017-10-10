@@ -10,8 +10,7 @@ namespace object_async {
  * Also, this class adheres to the rule of Zero because we define no custom
  * destructor or copy constructor
  */
-class HelloObjectAsync : public Nan::ObjectWrap
-{
+class HelloObjectAsync : public Nan::ObjectWrap {
 
   public:
     // initializer
