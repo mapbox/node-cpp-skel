@@ -8,8 +8,7 @@
 // "target" is a magic var that nodejs passes into a module's scope.
 // When you write things to target, they become available to call from
 // Javascript world.
-static void init(v8::Local<v8::Object> target)
-{
+static void init(v8::Local<v8::Object> target) {
 
     // expose hello method
     Nan::SetMethod(target, "hello", standalone::hello);

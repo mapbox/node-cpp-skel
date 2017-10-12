@@ -46,21 +46,15 @@ HelloObjectAsync::HelloObjectAsync(std::string&& name)
     : name_(std::move(name)) {}
 
 // Triggered from Javascript world when calling "new HelloObjectAsync(name)"
-NAN_METHOD(HelloObjectAsync::New)
-{
-    if (info.IsConstructCall())
-    {
-        try
-        {
-            if (info.Length() >= 1)
-            {
-                if (info[0]->IsString())
-                {
+NAN_METHOD(HelloObjectAsync::New) {
+    if (info.IsConstructCall()) {
+        try {
+            if (info.Length() >= 1) {
+                if (info[0]->IsString()) {
                     // Don't want to risk passing a null string around, which might create unpredictable behavior.
                     Nan::Utf8String utf8_value(info[0]);
                     int len = utf8_value.length();
-                    if (len <= 0)
-                    {
+                    if (len <= 0) {
                         return Nan::ThrowTypeError("arg must be a non-empty string");
                     }
 
@@ -91,28 +85,20 @@ NAN_METHOD(HelloObjectAsync::New)
                     **/
                     auto* const self = new HelloObjectAsync(std::move(name));
                     self->Wrap(info.This()); // Connects C++ object to Javascript object (this)
-                }
-                else
-                {
+                } else {
                     return Nan::ThrowTypeError(
                         "arg must be a string");
                 }
-            }
-            else
-            {
+            } else {
                 return Nan::ThrowTypeError(
                     "must provide string arg");
             }
-        }
-        catch (const std::exception& ex)
-        {
+        } catch (const std::exception& ex) {
             return Nan::ThrowTypeError(ex.what());
         }
 
         info.GetReturnValue().Set(info.This());
-    }
-    else
-    {
+    } else {
         return Nan::ThrowTypeError(
             "Cannot call constructor as function, you need to use 'new' keyword");
     }
@@ -121,23 +107,19 @@ NAN_METHOD(HelloObjectAsync::New)
 // This function performs expensive allocation of std::map, querying, and string
 // comparison, therefore threads are nice & busy.
 // Also, notice that name is passed by reference (std::string const& name)
-std::string do_expensive_work(bool louder, std::string const& name)
-{
+std::string do_expensive_work(bool louder, std::string const& name) {
 
     std::map<std::size_t, std::string> container;
     std::size_t work_to_do = 100000;
 
-    for (std::size_t i = 0; i < work_to_do; ++i)
-    {
+    for (std::size_t i = 0; i < work_to_do; ++i) {
         container.emplace(i, std::to_string(i));
     }
 
-    for (std::size_t i = 0; i < work_to_do; ++i)
-    {
+    for (std::size_t i = 0; i < work_to_do; ++i) {
         std::string const& item = container[i];
 
-        if (item != std::to_string(i))
-        {
+        if (item != std::to_string(i)) {
 
             // AsyncHelloWorker's Execute function will take care of this error
             // and return it to js-world via callback
@@ -150,8 +132,7 @@ std::string do_expensive_work(bool louder, std::string const& name)
 
     std::string result = "...threads are busy async bees...hello " + name;
 
-    if (louder)
-    {
+    if (louder) {
         result += "!!!!";
     }
 
@@ -179,14 +160,10 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
     // - You do not have access to Javascript v8 objects here.
-    void Execute() override
-    {
-        try
-        {
+    void Execute() override {
+        try {
             result_ = do_expensive_work(louder_, *name_);
-        }
-        catch (const std::exception& e)
-        {
+        } catch (const std::exception& e) {
             SetErrorMessage(e.what());
         }
     }
@@ -198,8 +175,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
     // - You have access to Javascript v8 objects again
     // - You have to translate from C++ member variables to Javascript v8 objects
     // - Finally, you call the user's callback with your results
-    void HandleOKCallback() override
-    {
+    void HandleOKCallback() override {
         Nan::HandleScope scope;
 
         const auto argc = 2u;
@@ -220,8 +196,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
     const std::string* name_;
 };
 
-NAN_METHOD(HelloObjectAsync::helloAsync)
-{
+NAN_METHOD(HelloObjectAsync::helloAsync) {
     // "info" comes from the NAN_METHOD macro, which returns differently according
     // to the Node version
     // "What is node::ObjectWrap???" The short version is that node::ObjectWrap
@@ -242,15 +217,13 @@ NAN_METHOD(HelloObjectAsync::helloAsync)
     // instead of throwing.
     // Also, "info" comes from the NAN_METHOD macro, which returns differently
     // according to the version of node
-    if (!info[1]->IsFunction())
-    {
+    if (!info[1]->IsFunction()) {
         return Nan::ThrowTypeError("second arg 'callback' must be a function");
     }
     v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
     // Check first argument, should be an 'options' object
-    if (!info[0]->IsObject())
-    {
+    if (!info[0]->IsObject()) {
         return utils::CallbackError("first arg 'options' must be an object",
                                     callback);
     }
@@ -258,12 +231,10 @@ NAN_METHOD(HelloObjectAsync::helloAsync)
 
     // Check options object for the "louder" property, which should be a boolean
     // value
-    if (options->Has(Nan::New("louder").ToLocalChecked()))
-    {
+    if (options->Has(Nan::New("louder").ToLocalChecked())) {
         v8::Local<v8::Value> louder_val =
             options->Get(Nan::New("louder").ToLocalChecked());
-        if (!louder_val->IsBoolean())
-        {
+        if (!louder_val->IsBoolean()) {
             return utils::CallbackError("option 'louder' must be a boolean",
                                         callback);
         }
@@ -282,14 +253,12 @@ NAN_METHOD(HelloObjectAsync::helloAsync)
 }
 
 // Singleton
-Nan::Persistent<v8::Function>& HelloObjectAsync::create_once()
-{
+Nan::Persistent<v8::Function>& HelloObjectAsync::create_once() {
     static Nan::Persistent<v8::Function> init;
     return init;
 }
 
-void HelloObjectAsync::Init(v8::Local<v8::Object> target)
-{
+void HelloObjectAsync::Init(v8::Local<v8::Object> target) {
     // A handlescope is needed so that v8 objects created in the local memory
     // space (this function in this case)
     // are cleaned up when the function is done running (and the handlescope is
