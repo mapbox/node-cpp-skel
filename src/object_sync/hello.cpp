@@ -53,7 +53,7 @@ NAN_METHOD(HelloObject::New) {
                      * Also, providing the length allows the std::string constructor to avoid calculating the length internally
                      * and should be faster since it skips an operation.
                      */
-                    std::string name(*utf8_value, len);
+                    std::string name(*utf8_value, static_cast<std::size_t>(len));
 
                     /** 
                      * This line is where HelloObjectAsync takes ownership of "name" with the use of move semantics.
