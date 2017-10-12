@@ -16,10 +16,11 @@
         '-Wall',
         '-Wextra',
         '-Wconversion',
-        '-pedantic',
-        '-Wsign-compare',
+        '-pedantic-errors',
         '-Wconversion',
-        '-Wshadow'
+        '-Wshadow',
+        '-Wfloat-equal',
+        '-Wno-error=unused-variable'
       ]
   },
   # `targets` is a list of targets for gyp to run.
