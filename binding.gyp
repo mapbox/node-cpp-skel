@@ -9,6 +9,21 @@
       'system_includes': [
         "-isystem <(module_root_dir)/<!(node -e \"require('nan')\")",
         "-isystem <(module_root_dir)/mason_packages/.link/include/"
+      ],
+      # Flags we pass to the compiler to ensure the compiler
+      # warns us about potentially buggy or dangerous code
+      'compiler_checks': [
+        '-Wall',
+        '-Wextra',
+        '-Wconversion',
+        '-pedantic-errors',
+        '-Wconversion',
+        '-Wshadow',
+        '-Wfloat-equal',
+        '-Wuninitialized',
+        '-Wunreachable-code',
+        '-Wold-style-cast',
+        '-Wno-error=unused-variable'
       ]
   },
   # `targets` is a list of targets for gyp to run.
@@ -64,15 +79,17 @@
             }
         }]
       ],
-      'cflags': [
-          '<@(system_includes)'
+      'cflags_cc': [
+          '<@(system_includes)',
+          '<@(compiler_checks)'
       ],
       'xcode_settings': {
         'OTHER_LDFLAGS':[
           '-Wl,-bind_at_load'
         ],
         'OTHER_CPLUSPLUSFLAGS': [
-            '<@(system_includes)'
+            '<@(system_includes)',
+            '<@(compiler_checks)'
         ],
         'GCC_ENABLE_CPP_RTTI': 'YES',
         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
