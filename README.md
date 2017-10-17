@@ -70,3 +70,13 @@ make coverage
 ```
 
 For more details about what `make coverage` is doing under the hood see https://github.com/mapbox/cpp#code-coverage
+
+# Contributing and License
+
+Contributors are welcome! :sparkles: This repo exists as a place to gather C++/Node Addon knowledge that will benefit the larger community. Please contribute your knowledge if youd like.
+
+Node-cpp-skel is licensed under [CC0](https://creativecommons.org/share-your-work/public-domain/cc0/). Attribution is not required, but definitely welcome! If your project uses this skeleton, please add the node-cpp-skel badge to your readme so that others can learn about the resource:
+
+![](https://user-images.githubusercontent.com/1209162/29897444-7ff63064-8da6-11e7-99a8-d2bc7c4faff3.png)
+
+See [CONTRIBUTING](CONTRIBUTING.md) and [LICENSE](LICENSE.md) for more info.
