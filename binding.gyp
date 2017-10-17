@@ -35,22 +35,6 @@
   # - none: a trick to tell gyp not to run the compiler for a given target.
   'targets': [
     {
-      # This target: 
-      # - doesnt build any code (why it's type "none", to tell gyp not to run the compiler)
-      # - runs a script to install mason packages
-      'target_name': 'action_before_build',
-      'type': 'none',
-      'hard_dependency': 1,
-      'actions': [
-        {
-          'action_name': 'install_deps',
-          'inputs': ['./scripts/install_deps.sh'],
-          'outputs': ['./mason_packages'],
-          'action': ['./scripts/install_deps.sh']
-        }
-      ]
-    },
-    {
       # module_name and module_path are both variables passed by node-pre-gyp from package.json
       'target_name': '<(module_name)', # sets the name of the binary file
       'product_dir': '<(module_path)', # controls where the node binary file gets copied to (./lib/binding/module.node)
