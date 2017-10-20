@@ -1,3 +1,5 @@
+![dancing skel](https://mapbox.s3.amazonaws.com/cpp-assets/node-cpp-skel-readme_blue.png)
+
 A skeleton for binding C++ libraries to Node.js using [Nan](https://github.com/nodejs/nan). This is a small, helper repository that generates simple `HelloWorld` Javascript example constructors. The examples have a number of methods to demonstrate different ways to use Nan for building particular types of functionality (i.e. asynchronous functions). Use this repo as both a template for your own code as well as a learning tool if you're just starting to develop Node/C++ Addons.
 
 **Why port C++ to Node.js?**. That's a great question! C++ is a high performance language that allows you to execute operations without clogging up the event loop. Node.js is single-threaded, which blocks execution. Even in highly optimized javascript code it may be impossible to improve performance. Passing heavy operations into C++ and subsequently into C++ workers can greatly improve the overall runtime of the code. Porting C++ code to Node.js is also referred to as creating an ["Addon"](https://github.com/mapbox/cpp/blob/master/node-cpp.md).
@@ -70,3 +72,18 @@ make coverage
 ```
 
 For more details about what `make coverage` is doing under the hood see https://github.com/mapbox/cpp#code-coverage
+
+# Contributing and License
+
+Contributors are welcome! :sparkles: This repo exists as a place to gather C++/Node Addon knowledge that will benefit the larger community. Please contribute your knowledge if you'd like.
+
+Node-cpp-skel is licensed under [CC0](https://creativecommons.org/share-your-work/public-domain/cc0/). Attribution is not required, but definitely welcome! If your project uses this skeleton, please add the node-cpp-skel badge to your readme so that others can learn about the resource.
+
+[![badge](https://mapbox.s3.amazonaws.com/cpp-assets/node-cpp-skel-badge_blue.svg)](https://github.com/mapbox/node-cpp-skel)
+
+To include the badge, paste this into your README.md file:
+```
+[![badge](https://mapbox.s3.amazonaws.com/cpp-assets/node-cpp-skel-badge_blue.svg)](https://github.com/mapbox/node-cpp-skel)
+```
+
+See [CONTRIBUTING](CONTRIBUTING.md) and [LICENSE](LICENSE.md) for more info.
