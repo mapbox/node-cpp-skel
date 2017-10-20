@@ -14,10 +14,9 @@ namespace utils {
 *
 *
 * "inline" is important here as well. See for more contex:
+* - https://github.com/mapbox/cpp/blob/master/glossary.md#inline-keyword
 * - https://github.com/mapbox/node-cpp-skel/pull/52#discussion_r126847394 for
 * context
-* - https://github.com/mapbox/cpp/pull/29 ...eventually point this to glossary
-* when it merges
 *
 */
 inline void CallbackError(std::string message,
