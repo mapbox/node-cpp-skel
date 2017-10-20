@@ -89,7 +89,7 @@ matrix:
         - ./scripts/publish.sh --toolset=${TOOLSET:-} --debug=$([ "${BUILDTYPE}" == 'debug' ] && echo "true" || echo "false")
     # g++ build (default builds all use clang++)
     - os: linux
-      env: BUILDTYPE=debug CXX="g++-6" CC="gcc-6" CXXFLAGS="-Weffc++"
+      env: BUILDTYPE=debug CXX="g++-6" CC="gcc-6"
       node_js: 4
       addons:
         apt:
