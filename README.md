@@ -58,10 +58,7 @@ WERROR=false make
 Enable additional sanitizers to catch hard-to-find bugs, for example:
 
 ```shell
-export LDFLAGS="-fsanitize=address,undefined,integer"
-export CXXFLAGS="-fsanitize=address,undefined,integer"
-
-make
+make sanitize
 ```
 
 # Add Custom Code
