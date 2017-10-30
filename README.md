@@ -55,6 +55,15 @@ Note: by default the build errors on compiler warnings. To disable this do:
 WERROR=false make
 ```
 
+Enable additional sanitizers to catch hard-to-find bugs, for example:
+
+```shell
+export LDFLAGS="-fsanitize=address,undefined,integer"
+export CXXFLAGS="-fsanitize=address,undefined,integer"
+
+make
+```
+
 # Add Custom Code
 
 `node-cpp-skel` was designed to make adding custom code simple and scalable, to form to whatever usecase you may need. Here's how:
