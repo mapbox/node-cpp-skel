@@ -31,4 +31,4 @@ class HelloObject : public Nan::ObjectWrap {
     // specific to each instance of the class
     std::string name_;
 };
-}
+} // namespace object_sync
