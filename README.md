@@ -61,7 +61,7 @@ Run tests locally with compile flags enabled to catch hard-to-find bugs (see [th
 make sanitize
 ```
 
-The sanitizers [are part of the compiler](https://github.com/mapbox/cpp/blob/master/glossary.md#sanitizers) are also run in a specific job on Travis.
+The sanitizers [are part of the compiler](https://github.com/mapbox/cpp/blob/master/glossary.md#sanitizers) and are also run in a specific job on Travis.
 
 # Add Custom Code
 
