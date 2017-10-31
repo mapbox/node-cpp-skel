@@ -3,8 +3,8 @@
 set -eu
 set -o pipefail
 
-export MASON_RELEASE="${MASON_RELEASE:-v0.14.1}"
-export MASON_LLVM_RELEASE="${MASON_LLVM_RELEASE:-4.0.1}"
+export MASON_RELEASE="${MASON_RELEASE:-eeba3b5}"
+export MASON_LLVM_RELEASE="${MASON_LLVM_RELEASE:-5.0.0}"
 
 PLATFORM=$(uname | tr A-Z a-z)
 if [[ ${PLATFORM} == 'darwin' ]]; then
@@ -89,8 +89,8 @@ function run() {
     echo "export MSAN_SYMBOLIZER_PATH=${llvm_toolchain_dir}/bin/llvm-symbolizer" >> ${config}
     echo "export UBSAN_OPTIONS=print_stacktrace=1" >> ${config}
     echo "export LSAN_OPTIONS=suppressions=${SUPPRESSION_FILE}" >> ${config}
-    echo "export ASAN_OPTIONS=symbolize=1:abort_on_error=1:detect_container_overflow=1:check_initialization_order=1:detect_stack_use_after_return=1" >> ${config}
-    echo 'export MASON_SANITIZE="-fsanitize=address,undefined,integer -fno-sanitize=vptr,function"' >> ${config}
+    echo "export ASAN_OPTIONS=detect_leaks=1:symbolize=1:abort_on_error=1:detect_container_overflow=1:check_initialization_order=1:detect_stack_use_after_return=1" >> ${config}
+    echo 'export MASON_SANITIZE="-fsanitize=address,undefined,integer,leak -fno-sanitize=vptr,function"' >> ${config}
     echo 'export MASON_SANITIZE_CXXFLAGS="${MASON_SANITIZE} -fno-sanitize=vptr,function -fsanitize-address-use-after-scope -fno-omit-frame-pointer -fno-common"' >> ${config}
     echo 'export MASON_SANITIZE_LDFLAGS="${MASON_SANITIZE}"' >> ${config}
 

@@ -55,14 +55,13 @@ Note: by default the build errors on compiler warnings. To disable this do:
 WERROR=false make
 ```
 
-Enable additional sanitizers to catch hard-to-find bugs, for example:
+Run tests locally with compile flags enabled to catch hard-to-find bugs (see [this PR](https://github.com/mapbox/node-cpp-skel/pull/85) for more info):
 
 ```shell
-export LDFLAGS="-fsanitize=address,undefined,integer"
-export CXXFLAGS="-fsanitize=address,undefined,integer"
-
-make
+make sanitize
 ```
+
+The sanitizers [are part of the compiler](https://github.com/mapbox/cpp/blob/master/glossary.md#sanitizers) and are also run in a specific job on Travis.
 
 # Add Custom Code
 
