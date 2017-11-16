@@ -65,11 +65,37 @@ The sanitizers [are part of the compiler](https://github.com/mapbox/cpp/blob/mas
 
 # Add Custom Code
 
-`node-cpp-skel` was designed to make adding custom code simple and scalable, to form to whatever usecase you may need. Here's how:
+Depending on your usecase, there are a variety of ways to start using this skeleton for your project.
+
+### Setup new project
+Easily use this skeleton as a starting off point for a _new_ custom project:
+
+```
+# Clone node-cpp-skel locally
+
+git clone git@github.com:mapbox/node-cpp-skel.git
+cd node-cpp-skel/
+
+# Create your new repo on GitHub and have the remote repo url handy for liftoff
+# Then run the liftoff script from within your local node-cpp-skel root directory.
+#
+# This will:
+# - prompt you for the new name of your project and the new remote repo url
+# - automatically create a new directory for your new project repo
+# - create a new branch called "node-cpp-skel-port" within your new repo directory
+# - add, commit, and push that branch to your new repo
+
+./scripts/liftoff.sh
+
+```
+
+### Add your code
+Once your project has ported node-cpp-skel, follow these steps to integrate your own code:
 
 - Create a dir in `./src` to hold your custom code. See the example code within `/src` for reference.
 - Add your new method or class to `./src/module.cpp`, and `#include` it at the top
 - Add your new file-to-be-compiled to the list of target sources in `./binding.gyp`
+- Run `make` and see what surprises await on your new journey
 
 # Code coverage
 
