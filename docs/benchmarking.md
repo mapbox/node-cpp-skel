@@ -20,6 +20,6 @@ This will run a bunch of calls to the module's `helloAsync()` function. You can 
 The bench tests and async functions that come with `node-cpp-skel` out of the box demonstrate this behaviour:
 - An async function that is CPU intensive and takes a while to finish (expensive creation and querying of a `std::map` and string comparisons). 
 - Worker threads are busy doing a lot of work, and the main loop is relatively idle. Depending on how many threads (concurrency) you enable, you may see your CPU% sky-rocket and your cores max out. Yeaahhh!!!
-- If you bump up `--iterations` to 500 and profile in Activity Monitor.app, you'll see the main loop is idle as expected since the threads are doing all the work. You'll also see the threads busy doing work in AsyncHelloWorker roughly 99% of the time :tada:
+- If you bump up `--iterations` to 500 and [profile in Activity Monitor.app](https://github.com/springmeyer/profiling-guide#activity-monitorapp-on-os-x), you'll see the main loop is idle as expected since the threads are doing all the work. You'll also see the threads busy doing work in AsyncHelloWorker roughly 99% of the time :tada:
 
 ![](https://user-images.githubusercontent.com/1209162/29333300-e7c483e2-81c8-11e7-8253-1beb12173841.png)
