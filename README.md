@@ -95,7 +95,7 @@ Once your project has ported node-cpp-skel, follow these steps to integrate your
 - Create a dir in `./src` to hold your custom code. See the example code within `/src` for reference.
 - Add your new method or class to `./src/module.cpp`, and `#include` it at the top
 - Add your new file-to-be-compiled to the list of target sources in `./binding.gyp`
-- Run `make` and see what surprises await on your new journey
+- Run `make` and see what surprises await on your new journey :boat:
 
 # Code coverage
 
