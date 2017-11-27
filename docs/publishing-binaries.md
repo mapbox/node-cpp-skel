@@ -167,3 +167,34 @@ The `.travis.yml` file uses the `matrix` to set up each individual job, which sp
   script: *test
   after_script: *publish
 ```
+
+### Dev releases
+
+You may want to test your module works correctly, in downstream dependencies, before formally publishing. To do this we recommend you:
+
+1. Create a branch of your node c++ module
+
+2. Modify the `version` string in your `package.json` like:
+
+```diff
+diff --git a/package.json b/package.json
+index e00b7b5..22f7cd9 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@mapbox/node-cpp-skel",
+-  "version": "0.1.0",
++  "version": "0.1.0-alpha1",
+   "description": "Skeleton for bindings to C++ libraries for Node.js using NAN",
+   "url": "http://github.com/mapbox/node-cpp-skel",
+   "main": "./lib/index.js",
+```
+
+3. Publishing C++ binaries by pushing a commit with `[publish binary]` per https://github.com/mapbox/node-cpp-skel/blob/master/docs/publishing-binaries.md#7-all-done
+
+4. Require your module in downstream applications like:
+
+```js
+"your-module": "https://github.com/<your-org>/<your-module>/tarball/<your-branch>",
+```
