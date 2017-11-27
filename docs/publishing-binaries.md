@@ -2,7 +2,7 @@
 
 So your code is compiling, tested, benched, and ready to be shared. How to get it into the wild? This document will go through what's next.
 
-Generally speaking, the workflow for a node-addon isn't much different than publishing a regular Javascript node module. The main difference is an added step and a bit more configuration in order to handle the binary (If the concept of a binary file is new, give this doc a gander: https://github.com/mapbox/node-cpp-skel/blob/master/docs/extended-tour.md#builds). 
+Generally speaking, the workflow for a node-addon isn't much different than publishing a regular Javascript node module. The main difference is an added step and a bit more configuration in order to handle the binary. If the concept of a binary file is new, give [this doc a gander](https://github.com/mapbox/node-cpp-skel/blob/dbc48924b3e30bba903e6b9220b0cdf2854f717f/docs/extended-tour.md#builds). 
 
 The typical workflow for a regular node module may look something like this:
 
