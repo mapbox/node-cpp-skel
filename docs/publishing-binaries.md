@@ -1,3 +1,29 @@
+# Workflow
+
+So your code is compiling, tested, benched, and ready to be shared. How to get it into the wild? This document will go through what's next.
+
+Generally speaking, the workflow for a node-addon isn't much different than publishing a regular Javascript node module. The main difference is an added step and a bit more configuration in order to handle the binary (If the concept of a binary file is new, give this doc a gander: https://github.com/mapbox/node-cpp-skel/blob/master/docs/extended-tour.md#builds). 
+
+The typical workflow for a regular node module may look something like this:
+
+1. merge to master
+2. git tag
+3. npm publish (Now it's ready to be npm installed)
+
+The workflow for a node add-on looks very similar:
+
+1. merge to master
+2. git tag
+3. publish binaries
+4. npm publish
+
+Let's talk generally about the relationship between the third and fourth steps. Since your code is in C++, any projects that `npm install` your module as a dependency will need the C++ code precompiled so that Node can use your module in Javascript world. Before publishing your module to npm, you will publish your binaries by putting them on s3. This s3 location is reflected in your module's [package.json file](https://github.com/mapbox/node-cpp-skel/blob/dbc48924b3e30bba903e6b9220b0cdf2854f717f/package.json#L35). Your package.json file is also redefining [the install command](https://github.com/mapbox/node-cpp-skel/blob/dbc48924b3e30bba903e6b9220b0cdf2854f717f/package.json#L14), by running node-pre-gyp instead. 
+
+[Node-pre-gyp](https://github.com/mapbox/node-pre-gyp) is responsible for installing the binary by pulling the relevant binary from s3 and placing it in the specified and expected location defined by your module's [main index.js file](https://github.com/mapbox/node-cpp-skel/blob/dbc48924b3e30bba903e6b9220b0cdf2854f717f/lib/index.js#L3). So when a project runs `require()` on your module, they are directly accessing the binary. In a bit more detail, node-pre-gyp will detect [what version of Node is being used and which operating system](https://github.com/mapbox/node-cpp-skel/blob/dbc48924b3e30bba903e6b9220b0cdf2854f717f/package.json#L37), then go to s3 to retrieve the binary that matches.
+
+Continue reading below to learn how to publish your binaries to s3 so they're ready to be installed.
+
+
 # Publishing Binaries
 
 It's a good idea to publish pre-built binaries of your module if you want others to be able to easily install it on their system without needing to install a compiler like g++ or clang++. Node-pre-gyp does a lot of the heavy lifting for us (like detecting which system you are building on and deploying to s3) but you'll need a few things configured to get started.
