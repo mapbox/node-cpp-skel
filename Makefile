@@ -10,7 +10,10 @@ node_modules:
 	# so that we can run it directly in either debug or release
 	npm install --ignore-scripts
 
-release: node_modules
+mason_packages:
+	mason-js 
+
+release: node_modules mason_packages 
 	V=1 ./node_modules/.bin/node-pre-gyp configure build --error_on_warnings=$(WERROR) --loglevel=error
 	@echo "run 'make clean' for full rebuild"
 

@@ -11,15 +11,14 @@
   "scripts": {
     "test": "tape test/*.test.js",
     "prepublishOnly": "npm ls",
-    "install": "mason-js install link && node-pre-gyp install --fallback-to-build",
+    "install": "mason-js install && node-pre-gyp install --fallback-to-build",
     "docs": "documentation build src/standalone_async/*.cpp src/standalone/*.cpp src/object_sync/*.cpp src/object_async/*.cpp --polyglot -f md -o API.md"
   },
   "author": "Mapbox",
   "license": "ISC",
   "dependencies": {
     "nan": "~2.5.1",
-    "node-pre-gyp": "~0.6.32",
-    "mason-js":"~1.0.0"
+    "node-pre-gyp": "~0.6.32"
   },
   "bundledDependencies": [
     "node-pre-gyp"

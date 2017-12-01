@@ -39,7 +39,6 @@
       'target_name': '<(module_name)', # sets the name of the binary file
       'product_dir': '<(module_path)', # controls where the node binary file gets copied to (./lib/binding/module.node)
       'type': 'loadable_module',
-      'dependencies': [ 'action_before_build' ],
       # "make" only watches files specified here, and will sometimes cache these files after the first compile.
       # This cache can sometimes cause confusing errors when removing/renaming/adding new files. 
       # Running "make clean" helps to prevent this "mysterious error by cache" scenario
