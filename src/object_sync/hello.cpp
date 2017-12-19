@@ -118,13 +118,6 @@ NAN_METHOD(HelloObject::hello) {
             .ToLocalChecked());
 }
 
-// This is a Singleton, which is a general programming design concept for
-// creating an instance once within a process.
-Nan::Persistent<v8::Function>& HelloObject::create_once() {
-    static Nan::Persistent<v8::Function> init;
-    return init;
-}
-
 void HelloObject::Init(v8::Local<v8::Object> target) {
     // A handlescope is needed so that v8 objects created in the local memory
     // space (this function in this case)
@@ -158,11 +151,12 @@ void HelloObject::Init(v8::Local<v8::Object> target) {
     // Create an unique instance of the HelloObject function template,
     // then set this unique instance to the target
     const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
-    create_once().Reset(fn); // calls the static &HelloObject::create_once method
-                             // above. This ensures the instructions in this Init
-                             // function are retained in memory even after this
-                             // code block ends.
     Nan::Set(target, whoami, fn);
+    
+    // This ensures the instructions in this Init
+    // function are retained in memory even after this
+    // code block ends.
+    static Nan::Global<v8::Function> global(fn);
 }
 
 } // namespace object_sync

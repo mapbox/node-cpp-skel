@@ -18,7 +18,6 @@ class HelloObjectAsync : public Nan::ObjectWrap {
 
     // methods required for the V8 constructor
     static NAN_METHOD(New);
-    static Nan::Persistent<v8::Function>& create_once();
 
     // helloAsync, custom async method tied to Init of this class
     // method's logic lives in ./hello.cpp

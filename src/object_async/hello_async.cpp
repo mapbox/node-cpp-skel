@@ -145,25 +145,22 @@ std::string do_expensive_work(bool louder, std::string const& name) {
 // them alive until done.
 // Nan AsyncWorker docs:
 // https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
-struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguidelines-special-member-functions
+class AsyncHelloWorker : public Nan::AsyncWorker // NOLINT to disable cppcoreguidelines-special-member-functions
 {
-
+public:
     using Base = Nan::AsyncWorker;
-    // Make this class noncopyable
-    AsyncHelloWorker(AsyncHelloWorker const&) = delete;
-    AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
-
-    AsyncHelloWorker(bool louder, const std::string* name,
+   
+    AsyncHelloWorker(bool louder, std::string const& name,
                      Nan::Callback* cb)
-        : Base(cb), result_{""}, louder_{louder}, name_{name} {}
+        : Base(cb), result_(), louder_(louder), name_(name) {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
     // - You do not have access to Javascript v8 objects here.
     void Execute() override {
         try {
-            result_ = do_expensive_work(louder_, *name_);
-        } catch (const std::exception& e) {
+            result_ = do_expensive_work(louder_, name_);
+        } catch (std::exception const& e) {
             SetErrorMessage(e.what());
         }
     }
@@ -186,14 +183,15 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
         callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
     }
 
+private:
     std::string result_;
     const bool louder_;
-    // We use a pointer here to avoid copying the string data.
+    // We use a const& here to avoid copying the string data.
     // This works because we know that the original string we are
     // pointing to will be kept in scope/alive for the time while AsyncHelloWorker
-    // is using it. If we could not guarantee this then we would need to either
-    // copy the string or pass a shared_ptr<std::string>.
-    const std::string* name_;
+    // is using it. If we could not guarantee this then we would need to
+    // copy the string.
+    std::string const& name_;
 };
 
 NAN_METHOD(HelloObjectAsync::helloAsync) {
@@ -248,16 +246,11 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
     auto* worker =
-        new AsyncHelloWorker{louder, &h->name_, new Nan::Callback{callback}};
+        new AsyncHelloWorker{louder, h->name_, new Nan::Callback{callback}};
     Nan::AsyncQueueWorker(worker);
 }
 
 // Singleton
-Nan::Persistent<v8::Function>& HelloObjectAsync::create_once() {
-    static Nan::Persistent<v8::Function> init;
-    return init;
-}
-
 void HelloObjectAsync::Init(v8::Local<v8::Object> target) {
     // A handlescope is needed so that v8 objects created in the local memory
     // space (this function in this case)
@@ -291,10 +284,10 @@ void HelloObjectAsync::Init(v8::Local<v8::Object> target) {
     // Create an unique instance of the HelloObject function template,
     // then set this unique instance to the target
     const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
-    create_once().Reset(fn); // calls the static &HelloObjectAsync::create_once
-                             // method above. This ensures the instructions in
-                             // this Init function are retained in memory even
-                             // after this code block ends.
     Nan::Set(target, whoami, fn);
+    
+    // Will remain in memory as long as module remains in memory by
+    // marking as a global that is static here.
+    static Nan::Global<v8::Function> global(fn);
 }
 } // namespace object_async
