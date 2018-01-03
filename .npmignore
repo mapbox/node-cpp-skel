@@ -1,0 +1,9 @@
+lib/binding
+mason_packages
+node_modules
+build
+.toolchain
+.mason
+.git
+.DS_Store
+local.env
