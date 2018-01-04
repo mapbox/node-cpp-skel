@@ -1,6 +1,6 @@
 # 1/4/2017
 
-* 
+* Add doc note about remove vs local coverage using `LCOV`
 
 # 11/17/2017
 
