@@ -105,7 +105,11 @@ Code coverage is critical for knowing how well your tests actually test all your
 make coverage
 ```
 
-For more details about what `make coverage` is doing under the hood see https://github.com/mapbox/cpp#code-coverage
+**Note**
+
+Use [`// LCOV_EXCL_START` and `// LCOV_EXCL_STOP`](https://github.com/mapbox/vtvalidate/blob/master/src/vtvalidate.cpp#L70-L73) to ignore from [codecov](https://codecov.io/gh/mapbox/node-cpp-skel) _remotely_. However, this won't ignore when running coverage _locally_.
+
+For more details about what `make coverage` is doing under the hood see https://github.com/mapbox/cpp#code-coverage.
 
 # Contributing and License
 
