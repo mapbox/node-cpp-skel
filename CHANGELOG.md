@@ -1,3 +1,7 @@
+# 1/4/2017
+
+* Add doc note about remote vs local coverage using `LCOV`
+
 # 11/17/2017
 
 * Add liftoff script, setup docs, and more contributing details per https://github.com/mapbox/node-cpp-skel/pull/87
