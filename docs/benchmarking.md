@@ -5,13 +5,14 @@ This project includes [bench tests](https://github.com/mapbox/node-cpp-skel/tree
 We've included two bench tests for the async examples, demonstrating the affects of concurrency and threads within a process. For example, you can run:
 
 ```
-node bench/hello_async.bench.js --iterations 50 --concurrency 10
+node bench/hello_async.bench.js --iterations 50 --concurrency 10 --mem
 ```
 
 This will run a bunch of calls to the module's `helloAsync()` function. You can control two things:
 
 - iterations: number of times to call `helloAsync()`
 - concurrency: max number of threads the test can utilize, by setting `UV_THREADPOOL_SIZE`. When running the bench script, you can see this number of threads reflected in your [Activity Monitor](https://github.com/springmeyer/profiling-guide#activity-monitorapp-on-os-x)/[htop window](https://hisham.hm/htop/). 
+- `--mem`: Optional arg to show memory stats per [`process.memoryUsage()`](https://nodejs.org/api/process.html#process_process_memoryusage)
 
 ### Ideal Benchmarks
 
