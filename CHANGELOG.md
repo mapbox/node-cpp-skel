@@ -1,4 +1,8 @@
-# 1/4/2017
+# 1/9/2018
+
+* Add memory stats option to bench tests
+
+# 1/4/2018
 
 * Add doc note about remote vs local coverage using `LCOV`
 
