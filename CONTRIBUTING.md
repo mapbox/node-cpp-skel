@@ -10,9 +10,9 @@ If adding new code, be sure to include relevant code comments. Code comments are
 
 Be sure to update any documentation relevant to your change. This includes updating the [CHANGELOG.md](https://github.com/mapbox/node-cpp-skel/blob/master/CHANGELOG.md).
 
-## Code Formatting
+## [Code Formatting](/docs/extended-tour.md#clang-tools)
 
-We use [this script](/scripts/format.sh#L20) to install a consistent version of [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) to format the code base. The format is automatically checked via a Travis CI build as well. Run the following script locally to ensure formatting is ready to merge:
+We use [this script](/scripts/clang-format.sh#L20) to install a consistent version of [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) to format the code base. The format is automatically checked via a Travis CI build as well. Run the following script locally to ensure formatting is ready to merge:
 
     make format
 
