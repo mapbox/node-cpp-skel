@@ -175,7 +175,7 @@ This binary file `../lib/binding/module.node` is what `require()` points to with
 
 # Clang Tools
 
-This skeleton uses two clang llvm tools for automated formatting and static fixes. 
+This skeleton uses two clang/llvm tools for automated formatting and static fixes. 
 
 Each of these tools run within their own [Travis jobs](https://github.com/mapbox/node-cpp-skel/blob/master/.travis.yml). You can disable these Travis jobs if you'd like, by commenting them out in `.travis.yml`. This may be necessary if you're porting this skel into an already-existing project that triggers tons of clang-tidy errors, and you'd like to work through them gradually while still actively iterating on other parts of your code.
 
@@ -199,12 +199,12 @@ To run
 make tidy
 ```
 
-- If clang-tidy outputs a failure, it will also output a specific code. Check llvm's clang docs for that exact code to learn more. For example, see ["performance-unnecessary-copy-initialization"](https://clang.llvm.org/extra/clang-tidy/checks/performance-unnecessary-copy-initialization.html).
+- The clang-tidy tool has a large set of checks and when one fails, the error message contains the shorthand for the check name. See llvm's docs for details about what failed check is referring to. For example, see ["performance-unnecessary-copy-initialization"](https://clang.llvm.org/extra/clang-tidy/checks/performance-unnecessary-copy-initialization.html).
 - Set tidy preferences in [`.clang-tidy`](https://github.com/mapbox/node-cpp-skel/blob/master/.clang-tidy). When you run clang-tidy, you'll see output of a number of specific checks that tidy runs. You can add/remove any of these checks via the `.clang-tidy` file, configure these checks, and specify the files you'd like to run these checks against. The skel runs clang-tidy against everything within the `/src` directory.
 - This skel runs clang-tidy with the `-fix` option, which will automatically apply fixes to your code. Though some warnings will need to be fixed manually.
 - Installed and run via [`/scripts/clang-tidy.sh`](https://github.com/mapbox/node-cpp-skel/blob/master/scripts/clang-tidy.sh)
-- `NOLINT`: In the case that clang-tidy throws for code that you either want to keep as-is or cant control, you can [use `NOLINT`](https://github.com/mapbox/node-cpp-skel/blob/87c8d51f2d7d05ac44f3ea7a607f60e73a2af9c8/src/module.cpp#L43-L46) to silent clang-tidy.
-- Since clang-tidy must compile the code to do its checks, skel [generates](https://github.com/mapbox/node-cpp-skel/blob/master/scripts/generate_compile_commands.py) a JSON file that tells clang-tidy which files to run against and what compile command to run. This file newly generated file, `/build/compile_command.json`, is created when running `make tidy`. See [clang's JSON compilation format docs](https://clang.llvm.org/docs/JSONCompilationDatabase.html) for more info.
+- `NOLINT`: In the case that clang-tidy throws for code that you either want to keep as-is or can't control, you can [use `NOLINT`](https://github.com/mapbox/node-cpp-skel/blob/87c8d51f2d7d05ac44f3ea7a607f60e73a2af9c8/src/module.cpp#L43-L46) to silent clang-tidy.
+- Since clang-tidy must compile the code to do its checks, skel [generates](https://github.com/mapbox/node-cpp-skel/blob/master/scripts/generate_compile_commands.py) a JSON file that tells clang-tidy which files to run against and what compile command to run. This newly generated file, `/build/compile_command.json`, is created when running `make tidy`. See [clang's JSON compilation format docs](https://clang.llvm.org/docs/JSONCompilationDatabase.html) for more info.
 
 
 # Xcode
