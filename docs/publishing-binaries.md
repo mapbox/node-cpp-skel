@@ -92,57 +92,8 @@ Run the command `cfn-config info ci-binary-publish` and you'll see a JSON output
  - Click the checkbox beside your `<your module name>-ci-binary-publish` stack
  - Click the `Output` tab to access the `AccessKeyId` and `SecretAccessKey` for this new user.
 
-#### 6) Add the keys to the travis
 
-You can do this two ways: 1) add the keys to the travis UI settings, or 2) encode them as secure variables in your `.travis.yml`
-
-**Adding to travis UI settings**
-
-- Go to https://travis-ci.org/<your user or org>/<your module>/settings
-- Scroll to the bottom and find the `Environment Variables` section
-- Add a variable called `AWS_ACCESS_KEY_ID` and put the value of the `AccessKeyId` in it
-- CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are not shown in the logs
-- Click `Add`
-- Add a variable called `AWS_SECRET_ACCESS_KEY` and put the value of the `SecretAccessKey` in it
-- CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are not shown in the logs
-- Click `Add`
-
-**Encoding keys in yml**
-
-Take the above `AccessKeyId` and `SecretAccessKey` variables and encode them into your `.travis.yml`. You will need to place these in your environment.
-
-Then run:
-
-```bash
-# https://github.com/mapbox/node-pre-gyp/#2-create-secure-variables
-travis encrypt node_pre_gyp_accessKeyId=${AccessKeyId}
-travis encrypt node_pre_gyp_secretAccessKey=${SecretAccessKey}
-```
-
-Those will dump text with `secure: <some string>` you can then copy and paste into your .travis.yml like:
-
-```yml
-env:
-  global:
-    - secure: <string encoding aws key>
-    - secure: <string encoding aws secret>
-```
-
-The strings can be quoted but do not need to be quoted.
-
-Once set, these values will be propagated to the build environment in a secure way. If you look at your travis logs you see:
-
-```bash
-# Setting environment variables from .travis.yml
-$ export node_pre_gyp_accessKeyId=[secure]
-$ export node_pre_gyp_secretAccessKey=[secure]
-```
-
-They are printed in the order listed in the `global:` section, which allows you to know what each `- secure: <string>` represents.
-
-Note: you can also pass the `--add` flag to `travis encrypt`. This will add the keys as secure variables to your `.travis.yml` automatically. However this is often not desirable since it will also reformat your `.travis.yml` indentation, hence we why recommend the manual copy/paste method.
-
-#### 7) All done!
+#### 6) All done!
 
 Now that you have generated keys for a user that can publish to s3 and provided these keys to travis in a secure way, you should be able to publish binaries. But this should be done in an automated way. See the next section below for how to do that with travis.ci.
 
