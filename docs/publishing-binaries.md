@@ -93,7 +93,20 @@ Run the command `cfn-config info ci-binary-publish` and you'll see a JSON output
  - Click the `Output` tab to access the `AccessKeyId` and `SecretAccessKey` for this new user.
 
 
-#### 6) All done!
+#### 6) Add the keys to the travis
+ 
+ **Adding to travis UI settings**
+ 
+ - Go to https://travis-ci.org/<your user or org>/<your module>/settings
+ - Scroll to the bottom and find the `Environment Variables` section
+ - Add a variable called `AWS_ACCESS_KEY_ID` and put the value of the `AccessKeyId` in it
+ - CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are not shown in the logs
+ - Click `Add`
+ - Add a variable called `AWS_SECRET_ACCESS_KEY` and put the value of the `SecretAccessKey` in it
+ - CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are not shown in the logs
+ - Click `Add`
+
+#### 7) All done!
 
 Now that you have generated keys for a user that can publish to s3 and provided these keys to travis in a secure way, you should be able to publish binaries. But this should be done in an automated way. See the next section below for how to do that with travis.ci.
 
