@@ -217,7 +217,7 @@ If you get an permissions error or `pip: command not found` error, it's likely y
 This will add a new python binary to your $PATH and allow you to use Python3's builtin `pip3` command in order to install
 without `sudo` and without disrupting the system's Python installation.
 
-- Once you have Python3 installed, try `make tidy` again. This will [install yaml and properly run clang-tidy for you](add_link_here to `./scripts/clang-tidy.sh`).
+- [ ] Once you have Python3 installed, try `make tidy` again. `./scripts/clang-tidy.sh` will install yaml and properly run clang-tidy for you.
 
 # Xcode
 
