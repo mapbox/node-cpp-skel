@@ -53,10 +53,25 @@ if [[ ! -f build/compile_commands.json ]]; then
     make | scripts/generate_compile_commands.py > build/compile_commands.json
 fi
 
+function runtidy() {
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        if which python3 > /dev/null; then 
+            pip3 install pyyaml
+            python3 ${PATH_TO_CLANG_TIDY_SCRIPT} -fix
+        else 
+            # See https://github.com/mapbox/node-cpp-skel/blob/master/docs/extended-tour.md#clang-tidy
+            echo "Please install Python3 for OSX before running \"make tidy\""
+            exit 1
+        fi
+    else
+        ${PATH_TO_CLANG_TIDY_SCRIPT} -fix
+    fi
+}
+
 # change into the build directory so that clang-tidy can find the files
 # at the right paths (since this is where the actual build happens)
 cd build
-${PATH_TO_CLANG_TIDY_SCRIPT} -fix
+runtidy
 cd ../
 
 # Print list of modified files

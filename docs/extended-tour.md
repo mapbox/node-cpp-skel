@@ -206,6 +206,18 @@ make tidy
 - `NOLINT`: In the case that clang-tidy throws for code that you either want to keep as-is or can't control, you can [use `NOLINT`](https://github.com/mapbox/node-cpp-skel/blob/87c8d51f2d7d05ac44f3ea7a607f60e73a2af9c8/src/module.cpp#L43-L46) to silent clang-tidy.
 - Since clang-tidy must compile the code to do its checks, skel [generates](https://github.com/mapbox/node-cpp-skel/blob/master/scripts/generate_compile_commands.py) a JSON file that tells clang-tidy which files to run against and what compile command to run. This newly generated file, `/build/compile_command.json`, is created when running `make tidy`. See [clang's JSON compilation format docs](https://clang.llvm.org/docs/JSONCompilationDatabase.html) for more info.
 
+#### Troubleshooting `clang-tidy`
+`run-clang-tidy.py` changed in the latest llvm release due to https://reviews.llvm.org/D31326, where the yaml dependency was added (which is not part of python proper). On OSX, this requires some steps to install the needed dependency in order to run clang-tidy:
+
+- [ ] Try `pip install pyyaml`
+
+If you get an permissions error or `pip: command not found` error, it's likely you're working with the system Python.
+
+- [ ] We highly recommend installing Python 3 from either Python.org or homebrew.
+This will add a new python binary to your $PATH and allow you to use Python3's builtin `pip3` command in order to install
+without `sudo` and without disrupting the system's Python installation.
+
+- Once you have Python3 installed, try `make tidy` again. This will [install yaml and properly run clang-tidy for you](add_link_here to `./scripts/clang-tidy.sh`).
 
 # Xcode
 
