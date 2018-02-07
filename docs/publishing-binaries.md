@@ -162,3 +162,5 @@ index e00b7b5..22f7cd9 100644
 ```js
 "your-module": "https://github.com/<your-org>/<your-module>/tarball/<your-branch>",
 ```
+
+If you're publishing from a private repo, generate a dev release and then reference the url in the appropriate `package.json` file. For example, `zip` the repo, put to S3, and then reference the S3 url in `package.json`. 
