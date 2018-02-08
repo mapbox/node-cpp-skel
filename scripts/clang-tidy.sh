@@ -54,17 +54,19 @@ if [[ ! -f build/compile_commands.json ]]; then
 fi
 
 function runtidy() {
-    if [[ $(uname -s) == 'Darwin' ]]; then
-        if which python3 > /dev/null; then 
-            pip3 install pyyaml
-            python3 ${PATH_TO_CLANG_TIDY_SCRIPT} -fix
-        else 
-            # See https://github.com/mapbox/node-cpp-skel/blob/master/docs/extended-tour.md#clang-tidy
-            echo "Please install Python3 for OSX before running \"make tidy\""
-            exit 1
-        fi
+    local CHECK2=0;
+    local CHECK3=0;
+    python  -c "import yaml" > /dev/null 2>&1 || CHECK2=$?
+    python3 -c "import yaml" > /dev/null 2>&1 || CHECK3=$?
+    if [[ ${CHECK2} == 0 ]]; then
+        python ${PATH_TO_CLANG_TIDY_SCRIPT} -fix
+    elif [[ ${CHECK3} == 0 ]]; then
+        python3 ${PATH_TO_CLANG_TIDY_SCRIPT} -fix
     else
-        ${PATH_TO_CLANG_TIDY_SCRIPT} -fix
+        # See https://github.com/mapbox/node-cpp-skel/blob/master/docs/extended-tour.md#clang-tidy
+        echo "Could not detect 'yaml' support in your python installation"
+        echo "Please install the 'yaml' module like 'pip install pyyaml' or 'apt-get install python-yaml'"
+        exit 1
     fi
 }
 
