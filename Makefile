@@ -17,7 +17,7 @@ release: node_modules mason_packages
 	V=1 ./node_modules/.bin/node-pre-gyp configure build --error_on_warnings=$(WERROR) --loglevel=error
 	@echo "run 'make clean' for full rebuild"
 
-debug: node_modules mason_packages
+debug: node_modules
 	V=1 ./node_modules/.bin/node-pre-gyp configure build --error_on_warnings=$(WERROR) --loglevel=error --debug
 	@echo "run 'make clean' for full rebuild"
 
