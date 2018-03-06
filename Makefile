@@ -11,7 +11,7 @@ node_modules:
 	npm install --ignore-scripts
 
 mason_packages:
-	mason-js 
+	mason-js install
 
 release: node_modules mason_packages 
 	V=1 ./node_modules/.bin/node-pre-gyp configure build --error_on_warnings=$(WERROR) --loglevel=error
