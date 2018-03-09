@@ -14,7 +14,7 @@ mason_packages:
 	mason-js install 
 
 mason_packages/.link: mason_packages
-	mason-js link || true
+	mason-js link
 
 release: node_modules mason_packages/.link
 	V=1 ./node_modules/.bin/node-pre-gyp configure build --error_on_warnings=$(WERROR) --loglevel=error
