@@ -17,7 +17,7 @@
   "author": "Mapbox",
   "license": "ISC",
   "dependencies": {
-    "mason-js-sdk": "https://mapbox-npm.s3.amazonaws.com/package/mason-js-sdk-0.0.5-alpha-8dd276fad63a92f9f5906edf213d82aec07a77ec.tgz",
+    "mason-js-sdk": "https://mapbox-npm.s3.amazonaws.com/package/mason-js-sdk-0.0.6-alpha-e8d7722417a180e9499b9dd7356f81501322d576.tgz",
     "nan": "~2.5.1",
     "node-pre-gyp": "~0.6.32"
   },
