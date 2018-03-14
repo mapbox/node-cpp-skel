@@ -5,3 +5,4 @@ mason_packages
 .mason
 .toolchain
 local.env
+.DS_Store
