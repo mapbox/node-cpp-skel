@@ -1,3 +1,29 @@
+# Workflow
+
+So your code is compiling, tested, benched, and ready to be shared. How to get it into the wild? This document will go through what's next.
+
+Generally speaking, the workflow for a node-addon isn't much different than publishing a regular Javascript node module. The main difference is an added step and a bit more configuration in order to handle the binary. If the concept of a binary file is new, give [this doc a gander](https://github.com/mapbox/node-cpp-skel/blob/dbc48924b3e30bba903e6b9220b0cdf2854f717f/docs/extended-tour.md#builds). 
+
+The typical workflow for a regular node module may look something like this:
+
+1. merge to master
+2. git tag
+3. npm publish (Now it's ready to be npm installed)
+
+The workflow for a node add-on looks very similar:
+
+1. merge to master
+2. git tag
+3. publish binaries
+4. npm publish
+
+Let's talk generally about the relationship between the third and fourth steps. Since your code is in C++, any projects that `npm install` your module as a dependency will need the C++ code precompiled so that Node can use your module in Javascript world. Before publishing your module to npm, you will publish your binaries by putting them on s3 (**Note**: you will likely publish multiple binaries, one for each Node version and various operating systems). This s3 location is reflected in your module's [package.json file](https://github.com/mapbox/node-cpp-skel/blob/dbc48924b3e30bba903e6b9220b0cdf2854f717f/package.json#L35). Your package.json file is also redefining [the install command](https://github.com/mapbox/node-cpp-skel/blob/dbc48924b3e30bba903e6b9220b0cdf2854f717f/package.json#L14), by running node-pre-gyp instead. 
+
+[Node-pre-gyp](https://github.com/mapbox/node-pre-gyp) is responsible for installing the binary by pulling the relevant binary from s3 and placing it in the specified and expected location defined by your module's [main index.js file](https://github.com/mapbox/node-cpp-skel/blob/dbc48924b3e30bba903e6b9220b0cdf2854f717f/lib/index.js#L3). So when a project runs `require()` on your module, they are directly accessing the binary. In a bit more detail, node-pre-gyp will detect [what version of Node is being used and which operating system](https://github.com/mapbox/node-cpp-skel/blob/dbc48924b3e30bba903e6b9220b0cdf2854f717f/package.json#L37), then go to s3 to retrieve the binary that matches.
+
+Continue reading below to learn how to publish your binaries to s3 so they're ready to be installed.
+
+
 # Publishing Binaries
 
 It's a good idea to publish pre-built binaries of your module if you want others to be able to easily install it on their system without needing to install a compiler like g++ or clang++. Node-pre-gyp does a lot of the heavy lifting for us (like detecting which system you are building on and deploying to s3) but you'll need a few things configured to get started.
@@ -66,55 +92,19 @@ Run the command `cfn-config info ci-binary-publish` and you'll see a JSON output
  - Click the checkbox beside your `<your module name>-ci-binary-publish` stack
  - Click the `Output` tab to access the `AccessKeyId` and `SecretAccessKey` for this new user.
 
+
 #### 6) Add the keys to the travis
-
-You can do this two ways: 1) add the keys to the travis UI settings, or 2) encode them as secure variables in your `.travis.yml`
-
-**Adding to travis UI settings**
-
-- Go to https://travis-ci.org/<your user or org>/<your module>/settings
-- Scroll to the bottom and find the `Environment Variables` section
-- Add a variable called `AWS_ACCESS_KEY_ID` and put the value of the `AccessKeyId` in it
-- CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are not shown in the logs
-- Click `Add`
-- Add a variable called `AWS_SECRET_ACCESS_KEY` and put the value of the `SecretAccessKey` in it
-- CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are not shown in the logs
-- Click `Add`
-
-**Encoding keys in yml**
-
-Take the above `AccessKeyId` and `SecretAccessKey` variables and encode them into your `.travis.yml`. You will need to place these in your environment.
-
-Then run:
-
-```bash
-# https://github.com/mapbox/node-pre-gyp/#2-create-secure-variables
-travis encrypt node_pre_gyp_accessKeyId=${AccessKeyId}
-travis encrypt node_pre_gyp_secretAccessKey=${SecretAccessKey}
-```
-
-Those will dump text with `secure: <some string>` you can then copy and paste into your .travis.yml like:
-
-```yml
-env:
-  global:
-    - secure: <string encoding aws key>
-    - secure: <string encoding aws secret>
-```
-
-The strings can be quoted but do not need to be quoted.
-
-Once set, these values will be propagated to the build environment in a secure way. If you look at your travis logs you see:
-
-```bash
-# Setting environment variables from .travis.yml
-$ export node_pre_gyp_accessKeyId=[secure]
-$ export node_pre_gyp_secretAccessKey=[secure]
-```
-
-They are printed in the order listed in the `global:` section, which allows you to know what each `- secure: <string>` represents.
-
-Note: you can also pass the `--add` flag to `travis encrypt`. This will add the keys as secure variables to your `.travis.yml` automatically. However this is often not desirable since it will also reformat your `.travis.yml` indentation, hence we why recommend the manual copy/paste method.
+ 
+ **Adding to travis UI settings**
+ 
+ - Go to https://travis-ci.org/<your user or org>/<your module>/settings
+ - Scroll to the bottom and find the `Environment Variables` section
+ - Add a variable called `AWS_ACCESS_KEY_ID` and put the value of the `AccessKeyId` in it
+ - CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are not shown in the logs
+ - Click `Add`
+ - Add a variable called `AWS_SECRET_ACCESS_KEY` and put the value of the `SecretAccessKey` in it
+ - CRITICAL: Choose `OFF` for `Display value in build log` to ensure the variables are not shown in the logs
+ - Click `Add`
 
 #### 7) All done!
 
@@ -141,3 +131,36 @@ The `.travis.yml` file uses the `matrix` to set up each individual job, which sp
   script: *test
   after_script: *publish
 ```
+
+### Dev releases
+
+You may want to test your module works correctly, in downstream dependencies, before formally publishing. To do this we recommend you:
+
+1. Create a branch of your node c++ module
+
+2. Modify the `version` string in your `package.json` like:
+
+```diff
+diff --git a/package.json b/package.json
+index e00b7b5..22f7cd9 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@mapbox/node-cpp-skel",
+-  "version": "0.1.0",
++  "version": "0.1.0-alpha1",
+   "description": "Skeleton for bindings to C++ libraries for Node.js using NAN",
+   "url": "http://github.com/mapbox/node-cpp-skel",
+   "main": "./lib/index.js",
+```
+
+3. Publishing C++ binaries by pushing a commit with `[publish binary]` per https://github.com/mapbox/node-cpp-skel/blob/master/docs/publishing-binaries.md#7-all-done
+
+4. Require your module in downstream applications like:
+
+```js
+"your-module": "https://github.com/<your-org>/<your-module>/tarball/<your-branch>",
+```
+
+If you're publishing from a private repo, generate a dev release and then reference the url in the appropriate `package.json` file. For example, `zip` the repo, put to S3, and then reference the S3 url in `package.json`. 

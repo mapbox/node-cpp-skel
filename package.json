@@ -29,7 +29,8 @@
     "aws-sdk": "^2.4.7",
     "tape": "^4.5.1",
     "d3-queue": "^3.0.1",
-    "minimist": "~1.2.0"
+    "minimist": "~1.2.0",
+    "bytes": "^2.4.0"
   },
   "binary": {
     "module_name": "module",

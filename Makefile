@@ -52,6 +52,9 @@ tidy:
 format:
 	./scripts/clang-format.sh
 
+sanitize:
+	./scripts/sanitize.sh
+
 clean:
 	rm -rf lib/binding
 	rm -rf build
