@@ -33,4 +33,4 @@ namespace standalone {
 // hello, custom sync method tied to module.cpp
 // method's logic lives in hello.cpp
 NAN_METHOD(hello);
-}
+} // namespace standalone
