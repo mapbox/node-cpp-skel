@@ -6,15 +6,6 @@ set -o pipefail
 export MASON_RELEASE="${MASON_RELEASE:-eeba3b5}"
 export MASON_LLVM_RELEASE="${MASON_LLVM_RELEASE:-5.0.0}"
 
-PLATFORM=$(uname | tr A-Z a-z)
-if [[ ${PLATFORM} == 'darwin' ]]; then
-  PLATFORM="osx"
-fi
-
-MASON_URL="https://s3.amazonaws.com/mason-binaries/${PLATFORM}-$(uname -m)"
-
-llvm_toolchain_dir="$(pwd)/.toolchain"
-
 function run() {
     local config=${1}
     # unbreak bash shell due to rvm bug on osx: https://github.com/direnv/direnv/issues/210#issuecomment-203383459
@@ -22,14 +13,6 @@ function run() {
     if [[ "${TRAVIS_OS_NAME:-}" == "osx" ]]; then
       echo 'shell_session_update() { :; }' > ~/.direnvrc
     fi
-
-    # Ensure toolchain is installed via mason-js
-    if [[ ! -f ./node_modules/.bin/mason-js ]]; then
-      npm install mason-js-sdk
-    fi
-
-    node_modules/.bin/mason-js install clang++=${MASON_LLVM_RELEASE} --type=compiled
-    node_modules/.bin/mason-js link clang++=${MASON_LLVM_RELEASE} --type=compiled
 
     #
     # ENV SETTINGS
