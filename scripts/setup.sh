@@ -3,9 +3,6 @@
 set -eu
 set -o pipefail
 
-export MASON_RELEASE="${MASON_RELEASE:-eeba3b5}"
-export MASON_LLVM_RELEASE="${MASON_LLVM_RELEASE:-5.0.0}"
-
 function run() {
     local config=${1}
     # unbreak bash shell due to rvm bug on osx: https://github.com/direnv/direnv/issues/210#issuecomment-203383459
@@ -20,14 +17,8 @@ function run() {
 
     echo "export PATH=$(pwd)/.mason:$(pwd)/mason_packages/.link/bin:"'${PATH}' > ${config}
     echo "export CXX=${CXX:-$(pwd)/mason_packages/.link/bin/clang++}" >> ${config}
-    echo "export MASON_LLVM_RELEASE=${MASON_LLVM_RELEASE}" >> ${config}
     # https://github.com/google/sanitizers/wiki/AddressSanitizerAsDso
-    RT_BASE=$(pwd)/mason_packages/.link/lib/clang/${MASON_LLVM_RELEASE}/lib/$(uname | tr A-Z a-z)/libclang_rt
-    if [[ $(uname -s) == 'Darwin' ]]; then
-        RT_PRELOAD=${RT_BASE}.asan_osx_dynamic.dylib
-    else
-        RT_PRELOAD=${RT_BASE}.asan-x86_64.so
-    fi
+    RT_PRELOAD=$(pwd)/$(ls mason_packages/.link/lib/clang/*/lib/*/libclang_rt.asan*)
     echo "export MASON_LLVM_RT_PRELOAD=${RT_PRELOAD}" >> ${config}
     SUPPRESSION_FILE="/tmp/leak_suppressions.txt"
     echo "leak:__strdup" > ${SUPPRESSION_FILE}
