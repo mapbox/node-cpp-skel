@@ -53,6 +53,10 @@ matrix:
       osx_image: xcode9.2
       env: BUILDTYPE=release
       node_js: 6
+    # linux cfi build node v6/release
+    - os: linux
+      env: BUILDTYPE=debug TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -flto -fvisibility=hidden" LDFLAGS="-fsanitize=cfi -flto"
+      node_js: 6
     # linux sanitizer build node v6/debug
     - os: linux
       env: BUILDTYPE=debug TOOLSET=asan
