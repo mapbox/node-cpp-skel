@@ -14,7 +14,11 @@ Rebuilds the code with the sanitizers and runs the tests
 make clean
 
 # https://github.com/google/sanitizers/wiki/AddressSanitizerAsDso
-export MASON_LLVM_RT_PRELOAD=$(pwd)/$(ls mason_packages/.link/lib/clang/*/lib/*/libclang_rt.asan*)
+SHARED_LIB_EXT=.so
+if [[ $(uname -s) == 'Darwin' ]]; then
+    SHARED_LIB_EXT=.dylib
+fi
+export MASON_LLVM_RT_PRELOAD=$(pwd)/$(ls mason_packages/.link/lib/clang/*/lib/*/libclang_rt.asan*${SHARED_LIB_EXT})
 SUPPRESSION_FILE="/tmp/leak_suppressions.txt"
 echo "leak:__strdup" > ${SUPPRESSION_FILE}
 echo "leak:v8::internal" >> ${SUPPRESSION_FILE}
