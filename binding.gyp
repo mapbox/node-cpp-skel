@@ -1,5 +1,10 @@
 # This file inherits default targets for Node addons, see https://github.com/nodejs/node-gyp/blob/master/addon.gypi
 {
+  'make_global_settings': [
+    ['CXX', '<(module_root_dir)/mason_packages/.link/bin/clang++'],
+    ['CC', '<(module_root_dir)/mason_packages/.link/bin/clang'],
+    ['LINK', '<(module_root_dir)/mason_packages/.link/bin/clang++']
+  ],
   'includes': [ 'common.gypi' ], # brings in a default set of options that are inherited from gyp
   'variables': { # custom variables we use specific to this file
       'error_on_warnings%':'true', # can be overriden by a command line variable because of the % sign using "WERROR" (defined in Makefile)
