@@ -43,16 +43,16 @@ debug: mason_packages/.link/include
 	V=1 ./node_modules/.bin/node-pre-gyp configure build --error_on_warnings=$(WERROR) --loglevel=error --debug
 	@echo "run 'make clean' for full rebuild"
 
-coverage:
+coverage: build-deps
 	./scripts/coverage.sh
 
-tidy:
+tidy: build-deps
 	./scripts/clang-tidy.sh
 
-format:
+format: build-deps
 	./scripts/clang-format.sh
 
-sanitize:
+sanitize: build-deps
 	./scripts/sanitize.sh
 
 clean:
