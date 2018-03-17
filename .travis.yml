@@ -23,27 +23,19 @@ install:
 # For this reason, we disable the 'script' section below, since we prefer using 'before_script'.
 before_script:
   - npm test
-  # after successful tests, publish binaries if specified in commit message
-  - ./scripts/publish.sh --toolset=${TOOLSET:-} --debug=$([ "${BUILDTYPE}" == 'debug' ] && echo "true" || echo "false")
 
-# We set 'script' here to an empty array to prevent this section from automatically running 'npm test'
-# The reason we do this is mentioned above in the comment about the 'before_script' stage.
-# For reference, the default travis behavior which we override comes from https://github.com/travis-ci/travis-build/blob/e5a45cbf49e0d9e27398e76e5f25dd7706feb6aa/lib/travis/build/script/node_js.rb#L62-L69.
-script: []
+script:
+  # after successful tests, publish binaries if specified in commit message
+  - ./scripts/publish.sh --TOOLSET=${TOOLSET:-} --debug=$([ "${BUILDTYPE}" == 'debug' ] && echo "true" || echo "false")
 
 # the matrix allows you to specify different operating systems and environments to 
 # run your tests and build binaries
 matrix:
   include:
-    # linux publishable node v4/release
-    - os: linux
-      env: BUILDTYPE=release
-      node_js: 4
-    # linux publishable node v4/debug
-    - os: linux
-      env: BUILDTYPE=debug
-      node_js: 4
-    # linux publishable node v6
+
+    ## ** Builds that are published **
+
+    # linux publishable node v6/release
     - os: linux
       env: BUILDTYPE=release
       node_js: 6
@@ -51,28 +43,43 @@ matrix:
     - os: linux
       env: BUILDTYPE=debug
       node_js: 6
-    # osx publishable node v4
+    # osx publishable node v6/release
     - os: osx
-      osx_image: xcode8.2
-      env: BUILDTYPE=release
-      node_js: 4
-    # osx publishable node v6
-    - os: osx
-      osx_image: xcode8.2
+      osx_image: xcode9.2
       env: BUILDTYPE=release
       node_js: 6
-    # Sanitizer build node v4/Debug
+    # osx publishable node v6/debug
+    - os: osx
+      osx_image: xcode9.2
+      env: BUILDTYPE=release
+      node_js: 6
+    # linux sanitizer build node v6/debug
     - os: linux
       env: BUILDTYPE=debug TOOLSET=asan
-      node_js: 4
+      node_js: 6
       sudo: required
       # Overrides `install` to set up custom asan flags
       install:
         - make sanitize
+      # Overrides `before_script` (tests are already run in `make sanitize`)
+      before_script:
+    # osx sanitizer build node v6/debug
+    - os: osx
+      env: BUILDTYPE=debug TOOLSET=asan
+      node_js: 6
+      sudo: required
+      # Overrides `install` to set up custom asan flags
+      install:
+        - make sanitize
+      # Overrides `before_script` (tests are already run in `make sanitize`)
+      before_script:
+
+    ## ** Builds that do not get published **
+    
     # g++ build (default builds all use clang++)
     - os: linux
       env: BUILDTYPE=debug CXX="g++-6" CC="gcc-6"
-      node_js: 4
+      node_js: 6
       addons:
         apt:
           sources:
@@ -84,15 +91,13 @@ matrix:
       install:
         - make ${BUILDTYPE}
       # Overrides `script` to disable publishing
-      before_script:
-        - npm test
+      script: []
     # Coverage build
     - os: linux
       env: BUILDTYPE=debug CXXFLAGS="--coverage" LDFLAGS="--coverage"
-      node_js: 4
+      node_js: 6
       # Overrides `script` to publish coverage data to codecov
-      before_script:
-        - npm test
+      script:
         - export PATH=$(pwd)/mason_packages/.link/bin/:${PATH}
         - which llvm-cov
         - curl -S -f https://codecov.io/bash -o codecov
@@ -109,12 +114,14 @@ matrix:
         # will trigger the build to fail (idea here is to get us to pay attention
         # and get in the habit of running these locally before committing)
         - make format
-      # Overrides `script`, no need to run tests
+      # Overrides `before_script`, no need to run tests
       before_script:
+      # Overrides `script` to disable publishing
+      script:
     # Clang tidy build
     - os: linux
       env: CLANG_TIDY
-      node_js: 4
+      node_js: 6
       # Overrides `install` to avoid initializing clang toolchain
       install:
         # First run the clang-tidy target
@@ -122,5 +129,7 @@ matrix:
         # will trigger the build to fail (idea here is to get us to pay attention
         # and get in the habit of running these locally before committing)
         - make tidy
-      # Overrides `script`, no need to run tests
+      # Overrides `before_script`, no need to run tests
       before_script:
+      # Overrides `script` to disable publishing
+      script:
