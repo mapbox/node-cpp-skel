@@ -18,6 +18,12 @@ SHARED_LIB_EXT=.so
 if [[ $(uname -s) == 'Darwin' ]]; then
     SHARED_LIB_EXT=.dylib
 fi
+
+if [[ $(uname -s) == 'Linux' ]]; then
+    ./node_modules/.bin/mason-js install binutils=2.30 --type=compiled
+    ./node_modules/.bin/mason-js link binutils=2.30 --type=compiled
+    export PATH=$(pwd)/mason_packages/.link/bin:${PATH}
+fi
 export MASON_LLVM_RT_PRELOAD=$(pwd)/$(ls mason_packages/.link/lib/clang/*/lib/*/libclang_rt.asan*${SHARED_LIB_EXT})
 SUPPRESSION_FILE="/tmp/leak_suppressions.txt"
 echo "leak:__strdup" > ${SUPPRESSION_FILE}
