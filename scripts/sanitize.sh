@@ -35,7 +35,7 @@ export MSAN_SYMBOLIZER_PATH=$(pwd)/mason_packages/.link/bin/llvm-symbolizer
 export UBSAN_OPTIONS=print_stacktrace=1
 export LSAN_OPTIONS=suppressions=${SUPPRESSION_FILE}
 export ASAN_OPTIONS=detect_leaks=1:symbolize=1:abort_on_error=1:detect_container_overflow=1:check_initialization_order=1:detect_stack_use_after_return=1
-export MASON_SANITIZE="-fsanitize=address,undefined,integer,leak,cfi -flto -fvisibility=hidden -fno-sanitize=vptr,function"
+export MASON_SANITIZE="-fsanitize=address,undefined,integer,leak -fno-sanitize=vptr,function"
 export MASON_SANITIZE_CXXFLAGS="${MASON_SANITIZE} -fno-sanitize=vptr,function -fsanitize-address-use-after-scope -fno-omit-frame-pointer -fno-common"
 export MASON_SANITIZE_LDFLAGS="${MASON_SANITIZE}"
 # Note: to build without stopping on errors remove the -fno-sanitize-recover=all flag
