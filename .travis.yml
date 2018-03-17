@@ -78,7 +78,7 @@ matrix:
     
     # g++ build (default builds all use clang++)
     - os: linux
-      env: BUILDTYPE=debug CXX="g++-6" CC="gcc-6"
+      env: BUILDTYPE=debug CXX="g++-6" CC="gcc-6" LINK="g++-6" AR="ar" NM="nm"
       node_js: 6
       addons:
         apt:
