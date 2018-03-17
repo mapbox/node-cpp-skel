@@ -11,8 +11,7 @@
   "scripts": {
     "test": "tape test/*.test.js",
     "prepublishOnly": "npm ls",
-    "mason": "mason-js install && mason-js link",
-    "install": "npm run mason && node-pre-gyp install --fallback-to-build",
+    "install": "node-pre-gyp install --fallback-to-build",
     "docs": "documentation build src/standalone_async/*.cpp src/standalone/*.cpp src/object_sync/*.cpp src/object_async/*.cpp --polyglot -f md -o API.md"
   },
   "author": "Mapbox",
