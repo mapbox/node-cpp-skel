@@ -35,6 +35,16 @@ matrix:
 
     ## ** Builds that are published **
 
+    # linux cfi build node v6/release
+    - os: linux
+      env: BUILDTYPE=debug TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -flto -fvisibility=hidden" LDFLAGS="-fsanitize=cfi -flto"
+      node_js: 6
+      # we need binutils for -flto on linux (TODO find cleaner way to do this)
+      before_install:
+        - npm install mason-js-sdk
+        - ./node_modules/.bin/mason-js install binutils=2.30 --type=compiled
+        - ./node_modules/.bin/mason-js link binutils=2.30 --type=compiled
+        - export PATH=$(pwd)/mason_packages/.link/bin:${PATH}
     # linux publishable node v6/release
     - os: linux
       env: BUILDTYPE=release
@@ -52,10 +62,6 @@ matrix:
     - os: osx
       osx_image: xcode9.2
       env: BUILDTYPE=release
-      node_js: 6
-    # linux cfi build node v6/release
-    - os: linux
-      env: BUILDTYPE=debug TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -flto -fvisibility=hidden" LDFLAGS="-fsanitize=cfi -flto"
       node_js: 6
     # linux sanitizer build node v6/debug
     - os: linux
