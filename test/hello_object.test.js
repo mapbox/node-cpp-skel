@@ -3,7 +3,7 @@ var module = require('../lib/index.js');
 
 test('success: prints expected string', function(t) {
   var H = new module.HelloObject('carol');
-  var check = H.hello();
+  var check = H.helloMethod();
   t.equal(check, '...initialized an object...hello carol', 'returned expected string');
   t.end();
 });
