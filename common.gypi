@@ -38,10 +38,12 @@
           'NDEBUG'
         ],
         'cflags': [
+         '-flto'
+        ],
+        'ldflags': [
          '-flto',
          '-fuse-ld=<(module_root_dir)/mason_packages/.link/bin/ld'
         ],
-        'ldflags': ['-flto'],
         'xcode_settings': {
           'OTHER_CPLUSPLUSFLAGS!': [
             '-Os',
