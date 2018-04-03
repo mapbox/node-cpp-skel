@@ -1,5 +1,13 @@
 # This file inherits default targets for Node addons, see https://github.com/nodejs/node-gyp/blob/master/addon.gypi
 {
+  # https://github.com/springmeyer/gyp/blob/master/test/make_global_settings/wrapper/wrapper.gyp
+  'make_global_settings': [
+    ['CXX', '<(module_root_dir)/mason_packages/.link/bin/clang++'],
+    ['CC', '<(module_root_dir)/mason_packages/.link/bin/clang'],
+    ['LINK', '<(module_root_dir)/mason_packages/.link/bin/clang++'],
+    ['AR', '<(module_root_dir)/mason_packages/.link/bin/llvm-ar'],
+    ['NM', '<(module_root_dir)/mason_packages/.link/bin/llvm-nm']
+  ],
   'includes': [ 'common.gypi' ], # brings in a default set of options that are inherited from gyp
   'variables': { # custom variables we use specific to this file
       'error_on_warnings%':'true', # can be overriden by a command line variable because of the % sign using "WERROR" (defined in Makefile)
@@ -36,10 +44,30 @@
   # - none: a trick to tell gyp not to run the compiler for a given target.
   'targets': [
     {
+      'target_name': 'action_before_build',
+      'type': 'none',
+      'hard_dependency': 1,
+      'actions': [
+        {
+          'action_name': 'install_deps',
+          'inputs': ['./node_modules/.bin/mason-js'],
+          'outputs': ['./mason_packages'],
+          'action': ['./node_modules/.bin/mason-js', 'install']
+        },
+        {
+          'action_name': 'link_deps',
+          'inputs': ['./node_modules/.bin/mason-js'],
+          'outputs': ['./mason_packages/.link'],
+          'action': ['./node_modules/.bin/mason-js', 'link']
+        }
+      ]
+    },
+    {
       # module_name and module_path are both variables passed by node-pre-gyp from package.json
       'target_name': '<(module_name)', # sets the name of the binary file
       'product_dir': '<(module_path)', # controls where the node binary file gets copied to (./lib/binding/module.node)
       'type': 'loadable_module',
+      'dependencies': [ 'action_before_build' ],
       # "make" only watches files specified here, and will sometimes cache these files after the first compile.
       # This cache can sometimes cause confusing errors when removing/renaming/adding new files. 
       # Running "make clean" helps to prevent this "mysterious error by cache" scenario

@@ -153,7 +153,7 @@ void HelloObject::Init(v8::Local<v8::Object> target) {
     // prototype.
     // "hello" is therefore like a property of the fnTp object
     // ex: console.log(HelloObject.hello) --> [Function: hello]
-    SetPrototypeMethod(fnTp, "hello", hello);
+    SetPrototypeMethod(fnTp, "helloMethod", hello);
 
     // Create an unique instance of the HelloObject function template,
     // then set this unique instance to the target
