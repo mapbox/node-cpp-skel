@@ -49,13 +49,33 @@ npm install -g documentation
 npm run docs
 ```
 
-Note: by default the build errors on compiler warnings. To disable this do:
+### Customizing the compiler toolchain
+
+By default we use `clang++` via [mason](https://github.com/mapbox/mason). This is controlled by the `make_global_settings` in the [`binding.gyp`](./binding.gyp). The version of the clang++ binary (and related tools) is controlled by the [`mason-versions.ini`](./mason-versions.ini), which `mason-js` uses to install the toolchain.
+
+If you want to customize the toolchain you can override the defaults by setting these environment variables: CXX, CC, LINK, AR, NM. For example to use g++-6 you could do:
+
+
+```bash
+export CXX="g++-6"
+export CC="gcc-6"
+export LINK="g++-6"
+export AR="ar"
+export NM="nm"
+make
+```
+
+### Warnings as errors
+
+By default the build errors on compiler warnings. To disable this do:
 
 ```
 WERROR=false make
 ```
 
-Run tests locally with compile flags enabled to catch hard-to-find bugs (see [this PR](https://github.com/mapbox/node-cpp-skel/pull/85) for more info):
+### Sanitizers
+
+You can run the [sanitizers](https://github.com/mapbox/cpp/blob/master/glossary.md#sanitizers), to catch additional bugs, by doing:
 
 ```shell
 make sanitize
