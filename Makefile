@@ -5,9 +5,11 @@
 # directly to underlying build tools and skips running steps that appear to have already
 # been run (determined by the presence of a known file or directory). What `make` does is
 # the same as running `npm install --build-from-source` except that it is faster when
-# run a second time and may break if your build deps failed to install but their directories
-# do exist. If you hit a build error do to this, you should be able to fix it by running
-# `make distclean` and then `make` again.
+# run a second time because it will skip re-running expensive steps.
+# Note: in rare cases (like if you hit `crtl-c` during an install) you might end up with
+# build deps only partially installed. In this case you should run `make distclean` to fully
+# restore your repo to is starting state and then running `make` again should start from
+# scratch, fixing any inconsistencies.
 #
 # 2. It provides a few commands that call out to external scripts like `make coverage` or
 # `make tidy`. These scripts can be called directly but this Makefile provides a more uniform
@@ -15,15 +17,13 @@
 #
 # To learn more about the build system see https://github.com/mapbox/node-cpp-skel/blob/master/docs/extended-tour.md#builds
 
-MODULE_NAME := $(shell node -e "console.log(require('./package.json').binary.module_name)")
-
 # Whether to turn compiler warnings into errors
 export WERROR ?= true
 
+# the default target. This line means that
+# just typing `make` will call `make release`
 default: release
 
-# install deps but for now ignore our own install script
-# so that we can run it directly in either debug or release
 node_modules/nan:
 	npm install --ignore-scripts
 
@@ -71,9 +71,11 @@ distclean: clean
 	rm -rf .toolchain
 	rm -f local.env
 
+# variable used in the `xcode` target below
+MODULE_NAME := $(shell node -e "console.log(require('./package.json').binary.module_name)")
+
 xcode: node_modules
 	./node_modules/.bin/node-pre-gyp configure -- -f xcode
-
 	@# If you need more targets, e.g. to run other npm scripts, duplicate the last line and change NPM_ARGUMENT
 	SCHEME_NAME="$(MODULE_NAME)" SCHEME_TYPE=library BLUEPRINT_NAME=$(MODULE_NAME) BUILDABLE_NAME=$(MODULE_NAME).node scripts/create_scheme.sh
 	SCHEME_NAME="npm test" SCHEME_TYPE=node BLUEPRINT_NAME=$(MODULE_NAME) BUILDABLE_NAME=$(MODULE_NAME).node NODE_ARGUMENT="`npm bin tape`/tape test/*.test.js" scripts/create_scheme.sh
