@@ -6,38 +6,18 @@ set -o pipefail
 # https://clang.llvm.org/extra/clang-tidy/
 
 : '
-
 Runs clang-tidy on the code in src/
-
 Return `1` if there are files automatically fixed by clang-tidy.
-
 Returns `0` if no fixes by clang-tidy.
-
 TODO: should also return non-zero if clang-tidy emits warnings
 or errors about things it cannot automatically fix. However I cannot
 figure out how to get this working yet as it seems that clang-tidy
 always returns 0 even on errors.
-
 '
 
-# to speed up re-runs, only re-create environment if needed
-if [[ ! -f local.env ]]; then
-    # automatically setup environment
-    ./scripts/setup.sh --config local.env
-fi
-
-# source the environment
-source local.env
-
 PATH_TO_CLANG_TIDY_SCRIPT="$(pwd)/mason_packages/.link/share/run-clang-tidy.py"
-
-# to speed up re-runs, only install clang-tidy if needed
-if [[ ! -f PATH_TO_CLANG_TIDY_SCRIPT ]]; then
-    # The MASON_LLVM_RELEASE variable comes from `local.env`
-    mason install clang-tidy ${MASON_LLVM_RELEASE}
-    # We link the tools to make it easy to know ${PATH_TO_CLANG_TIDY_SCRIPT}
-    mason link clang-tidy ${MASON_LLVM_RELEASE}
-fi
+# make sure that run-clang-tidy.py can find the right clang-tidy
+export PATH=$(pwd)/mason_packages/.link/bin:${PATH}
 
 # build the compile_commands.json file if it does not exist
 if [[ ! -f build/compile_commands.json ]]; then
@@ -70,4 +50,3 @@ if [[ $dirty ]]; then
 else
     exit 0
 fi
-

@@ -12,18 +12,12 @@ Return `1` if there are files to be formatted, and automatically formats them.
 Returns `0` if everything looks properly formatted.
 
 '
- # Set up the environment by installing mason and clang++
- # See https://github.com/mapbox/node-cpp-skel/blob/master/docs/extended-tour.md#configuration-files
-./scripts/setup.sh --config local.env
-source local.env
 
-# Add clang-format as a dep
-mason install clang-format ${MASON_LLVM_RELEASE}
-mason link clang-format ${MASON_LLVM_RELEASE}
+PATH_TO_FORMAT_SCRIPT="$(pwd)/mason_packages/.link/bin/clang-format"
 
 # Run clang-format on all cpp and hpp files in the /src directory
 find src/ -type f -name '*.hpp' -o -name '*.cpp' \
- | xargs -I{} clang-format -i -style=file {}
+ | xargs -I{} ${PATH_TO_FORMAT_SCRIPT} -i -style=file {}
 
 # Print list of modified files
 dirty=$(git ls-files --modified src/)
