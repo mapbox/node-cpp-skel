@@ -3,7 +3,6 @@
 #include "standalone/hello.hpp"
 #include "standalone_async/hello_async.hpp"
 #include <nan.h>
-#include <protozero/types.hpp>
 // #include "your_code.hpp"
 
 // "target" is a magic var that nodejs passes into a module's scope.

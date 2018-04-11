@@ -66,10 +66,6 @@ clean:
 distclean: clean
 	rm -rf node_modules
 	rm -rf mason_packages
-	# remove remains from running './scripts/setup.sh'
-	rm -rf .mason
-	rm -rf .toolchain
-	rm -f local.env
 
 # variable used in the `xcode` target below
 MODULE_NAME := $(shell node -e "console.log(require('./package.json').binary.module_name)")
