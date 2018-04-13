@@ -172,6 +172,7 @@ Before publishing to npm, you can ensure the final packaged tarball will include
 Take a peek at what npm will publish by running:
 
 ```
+make
 make testpack
 ```
 
