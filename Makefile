@@ -78,6 +78,11 @@ xcode: node_modules
 
 	open build/binding.xcodeproj
 
+testpack:
+	rm -f ./*tgz
+	npm pack
+	tar -ztvf *tgz
+
 docs:
 	npm run docs
 

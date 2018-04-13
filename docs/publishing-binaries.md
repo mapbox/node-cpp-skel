@@ -163,4 +163,23 @@ index e00b7b5..22f7cd9 100644
 "your-module": "https://github.com/<your-org>/<your-module>/tarball/<your-branch>",
 ```
 
-If you're publishing from a private repo, generate a dev release and then reference the url in the appropriate `package.json` file. For example, `zip` the repo, put to S3, and then reference the S3 url in `package.json`. 
+If you're publishing from a private repo, generate a dev release and then reference the url in the appropriate `package.json` file. For example, `zip` the repo, put to S3, and then reference the S3 url in `package.json`.
+
+#### Before `npm publish`
+
+Before publishing to npm, you can ensure the final packaged tarball will include what you expect. For instance, you want to avoid a large accidental file being packaged by npm and make sure the package contains all needed dependencies.
+
+Take a peek at what npm will publish by running:
+
+```
+make testpack
+```
+
+This will create a tarball locally and print every file included. A couple basic checks:
+  - make sure `.mason` is not included
+  - make sure `node-pre-gyp` directory is included, because it is responsible for knowing where to grab the binary from s3.
+
+**Hot tip** :hot_pepper: You can use the resulting tarball locally and install it within another local repo to make sure it works: 
+```
+npm install <path to tarball>
+```
