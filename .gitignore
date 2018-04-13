@@ -3,3 +3,4 @@ node_modules
 build
 mason_packages
 .DS_Store
+*tgz
