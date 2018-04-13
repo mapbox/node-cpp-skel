@@ -180,7 +180,9 @@ This will create a tarball locally and print every file included. A couple basic
   - make sure `.mason` is not included
   - make sure `node-pre-gyp` directory is included, because it is responsible for knowing where to grab the binary from s3.
 
-**Hot tip** :hot_pepper: You can use the resulting tarball locally and install it within another local repo to make sure it works: 
+**Hot tips** :hot_pepper: 
+- Node and npm versions can have differing `npm pack` and `npm publish` behaviour, so be mindful of what your environment is using
+- You can use the resulting tarball locally and install it within another local repo to make sure it works: 
 ```
 npm install <path to tarball>
 ```
