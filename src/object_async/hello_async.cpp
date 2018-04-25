@@ -186,7 +186,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
         callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
     }
 
-    std::string result_;
+    std::string result_{};
     const bool louder_;
     // We use a pointer here to avoid copying the string data.
     // This works because we know that the original string we are

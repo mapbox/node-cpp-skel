@@ -105,7 +105,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
         callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
     }
 
-    std::string result_;
+    std::string result_{};
     const bool louder_;
 };
 
