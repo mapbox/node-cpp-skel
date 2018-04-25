@@ -25,15 +25,9 @@ if [[ $(uname -s) == 'Linux' ]]; then
     export PATH=$(pwd)/mason_packages/.link/bin:${PATH}
 fi
 export MASON_LLVM_RT_PRELOAD=$(pwd)/$(ls mason_packages/.link/lib/clang/*/lib/*/libclang_rt.asan*${SHARED_LIB_EXT})
-SUPPRESSION_FILE="/tmp/leak_suppressions.txt"
-echo "leak:__strdup" > ${SUPPRESSION_FILE}
-echo "leak:v8::internal" >> ${SUPPRESSION_FILE}
-echo "leak:node::CreateEnvironment" >> ${SUPPRESSION_FILE}
-echo "leak:node::Init" >> ${SUPPRESSION_FILE}
 export ASAN_SYMBOLIZER_PATH=$(pwd)/mason_packages/.link/bin/llvm-symbolizer
 export MSAN_SYMBOLIZER_PATH=$(pwd)/mason_packages/.link/bin/llvm-symbolizer
 export UBSAN_OPTIONS=print_stacktrace=1
-export LSAN_OPTIONS=suppressions=${SUPPRESSION_FILE}
 export ASAN_OPTIONS=detect_leaks=1:symbolize=1:abort_on_error=1:detect_container_overflow=1:check_initialization_order=1:detect_stack_use_after_return=1
 export MASON_SANITIZE="-fsanitize=address,undefined,integer,leak -fno-sanitize=vptr,function"
 export MASON_SANITIZE_CXXFLAGS="${MASON_SANITIZE} -fno-sanitize=vptr,function -fsanitize-address-use-after-scope -fno-omit-frame-pointer -fno-common"
