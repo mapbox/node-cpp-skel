@@ -51,9 +51,17 @@ npm run docs
 
 ### Customizing the compiler toolchain
 
-By default we use `clang++` via [mason](https://github.com/mapbox/mason). This is controlled by the `make_global_settings` in the [`binding.gyp`](./binding.gyp). The version of the clang++ binary (and related tools) is controlled by the [`mason-versions.ini`](./mason-versions.ini), which `mason-js` uses to install the toolchain.
+By default we use `clang++` via [mason](https://github.com/mapbox/mason). The reason we do this is:
 
-If you want to customize the toolchain you can override the defaults by setting these environment variables: CXX, CC, LINK, AR, NM. For example to use g++-6 you could do:
+ - We want to run the latest and greatest compiler version, to catch the most bugs, provide the best developer experience, and trigger the most helpful warnings
+ - We use clang-format to format the code and each version of clang-format formats code slightly differently. To avoid friction around this (and ensure all devs format the code the same) we default to using the same version of clang++ via mason.
+ - We want to support [LTO](https://github.com/mapbox/cpp/blob/master/glossary.md#link-time-optimization) in the builds, which is difficult to do on linux unless you control the toolchain tightly.
+
+The version of the clang++ binary (and related tools) is controlled by the [`mason-versions.ini`](./mason-versions.ini), and uses `mason-js` uses to install the toolchain.
+
+All that said, it is still absolutely possible and encouraged to compile your module with another compiler toolchain. In fact we hope that modules based on node-cpp-skel do this!
+
+To customize the toolchain you can override the defaults by setting these environment variables: CXX, CC, LINK, AR, NM. For example to use g++-6 you could do:
 
 
 ```bash
@@ -64,6 +72,9 @@ export AR="ar"
 export NM="nm"
 make
 ```
+
+These environment variables will override the compiler toolchain defaults in `make_global_settings` in the [`binding.gyp`](./binding.gyp).
+
 
 ### Warnings as errors
 
