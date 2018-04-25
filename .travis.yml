@@ -55,7 +55,7 @@ matrix:
     # osx publishable node v6/debug
     - os: osx
       osx_image: xcode9.2
-      env: BUILDTYPE=release
+      env: BUILDTYPE=debug
       node_js: 6
     # linux sanitizer build node v6/debug
     - os: linux
