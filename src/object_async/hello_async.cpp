@@ -155,7 +155,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
 
     AsyncHelloWorker(bool louder, const std::string* name,
                      Nan::Callback* cb)
-        : Base(cb), result_{}, louder_{louder}, name_{name} {}
+        : Base(cb), louder_{louder}, name_{name} {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -186,7 +186,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
         callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
     }
 
-    std::string result_;
+    std::string result_{};
     const bool louder_;
     // We use a pointer here to avoid copying the string data.
     // This works because we know that the original string we are
@@ -274,8 +274,7 @@ void HelloObjectAsync::Init(v8::Local<v8::Object> target) {
     v8::Local<v8::String> whoami = Nan::New("HelloObjectAsync").ToLocalChecked();
 
     // Create the HelloObject
-    auto fnTp = Nan::New<v8::FunctionTemplate>(
-        HelloObjectAsync::New); // Passing the HelloObject::New method above
+    auto fnTp = Nan::New<v8::FunctionTemplate>(HelloObjectAsync::New, v8::Local<v8::Value>()); // Passing the HelloObject::New method above
     fnTp->InstanceTemplate()->SetInternalFieldCount(
         1);                     // It's 1 when holding the ObjectWrap itself and nothing else
     fnTp->SetClassName(whoami); // Passing the Javascript string object above
