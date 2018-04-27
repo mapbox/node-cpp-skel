@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-fuchsia-*'
+Checks:          '*'
 WarningsAsErrors: '*'
 HeaderFilterRegex: '\/src\/.*'
 ...
