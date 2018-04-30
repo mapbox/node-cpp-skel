@@ -184,7 +184,8 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
             Nan::Null(), Nan::New<v8::String>(result_).ToLocalChecked()};
 
         // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
-        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
+        Nan::AsyncResource resource("object-async-worker");
+        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv),&resource);
     }
 
     std::string result_{};
