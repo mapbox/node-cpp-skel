@@ -156,7 +156,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
     AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
     AsyncHelloWorker(bool louder, const std::string* name,
                      Nan::Callback* cb, std::string const& resource_name)
-        : Base(cb, resource_name.c_str()), louder_{louder}, name_{name} {}
+        : Base(cb, resource_name.c_str()), result_{}, louder_{louder}, name_{name} {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -184,7 +184,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
             Nan::Null(), Nan::New<v8::String>(result_).ToLocalChecked()};
 
         // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
-        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv),async_resource);
+        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
     }
 
     std::string result_{};
