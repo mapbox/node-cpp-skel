@@ -30,7 +30,15 @@ if [[ ! -f build/compile_commands.json ]]; then
     mkdir -p build
     # Run make, pipe the output to the generate_compile_commands.py
     # and drop them in a place that clang-tidy will automatically find them
-    make | scripts/generate_compile_commands.py > build/compile_commands.json
+    RESULT=0
+    make | tee /tmp/make-node-cpp-skel-build-output.txt || RESULT=$?
+    if [[ ${RESULT} != 0 ]]; then
+        echo "Build failed, could not generate compile commands for clang-tidy, aborting!"
+        exit ${RESULT}
+    else
+        cat /tmp/make-node-cpp-skel-build-output.txt | scripts/generate_compile_commands.py > build/compile_commands.json
+    fi
+
 fi
 
 # change into the build directory so that clang-tidy can find the files
