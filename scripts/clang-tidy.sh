@@ -31,7 +31,7 @@ if [[ ! -f build/compile_commands.json ]]; then
     # Run make, pipe the output to the generate_compile_commands.py
     # and drop them in a place that clang-tidy will automatically find them
     RESULT=0
-    make > /tmp/make-node-cpp-skel-build-output.txt || RESULT=$?
+    make | tee /tmp/make-node-cpp-skel-build-output.txt || RESULT=$?
     if [[ ${RESULT} != 0 ]]; then
         echo "Build failed, could not generate compile commands for clang-tidy, aborting!"
         exit ${RESULT}
