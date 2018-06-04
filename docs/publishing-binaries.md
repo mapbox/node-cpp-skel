@@ -159,12 +159,12 @@ index e00b7b5..22f7cd9 100644
 
 4. Require your *public* module in downstream applications via one of two ways...
 
-#### npm
+##### npm
 ```
 npm publish --tag dev
 ```
 
-#### Github tarball url
+##### Github tarball url
 ```js
 "your-module": "https://github.com/<your-org>/<your-module>/tarball/<your-branch>",
 ```
