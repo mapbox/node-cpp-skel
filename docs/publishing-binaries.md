@@ -149,7 +149,7 @@ index e00b7b5..22f7cd9 100644
  {
    "name": "@mapbox/node-cpp-skel",
 -  "version": "0.1.0",
-+  "version": "0.1.0-alpha1",
++  "version": "0.1.0-alpha",
    "description": "Skeleton for bindings to C++ libraries for Node.js using NAN",
    "url": "http://github.com/mapbox/node-cpp-skel",
    "main": "./lib/index.js",
@@ -157,13 +157,25 @@ index e00b7b5..22f7cd9 100644
 
 3. Publishing C++ binaries by pushing a commit with `[publish binary]` per https://github.com/mapbox/node-cpp-skel/blob/master/docs/publishing-binaries.md#7-all-done
 
-4. Require your module in downstream applications like:
+
+4. **Option A)** Require your module in downstream applications like:
 
 ```js
 "your-module": "https://github.com/<your-org>/<your-module>/tarball/<your-branch>",
 ```
 
-If you're publishing from a private repo, generate a dev release and then reference the url in the appropriate `package.json` file. For example, `zip` the repo, put to S3, and then reference the S3 url in `package.json`.
+If you're publishing from a private repo, generate a dev release and then reference the url in the appropriate `package.json` file. For example, `zip` the repo, put to S3, and then reference the S3 url in `package.json`. 
+
+**Option B)** Issue a npm dev release after the binary is published. 
+
+Run `npm publish --tag dev` and then require your module in downstream applications like: 
+
+```js
+"your-module": "0.1.0-alpha",
+```
+
+For npm dev releases, it’s good to use the `--tag <something>` to avoid publishing to the latest tag. If you run `npm publish` then `0.1.0-alpha` is what anyone running `npm install <your module> --save` will receive. 
+
 
 #### Before `npm publish`
 
