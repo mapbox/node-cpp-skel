@@ -1,6 +1,6 @@
 {
   "name": "@mapbox/node-cpp-skel",
-  "version": "0.1.0-mapsamtmp2",
+  "version": "0.1.0",
   "description": "Skeleton for bindings to C++ libraries for Node.js using NAN",
   "url": "http://github.com/mapbox/node-cpp-skel",
   "main": "./lib/index.js",
