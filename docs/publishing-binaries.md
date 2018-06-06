@@ -157,13 +157,19 @@ index e00b7b5..22f7cd9 100644
 
 3. Publishing C++ binaries by pushing a commit with `[publish binary]` per https://github.com/mapbox/node-cpp-skel/blob/master/docs/publishing-binaries.md#7-all-done
 
-4. Require your module in downstream applications like:
+4. Require your *public* module in downstream applications via one of two ways...
 
+##### npm
+```
+npm publish --tag dev
+```
+
+##### Github tarball url
 ```js
 "your-module": "https://github.com/<your-org>/<your-module>/tarball/<your-branch>",
 ```
 
-If you're publishing from a private repo, generate a dev release and then reference the url in the appropriate `package.json` file. For example, `zip` the repo, put to S3, and then reference the S3 url in `package.json`.
+If you're publishing from a *private* repo, generate a dev release and then reference the url in the appropriate `package.json` file. For example, `zip` the repo, put to S3, and then reference the S3 url in `package.json`.
 
 #### Before `npm publish`
 
