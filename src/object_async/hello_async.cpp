@@ -155,7 +155,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
 
     AsyncHelloWorker(bool louder, const std::string* name,
                      Nan::Callback* cb)
-        : Base(cb), result_{}, louder_{louder}, name_{name} {}
+        : Base(cb), , louder_{louder}, name_{name} {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
