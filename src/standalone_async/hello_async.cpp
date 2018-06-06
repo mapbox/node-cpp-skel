@@ -72,7 +72,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
     using Base = Nan::AsyncWorker;
 
     AsyncHelloWorker(bool louder, Nan::Callback* cb)
-        : Base(cb), result_{""}, louder_{louder} {}
+        : Base(cb), result_{}, louder_{louder} {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.

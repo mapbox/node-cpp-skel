@@ -177,3 +177,24 @@ Run `npm publish --tag dev` and then require your module in downstream applicati
 For npm dev releases, it’s good to use the `--tag <something>` to avoid publishing to the latest tag. If you run `npm publish` then `0.1.0-alpha` is what anyone running `npm install <your module> --save` will receive. 
 
 
+#### Before `npm publish`
+
+Before publishing to npm, you can ensure the final packaged tarball will include what you expect. For instance, you want to avoid a large accidental file being packaged by npm and make sure the package contains all needed dependencies.
+
+Take a peek at what npm will publish by running:
+
+```
+make
+make testpack
+```
+
+This will create a tarball locally and print every file included. A couple basic checks:
+  - make sure `.mason` is not included
+  - make sure `node-pre-gyp` directory is included, because it is responsible for knowing where to grab the binary from s3.
+
+**Hot tips** :hot_pepper: 
+- Node and npm versions can have differing `npm pack` and `npm publish` behaviour, so be mindful of what your environment is using
+- You can use the resulting tarball locally and install it within another local repo to make sure it works: 
+```
+npm install <path to tarball>
+```
