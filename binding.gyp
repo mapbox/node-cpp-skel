@@ -69,11 +69,11 @@
       'type': 'loadable_module',
       'dependencies': [ 'action_before_build' ],
       # "make" only watches files specified here, and will sometimes cache these files after the first compile.
-      # This cache can sometimes cause confusing errors when removing/renaming/adding new files. 
+      # This cache can sometimes cause confusing errors when removing/renaming/adding new files.
       # Running "make clean" helps to prevent this "mysterious error by cache" scenario
       # This also is where the benefits of using a "glob" come into play...
       # See: https://github.com/mapbox/node-cpp-skel/pull/44#discussion_r122050205
-      'sources': [ 
+      'sources': [
         './src/module.cpp',
         './src/standalone/hello.cpp',
         './src/standalone_async/hello_async.cpp',
@@ -107,7 +107,7 @@
         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
         'MACOSX_DEPLOYMENT_TARGET':'10.8',
         'CLANG_CXX_LIBRARY': 'libc++',
-        'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
+        'CLANG_CXX_LANGUAGE_STANDARD':'c++14',
         'GCC_VERSION': 'com.apple.compilers.llvm.clang.1_0'
       }
     }

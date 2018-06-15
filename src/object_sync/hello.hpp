@@ -1,4 +1,5 @@
 #pragma once
+
 #include <nan.h>
 
 namespace object_sync {

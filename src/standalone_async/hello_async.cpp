@@ -4,6 +4,7 @@
 #include <exception>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <stdexcept>
 
 /**
@@ -151,8 +152,9 @@ NAN_METHOD(helloAsync) {
     // pointer automatically.
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
-    auto* worker = new AsyncHelloWorker{louder, new Nan::Callback{callback}};
-    Nan::AsyncQueueWorker(worker);
+    auto cb = std::make_unique<Nan::Callback>(callback);
+    auto worker = std::make_unique<AsyncHelloWorker>(louder, cb.release());
+    Nan::AsyncQueueWorker(worker.release());
 }
 
 } // namespace standalone_async

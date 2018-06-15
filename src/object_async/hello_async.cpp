@@ -4,6 +4,7 @@
 #include <exception>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <stdexcept>
 
 /**
@@ -83,8 +84,9 @@ NAN_METHOD(HelloObjectAsync::New) {
                     * (the object needs to stay alive until the V8 garbage collector has decided it's done):
                     * https://github.com/nodejs/node/blob/7ec28a0a506efe9d1c03240fd028bea4a3d350da/src/node_object_wrap.h#L124
                     **/
-                    auto* const self = new HelloObjectAsync(std::move(name));
-                    self->Wrap(info.This()); // Connects C++ object to Javascript object (this)
+                    auto self = std::make_unique<HelloObjectAsync>(std::move(name)); // Using unique pointer to adhere to cpp core guideline: https://clang.llvm.org/extra/clang-tidy/checks/cppcoreguidelines-owning-memory.html
+                    self->Wrap(info.This());                                         // Connects C++ object to Javascript object (this)
+                    self.release();                                                  // Release the ownership of self so it can be managed by wrapper
                 } else {
                     return Nan::ThrowTypeError(
                         "arg must be a string");
@@ -152,7 +154,6 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
     // Make this class noncopyable
     AsyncHelloWorker(AsyncHelloWorker const&) = delete;
     AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
-
     AsyncHelloWorker(bool louder, const std::string* name,
                      Nan::Callback* cb)
         : Base(cb), louder_{louder}, name_{name} {}
@@ -247,9 +248,9 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
     // pointer automatically.
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
-    auto* worker =
-        new AsyncHelloWorker{louder, &h->name_, new Nan::Callback{callback}};
-    Nan::AsyncQueueWorker(worker);
+    auto cb = std::make_unique<Nan::Callback>(callback);
+    auto worker = std::make_unique<AsyncHelloWorker>(louder, &h->name_, cb.release());
+    Nan::AsyncQueueWorker(worker.release());
 }
 
 // Singleton
@@ -277,7 +278,7 @@ void HelloObjectAsync::Init(v8::Local<v8::Object> target) {
     auto fnTp = Nan::New<v8::FunctionTemplate>(
         HelloObjectAsync::New, v8::Local<v8::Value>()); // Passing the HelloObject::New method above
     fnTp->InstanceTemplate()->SetInternalFieldCount(1); // It's 1 when holding the ObjectWrap itself and nothing else
-    fnTp->SetClassName(whoami); // Passing the Javascript string object above
+    fnTp->SetClassName(whoami);                         // Passing the Javascript string object above
 
     // Add custom methods here.
     // This is how helloAsync() is exposed as part of HelloObjectAsync.
