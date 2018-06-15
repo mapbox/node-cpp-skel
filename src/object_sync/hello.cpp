@@ -55,17 +55,17 @@ NAN_METHOD(HelloObject::New) {
                      */
                     std::string name(*utf8_value, static_cast<std::size_t>(len));
 
-                    /** 
+                    /**
                      * This line is where HelloObjectAsync takes ownership of "name" with the use of move semantics.
                      * Then all later usage of "name" are passed by reference (const&), but the actual home or address in memory
                      * will always be owned by this instance of HelloObjectAsync. Generally important to know what has ownership of an object.
                      * When a object/value is a member of a class (like "name"), we know the class (HelloObjectAsync) has full control of the scope of the object/value.
                      * This avoids the scenario of "name" being destroyed or becoming out of scope.
-                     * 
+                     *
                      * Also, we're using "new" here to create a custom C++ class, based on node::ObjectWrap since this is a node addon.
-                     * In this case, "new" allocates a C++ object (dynamically on the heap) and then passes ownership (control of when it gets deleted) 
+                     * In this case, "new" allocates a C++ object (dynamically on the heap) and then passes ownership (control of when it gets deleted)
                      * to V8, the javascript engine which decides when to clean up the object based on how its’ garbage collector works.
-                     * In other words, the memory of HelloObjectAsync is expliclty deleted via node::ObjectWrap when it's gone out of scope 
+                     * In other words, the memory of HelloObjectAsync is expliclty deleted via node::ObjectWrap when it's gone out of scope
                      * (the object needs to stay alive until the V8 garbage collector has decided it's done):
                      * https://github.com/nodejs/node/blob/7ec28a0a506efe9d1c03240fd028bea4a3d350da/src/node_object_wrap.h#L124
                      */
@@ -142,9 +142,8 @@ void HelloObject::Init(v8::Local<v8::Object> target) {
 
     // Officially create the HelloObject
     auto fnTp = Nan::New<v8::FunctionTemplate>(
-        HelloObject::New); // Passing the HelloObject::New method above
-    fnTp->InstanceTemplate()->SetInternalFieldCount(
-        1);                     // It's 1 when holding the ObjectWrap itself and nothing else
+        HelloObject::New, v8::Local<v8::Value>()); // Passing the HelloObject::New method above
+    fnTp->InstanceTemplate()->SetInternalFieldCount(1); // It's 1 when holding the ObjectWrap itself and nothing else
     fnTp->SetClassName(whoami); // Passing the Javascript string object above
 
     // Add custom methods here.

@@ -275,9 +275,8 @@ void HelloObjectAsync::Init(v8::Local<v8::Object> target) {
 
     // Create the HelloObject
     auto fnTp = Nan::New<v8::FunctionTemplate>(
-        HelloObjectAsync::New); // Passing the HelloObject::New method above
-    fnTp->InstanceTemplate()->SetInternalFieldCount(
-        1);                     // It's 1 when holding the ObjectWrap itself and nothing else
+        HelloObjectAsync::New, v8::Local<v8::Value>()); // Passing the HelloObject::New method above
+    fnTp->InstanceTemplate()->SetInternalFieldCount(1); // It's 1 when holding the ObjectWrap itself and nothing else
     fnTp->SetClassName(whoami); // Passing the Javascript string object above
 
     // Add custom methods here.
