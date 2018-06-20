@@ -4,6 +4,7 @@
 #include <exception>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <stdexcept>
 
 /**
@@ -69,22 +70,23 @@ NAN_METHOD(HelloObjectAsync::New) {
                     */
                     std::string name(*utf8_value, static_cast<std::size_t>(len));
 
-                    /** 
+                    /**
                     * This line is where HelloObjectAsync takes ownership of "name" with the use of move semantics.
                     * Then all later usage of "name" are passed by reference (const&), but the actual home or address in memory
                     * will always be owned by this instance of HelloObjectAsync. Generally important to know what has ownership of an object.
                     * When a object/value is a member of a class (like "name"), we know the class (HelloObjectAsync) has full control of the scope of the object/value.
                     * This avoids the scenario of "name" being destroyed or becoming out of scope.
-                    * 
+                    *
                     * Also, we're using "new" here to create a custom C++ class, based on node::ObjectWrap since this is a node addon.
-                    * In this case, "new" allocates a C++ object (dynamically on the heap) and then passes ownership (control of when it gets deleted) 
+                    * In this case, "new" allocates a C++ object (dynamically on the heap) and then passes ownership (control of when it gets deleted)
                     * to V8, the javascript engine which decides when to clean up the object based on how its’ garbage collector works.
-                    * In other words, the memory of HelloObjectAsync is expliclty deleted via node::ObjectWrap when it's gone out of scope 
+                    * In other words, the memory of HelloObjectAsync is expliclty deleted via node::ObjectWrap when it's gone out of scope
                     * (the object needs to stay alive until the V8 garbage collector has decided it's done):
                     * https://github.com/nodejs/node/blob/7ec28a0a506efe9d1c03240fd028bea4a3d350da/src/node_object_wrap.h#L124
                     **/
-                    auto* const self = new HelloObjectAsync(std::move(name));
-                    self->Wrap(info.This()); // Connects C++ object to Javascript object (this)
+                    auto self = std::make_unique<HelloObjectAsync>(std::move(name)); // Using unique pointer to adhere to cpp core guideline: https://clang.llvm.org/extra/clang-tidy/checks/cppcoreguidelines-owning-memory.html
+                    self->Wrap(info.This());                                         // Connects C++ object to Javascript object (this)
+                    self.release();                                                  // Release the ownership of self so it can be managed by wrapper
                 } else {
                     return Nan::ThrowTypeError(
                         "arg must be a string");
@@ -152,10 +154,9 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
     // Make this class noncopyable
     AsyncHelloWorker(AsyncHelloWorker const&) = delete;
     AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
-
     AsyncHelloWorker(bool louder, const std::string* name,
                      Nan::Callback* cb)
-        : Base(cb), result_{}, louder_{louder}, name_{name} {}
+        : Base(cb), louder_{louder}, name_{name} {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -186,7 +187,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
         callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
     }
 
-    std::string result_;
+    std::string result_{};
     const bool louder_;
     // We use a pointer here to avoid copying the string data.
     // This works because we know that the original string we are
@@ -247,9 +248,9 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
     // pointer automatically.
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
-    auto* worker =
-        new AsyncHelloWorker{louder, &h->name_, new Nan::Callback{callback}};
-    Nan::AsyncQueueWorker(worker);
+    auto cb = std::make_unique<Nan::Callback>(callback);
+    auto worker = std::make_unique<AsyncHelloWorker>(louder, &h->name_, cb.release());
+    Nan::AsyncQueueWorker(worker.release());
 }
 
 // Singleton
@@ -275,10 +276,9 @@ void HelloObjectAsync::Init(v8::Local<v8::Object> target) {
 
     // Create the HelloObject
     auto fnTp = Nan::New<v8::FunctionTemplate>(
-        HelloObjectAsync::New); // Passing the HelloObject::New method above
-    fnTp->InstanceTemplate()->SetInternalFieldCount(
-        1);                     // It's 1 when holding the ObjectWrap itself and nothing else
-    fnTp->SetClassName(whoami); // Passing the Javascript string object above
+        HelloObjectAsync::New, v8::Local<v8::Value>()); // Passing the HelloObject::New method above
+    fnTp->InstanceTemplate()->SetInternalFieldCount(1); // It's 1 when holding the ObjectWrap itself and nothing else
+    fnTp->SetClassName(whoami);                         // Passing the Javascript string object above
 
     // Add custom methods here.
     // This is how helloAsync() is exposed as part of HelloObjectAsync.

@@ -4,6 +4,7 @@
 #include <exception>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <stdexcept>
 
 /**
@@ -72,7 +73,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
     using Base = Nan::AsyncWorker;
 
     AsyncHelloWorker(bool louder, Nan::Callback* cb)
-        : Base(cb), result_{}, louder_{louder} {}
+        : Base(cb), louder_{louder} {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -105,7 +106,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
         callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
     }
 
-    std::string result_;
+    std::string result_{};
     const bool louder_;
 };
 
@@ -151,8 +152,9 @@ NAN_METHOD(helloAsync) {
     // pointer automatically.
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
-    auto* worker = new AsyncHelloWorker{louder, new Nan::Callback{callback}};
-    Nan::AsyncQueueWorker(worker);
+    auto cb = std::make_unique<Nan::Callback>(callback);
+    auto worker = std::make_unique<AsyncHelloWorker>(louder, cb.release());
+    Nan::AsyncQueueWorker(worker.release());
 }
 
 } // namespace standalone_async
