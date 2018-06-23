@@ -72,8 +72,8 @@ std::string do_expensive_work(bool louder) {
 struct AsyncHelloWorker : Nan::AsyncWorker {
     using Base = Nan::AsyncWorker;
 
-    AsyncHelloWorker(bool louder, Nan::Callback* cb, std::string const& resource_name)
-        : Base(cb, resource_name.c_str()), louder_{louder} {}
+    AsyncHelloWorker(bool louder, Nan::Callback* cb)
+        : Base(cb, "skel:standalone-async-worker"), louder_{louder} {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -152,7 +152,7 @@ NAN_METHOD(helloAsync) {
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
     auto cb = std::make_unique<Nan::Callback>(callback);
-    auto worker = std::make_unique<AsyncHelloWorker>(louder, cb.release(), "standalone-async-worker");
+    auto worker = std::make_unique<AsyncHelloWorker>(louder, cb.release());
     Nan::AsyncQueueWorker(worker.release());
 }
 

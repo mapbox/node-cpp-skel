@@ -151,12 +151,9 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
 {
 
     using Base = Nan::AsyncWorker;
-    // Make this class noncopyable
-    AsyncHelloWorker(AsyncHelloWorker const&) = delete;
-    AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
     AsyncHelloWorker(bool louder, const std::string* name,
-                     Nan::Callback* cb, std::string const& resource_name)
-        : Base(cb, resource_name.c_str()), result_{}, louder_{louder}, name_{name} {}
+                     Nan::Callback* cb)
+        : Base(cb, "skel:object-async-worker"), louder_{louder}, name_{name} {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -249,7 +246,7 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
     auto cb = std::make_unique<Nan::Callback>(callback);
-    auto worker = std::make_unique<AsyncHelloWorker>(louder, &h->name_, cb.release(), "object-async-worker");
+    auto worker = std::make_unique<AsyncHelloWorker>(louder, &h->name_, cb.release());
     Nan::AsyncQueueWorker(worker.release());
 }
 
