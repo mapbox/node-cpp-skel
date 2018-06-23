@@ -151,6 +151,11 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
 {
 
     using Base = Nan::AsyncWorker;
+    // We explicitly delete the copy constructor and assignment operator below (even though Nan::Asyncworker)
+    // already does this in the base class. This allows us to have the `const std::string* name`
+    // pointer member without the silly g++ warning of "error: ‘struct object_async::AsyncHelloWorker’ has pointer data members [-Werror=effc++]"
+    AsyncHelloWorker(AsyncHelloWorker const&) = delete;
+    AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
     AsyncHelloWorker(bool louder, const std::string* name,
                      Nan::Callback* cb)
         : Base(cb, "skel:object-async-worker"), louder_{louder}, name_{name} {}
