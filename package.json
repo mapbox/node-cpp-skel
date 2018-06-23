@@ -18,7 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "mason-js-sdk": "~0.1.4",
-    "nan": "~2.5.1",
+    "nan": "~2.10.0",
     "node-pre-gyp": "~0.10.0"
   },
   "bundledDependencies": [

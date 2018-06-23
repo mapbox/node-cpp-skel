@@ -73,7 +73,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
     using Base = Nan::AsyncWorker;
 
     AsyncHelloWorker(bool louder, Nan::Callback* cb)
-        : Base(cb), louder_{louder} {}
+        : Base(cb, "skel:standalone-async-worker"), louder_{louder} {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -101,9 +101,8 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
         const auto argc = 2u;
         v8::Local<v8::Value> argv[argc] = {
             Nan::Null(), Nan::New<v8::String>(result_).ToLocalChecked()};
-
         // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
-        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
+        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
     }
 
     std::string result_{};

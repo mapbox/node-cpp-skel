@@ -151,12 +151,14 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
 {
 
     using Base = Nan::AsyncWorker;
-    // Make this class noncopyable
+    // We explicitly delete the copy constructor and assignment operator below (even though Nan::Asyncworker)
+    // already does this in the base class. This allows us to have the `const std::string* name`
+    // pointer member without the silly g++ warning of "error: ‘struct object_async::AsyncHelloWorker’ has pointer data members [-Werror=effc++]"
     AsyncHelloWorker(AsyncHelloWorker const&) = delete;
     AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
     AsyncHelloWorker(bool louder, const std::string* name,
                      Nan::Callback* cb)
-        : Base(cb), louder_{louder}, name_{name} {}
+        : Base(cb, "skel:object-async-worker"), louder_{louder}, name_{name} {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -184,7 +186,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
             Nan::Null(), Nan::New<v8::String>(result_).ToLocalChecked()};
 
         // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
-        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv));
+        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
     }
 
     std::string result_{};
