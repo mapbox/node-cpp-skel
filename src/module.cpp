@@ -43,4 +43,6 @@ static void init(v8::Local<v8::Object> target) {
 // We mark this NOLINT to avoid the clang-tidy checks
 // warning about code inside nodejs that we don't control and can't
 // directly change to avoid the warning.
-NODE_MODULE(module, init) // NOLINT
+// NODE_GYP_MODULE_NAME is the name of our module as defined in 'target_name'
+// variable in the 'binding.gyp', which is passed along as a compiler define
+NODE_MODULE(NODE_GYP_MODULE_NAME, init) // NOLINT
