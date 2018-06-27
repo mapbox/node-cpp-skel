@@ -38,7 +38,23 @@ matrix:
     # linux cfi build node v6/release
     - os: linux
       env: BUILDTYPE=release TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -fvisibility=hidden" LDFLAGS="-fsanitize=cfi"
-      node_js: 6
+      node_js: 10
+    # linux publishable node v10/release
+    - os: linux
+      env: BUILDTYPE=release
+      node_js: 10
+    # linux publishable node v10/debug
+    - os: linux
+      env: BUILDTYPE=debug
+      node_js: 10
+    # linux publishable node v8/release
+    - os: linux
+      env: BUILDTYPE=release
+      node_js: 8
+    # linux publishable node v8/debug
+    - os: linux
+      env: BUILDTYPE=debug
+      node_js: 8
     # linux publishable node v6/release
     - os: linux
       env: BUILDTYPE=release
@@ -47,20 +63,30 @@ matrix:
     - os: linux
       env: BUILDTYPE=debug
       node_js: 6
+    # osx publishable node v10/release
+    - os: osx
+      osx_image: xcode9.3
+      env: BUILDTYPE=release
+      node_js: 10
+    # osx publishable node v8/release
+    - os: osx
+      osx_image: xcode9.3
+      env: BUILDTYPE=release
+      node_js: 8
     # osx publishable node v6/release
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode9.3
       env: BUILDTYPE=release
       node_js: 6
     # osx publishable node v6/debug
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode9.3
       env: BUILDTYPE=debug
       node_js: 6
     # linux sanitizer build node v6/debug
     - os: linux
       env: BUILDTYPE=debug TOOLSET=asan
-      node_js: 6
+      node_js: 10
       sudo: required
       # Overrides `install` to set up custom asan flags
       install:
@@ -70,7 +96,7 @@ matrix:
     # osx sanitizer build node v6/debug
     - os: osx
       env: BUILDTYPE=debug TOOLSET=asan
-      node_js: 6
+      node_js: 10
       sudo: required
       # Overrides `install` to set up custom asan flags
       install:
@@ -83,7 +109,7 @@ matrix:
     # g++ build (default builds all use clang++)
     - os: linux
       env: BUILDTYPE=debug CXX="g++-6" CC="gcc-6" LINK="g++-6" AR="ar" NM="nm"
-      node_js: 6
+      node_js: 10
       addons:
         apt:
           sources:
@@ -99,7 +125,7 @@ matrix:
     # Coverage build
     - os: linux
       env: BUILDTYPE=debug CXXFLAGS="--coverage" LDFLAGS="--coverage"
-      node_js: 6
+      node_js: 10
       # Overrides `script` to publish coverage data to codecov
       script:
         - export PATH=$(pwd)/mason_packages/.link/bin/:${PATH}
@@ -125,7 +151,7 @@ matrix:
     # Clang tidy build
     - os: linux
       env: CLANG_TIDY
-      node_js: 6
+      node_js: 10
       # Overrides `install` to avoid initializing clang toolchain
       install:
         # First run the clang-tidy target
