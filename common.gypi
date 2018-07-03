@@ -12,7 +12,7 @@
       # More details at https://github.com/mapbox/mason/issues/319
       '-D_GLIBCXX_USE_CXX11_ABI=0'
     ],
-    'cflags_cc!': ['-std=gnu++0x','-fno-rtti', '-fno-exceptions'],
+    'cflags_cc!': ['-std=gnu++0x','-std=gnu++1y', '-fno-rtti', '-fno-exceptions'],
     'configurations': {
       'Debug': {
         'defines!': [
