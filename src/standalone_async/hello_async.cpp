@@ -32,7 +32,7 @@ namespace standalone_async {
 
 // Expensive allocation of std::map, querying, and string comparison,
 // therefore threads are busy
-std::string do_expensive_work(bool louder) {
+std::unique_ptr<std::string> do_expensive_work(bool louder) {
 
     std::map<std::size_t, std::string> container;
     std::size_t work_to_do = 100000;
@@ -54,10 +54,10 @@ std::string do_expensive_work(bool louder) {
         }
     }
 
-    std::string result = "...threads are busy async bees...hello world";
+    std::unique_ptr<std::string> result = std::make_unique<std::string>("...threads are busy async bees...hello world");
 
     if (louder) {
-        result += "!!!!";
+        *result += "!!!!";
     }
 
     return result;
@@ -72,8 +72,8 @@ std::string do_expensive_work(bool louder) {
 struct AsyncHelloWorker : Nan::AsyncWorker {
     using Base = Nan::AsyncWorker;
 
-    AsyncHelloWorker(bool louder, Nan::Callback* cb)
-        : Base(cb, "skel:standalone-async-worker"), louder_{louder} {}
+    AsyncHelloWorker(bool louder, bool buffer, Nan::Callback* cb)
+        : Base(cb, "skel:standalone-async-worker"), louder_(louder), buffer_(buffer) {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -98,15 +98,24 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
     void HandleOKCallback() override {
         Nan::HandleScope scope;
 
-        const auto argc = 2u;
-        v8::Local<v8::Value> argv[argc] = {
-            Nan::Null(), Nan::New<v8::String>(result_).ToLocalChecked()};
-        // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
-        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
+        if (buffer_) {
+            const auto argc = 2u;
+            v8::Local<v8::Value> argv[argc] = {
+                Nan::Null(), utils::NewBufferFrom(std::move(result_)).ToLocalChecked()};
+            // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
+            callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
+        } else {
+            const auto argc = 2u;
+            v8::Local<v8::Value> argv[argc] = {
+                Nan::Null(), Nan::New<v8::String>(*result_).ToLocalChecked()};
+            // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
+            callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
+        }
     }
 
-    std::string result_{};
+    std::unique_ptr<std::string> result_;
     const bool louder_;
+    const bool buffer_;
 };
 
 // helloAsync is a "standalone function" because it's not a class.
@@ -115,6 +124,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
 NAN_METHOD(helloAsync) {
 
     bool louder = false;
+    bool buffer = false;
 
     // Check second argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors
@@ -144,6 +154,17 @@ NAN_METHOD(helloAsync) {
         }
         louder = louder_val->BooleanValue();
     }
+    // Check options object for the "buffer" property, which should be a boolean
+    // value
+    if (options->Has(Nan::New("buffer").ToLocalChecked())) {
+        v8::Local<v8::Value> buffer_val =
+            options->Get(Nan::New("buffer").ToLocalChecked());
+        if (!buffer_val->IsBoolean()) {
+            return utils::CallbackError("option 'buffer' must be a boolean",
+                                        callback);
+        }
+        buffer = buffer_val->BooleanValue();
+    }
 
     // Creates a worker instance and queues it to run asynchronously, invoking the
     // callback when done.
@@ -152,7 +173,7 @@ NAN_METHOD(helloAsync) {
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
     auto cb = std::make_unique<Nan::Callback>(callback);
-    auto worker = std::make_unique<AsyncHelloWorker>(louder, cb.release());
+    auto worker = std::make_unique<AsyncHelloWorker>(louder, buffer, cb.release());
     Nan::AsyncQueueWorker(worker.release());
 }
 

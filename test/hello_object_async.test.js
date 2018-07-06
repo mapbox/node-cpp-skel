@@ -19,6 +19,17 @@ test('success: prints loud busy world', function(t) {
   });
 });
 
+test('success: return buffer busy world', function(t) {
+  var H = new module.HelloObjectAsync('world');
+  H.helloAsync({ buffer: true }, function(err, result) {
+    if (err) throw err;
+    t.equal(result.length, 44);
+    t.equal(typeof(result), 'object');
+    t.equal(result.toString(), '...threads are busy async bees...hello world');
+    t.end();
+  });
+});
+
 test('error: throws when passing empty string', function(t) {
   try {
     var H = new module.HelloObjectAsync('');
@@ -54,6 +65,15 @@ test('error: handles invalid louder value', function(t) {
   H.helloAsync({ louder: 'oops' }, function(err, result) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('option \'louder\' must be a boolean') > -1, 'expected error message');
+    t.end();
+  });
+});
+
+test('error: handles invalid buffer value', function(t) {
+  var H = new module.HelloObjectAsync('world');
+  H.helloAsync({ buffer: 'oops' }, function(err, result) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf('option \'buffer\' must be a boolean') > -1, 'expected error message');
     t.end();
   });
 });

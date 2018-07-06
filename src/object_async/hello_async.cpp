@@ -44,7 +44,7 @@ namespace object_async {
 // This avoids copying the value and duplicating memory allocation, which can
 // negatively affect performance.
 HelloObjectAsync::HelloObjectAsync(std::string&& name)
-    : name_(std::move(name)) {}
+    : name_(name) {}
 
 // Triggered from Javascript world when calling "new HelloObjectAsync(name)"
 NAN_METHOD(HelloObjectAsync::New) {
@@ -109,7 +109,7 @@ NAN_METHOD(HelloObjectAsync::New) {
 // This function performs expensive allocation of std::map, querying, and string
 // comparison, therefore threads are nice & busy.
 // Also, notice that name is passed by reference (std::string const& name)
-std::string do_expensive_work(bool louder, std::string const& name) {
+std::unique_ptr<std::string> do_expensive_work(bool louder, std::string const& name) {
 
     std::map<std::size_t, std::string> container;
     std::size_t work_to_do = 100000;
@@ -132,10 +132,10 @@ std::string do_expensive_work(bool louder, std::string const& name) {
         }
     }
 
-    std::string result = "...threads are busy async bees...hello " + name;
+    std::unique_ptr<std::string> result = std::make_unique<std::string>("...threads are busy async bees...hello " + name);
 
     if (louder) {
-        result += "!!!!";
+        *result += "!!!!";
     }
 
     return result;
@@ -156,9 +156,14 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
     // pointer member without the silly g++ warning of "error: ‘struct object_async::AsyncHelloWorker’ has pointer data members [-Werror=effc++]"
     AsyncHelloWorker(AsyncHelloWorker const&) = delete;
     AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
-    AsyncHelloWorker(bool louder, const std::string* name,
+    AsyncHelloWorker(bool louder,
+                     bool buffer,
+                     const std::string* name,
                      Nan::Callback* cb)
-        : Base(cb, "skel:object-async-worker"), louder_{louder}, name_{name} {}
+        : Base(cb, "skel:object-async-worker"), 
+          louder_(louder),
+          buffer_(buffer),
+          name_(name) {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -181,16 +186,27 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
     void HandleOKCallback() override {
         Nan::HandleScope scope;
 
-        const auto argc = 2u;
-        v8::Local<v8::Value> argv[argc] = {
-            Nan::Null(), Nan::New<v8::String>(result_).ToLocalChecked()};
+        if (buffer_) {
+            const auto argc = 2u;
+            v8::Local<v8::Value> argv[argc] = {
+                Nan::Null(), utils::NewBufferFrom(std::move(result_)).ToLocalChecked()};
 
-        // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
-        callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
+            // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
+            callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
+
+        } else {
+            const auto argc = 2u;
+            v8::Local<v8::Value> argv[argc] = {
+                Nan::Null(), Nan::New<v8::String>(*result_).ToLocalChecked()};
+
+            // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
+            callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
+        }
     }
 
-    std::string result_{};
+    std::unique_ptr<std::string> result_;
     const bool louder_;
+    const bool buffer_;
     // We use a pointer here to avoid copying the string data.
     // This works because we know that the original string we are
     // pointing to will be kept in scope/alive for the time while AsyncHelloWorker
@@ -214,6 +230,7 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
         Nan::ObjectWrap::Unwrap<HelloObjectAsync>(info.Holder());
 
     bool louder = false;
+    bool buffer = false;
 
     // Check second argument, should be a 'callback' function.
     // This allows us to set the callback so we can use it to return errors
@@ -243,6 +260,17 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
         }
         louder = louder_val->BooleanValue();
     }
+    // Check options object for the "buffer" property, which should be a boolean
+    // value
+    if (options->Has(Nan::New("buffer").ToLocalChecked())) {
+        v8::Local<v8::Value> buffer_val =
+            options->Get(Nan::New("buffer").ToLocalChecked());
+        if (!buffer_val->IsBoolean()) {
+            return utils::CallbackError("option 'buffer' must be a boolean",
+                                        callback);
+        }
+        buffer = buffer_val->BooleanValue();
+    }
 
     // Create a worker instance and queues it to run asynchronously invoking the
     // callback when done.
@@ -251,7 +279,7 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
     // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
     // the pointer automatically.
     auto cb = std::make_unique<Nan::Callback>(callback);
-    auto worker = std::make_unique<AsyncHelloWorker>(louder, &h->name_, cb.release());
+    auto worker = std::make_unique<AsyncHelloWorker>(louder, buffer, &h->name_, cb.release());
     Nan::AsyncQueueWorker(worker.release());
 }
 
