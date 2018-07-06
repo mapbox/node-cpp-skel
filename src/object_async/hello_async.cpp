@@ -160,7 +160,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
                      bool buffer,
                      const std::string* name,
                      Nan::Callback* cb)
-        : Base(cb, "skel:object-async-worker"), 
+        : Base(cb, "skel:object-async-worker"),
           louder_(louder),
           buffer_(buffer),
           name_(name) {}

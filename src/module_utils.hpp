@@ -1,5 +1,7 @@
 #pragma once
+#include <memory>
 #include <nan.h>
+#include <string>
 
 namespace utils {
 
@@ -25,17 +27,15 @@ inline void CallbackError(std::string message, v8::Local<v8::Function> func) {
     Nan::Call(cb, 1, argv);
 }
 
-inline Nan::MaybeLocal<v8::Object> NewBufferFrom(std::unique_ptr<std::string> && ptr)
-{
+inline Nan::MaybeLocal<v8::Object> NewBufferFrom(std::unique_ptr<std::string>&& ptr) {
     Nan::MaybeLocal<v8::Object> res = Nan::NewBuffer(
-            &(*ptr)[0],
-            ptr->size(),
-            [](char*, void* hint) {
-                delete static_cast<std::string*>(hint);
-            },
-            ptr.get());
-    if (!res.IsEmpty())
-    {
+        &(*ptr)[0],
+        ptr->size(),
+        [](char*, void* hint) {
+            delete static_cast<std::string*>(hint);
+        },
+        ptr.get());
+    if (!res.IsEmpty()) {
         ptr.release();
     }
     return res;
