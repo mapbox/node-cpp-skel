@@ -12,6 +12,7 @@
  * @name helloAsync
  * @param {Object} args - different ways to alter the string
  * @param {boolean} args.louder - adds exclamation points to the string
+ * @param {boolean} args.buffer - returns value as a node buffer rather than a string
  * @param {Function} callback - from whence the hello comes, returns a string
  * @returns {string}
  * @example
