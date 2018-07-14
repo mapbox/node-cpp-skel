@@ -45,9 +45,11 @@ make distclean
 # This skel uses documentation.js to auto-generate API docs.
 # If you'd like to generate docs for your code, you'll need to install documentation.js,
 # and then add your subdirectory to the docs command in package.json
-npm install -g documentation
+npm install -g documentation@4.0.0
 npm run docs
 ```
+
+NOTE: we are pinned to `documentation@4.0.0` because 5.x removed C++ support: https://github.com/documentationjs/documentation/blob/master/CHANGELOG.md#500-2017-07-27
 
 ### Customizing the compiler toolchain
 
