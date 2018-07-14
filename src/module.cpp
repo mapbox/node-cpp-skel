@@ -5,10 +5,10 @@
 #include <nan.h>
 // #include "your_code.hpp"
 
-// "target" is a magic var that nodejs passes into a module's scope.
+// "target" is a magic var that NAN_MODULE_INIT passes into a module's scope.
 // When you write things to target, they become available to call from
 // Javascript world.
-static void init(v8::Local<v8::Object> target) {
+NAN_MODULE_INIT(init) {
 
     // expose hello method
     Nan::SetMethod(target, "hello", standalone::hello);
