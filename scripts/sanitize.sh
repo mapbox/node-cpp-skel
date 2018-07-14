@@ -45,10 +45,10 @@ if [[ $(uname -s) == 'Darwin' ]]; then
     # If this is not done right we'll see
     #   ==18464==ERROR: Interceptors are not working. This may be because AddressSanitizer is loaded too late (e.g. via dlopen).
     #
+    # See https://github.com/mapbox/node-cpp-skel/issues/122
     DYLD_INSERT_LIBRARIES=${MASON_LLVM_RT_PRELOAD} \
-      node node_modules/.bin/tape test/*test.js
+      node node_modules/.bin/$(node -e "console.log(require('./package.json').scripts.test)") test/*test.js
 else
     LD_PRELOAD=${MASON_LLVM_RT_PRELOAD} \
       npm test
 fi
-
