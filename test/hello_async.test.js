@@ -17,10 +17,28 @@ test('success: prints regular busy world', function(t) {
   });
 });
 
+test('success: buffer regular busy world', function(t) {
+  module.helloAsync({ buffer: true }, function(err, result) {
+    if (err) throw err;
+    t.equal(result.length, 44);
+    t.equal(typeof(result), 'object');
+    t.equal(result.toString(), '...threads are busy async bees...hello world');
+    t.end();
+  });
+});
+
 test('error: handles invalid louder value', function(t) {
   module.helloAsync({ louder: 'oops' }, function(err, result) {
     t.ok(err, 'expected error');
     t.ok(err.message.indexOf('option \'louder\' must be a boolean') > -1, 'expected error message');
+    t.end();
+  });
+});
+
+test('error: handles invalid buffer value', function(t) {
+  module.helloAsync({ buffer: 'oops' }, function(err, result) {
+    t.ok(err, 'expected error');
+    t.ok(err.message.indexOf('option \'buffer\' must be a boolean') > -1, 'expected error message');
     t.end();
   });
 });

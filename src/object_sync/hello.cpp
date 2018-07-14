@@ -31,7 +31,7 @@ namespace object_sync {
 // Custom constructor, assigns custom name passed in from Javascript world.
 // This constructor uses member init list via the semicolon, aka "direct initialization"
 // which is more efficient than using assignment operators.
-HelloObject::HelloObject(std::string&& name) : name_(std::move(name)) {}
+HelloObject::HelloObject(std::string&& name) : name_(name) {}
 
 // Triggered from Javascript world when calling "new HelloObject(name)"
 NAN_METHOD(HelloObject::New) {
