@@ -31,7 +31,7 @@ function is_pr_merge() {
 # if [publish binary] is present since that should refer only to the
 # previously job that ran for that commit and not the tag made
 function is_tag_commit() {
-  export COMMIT_MATCHES_KNOWN_TAG=$(git describe --exact-match $(git rev-parse HEAD))
+  export COMMIT_MATCHES_KNOWN_TAG=$(git describe --exact-match $(git rev-parse HEAD) 2> /dev/null)
   if [[ ${COMMIT_MATCHES_KNOWN_TAG} ]]; then
     echo true
   fi
@@ -52,7 +52,7 @@ function publish() {
   elif [[  $(is_tag_commit) ]]; then
       echo "Skipping publishing because this is a tag"
   else
-      echo "Commit message: ${COMMIT_MESSAGE}"
+      echo "Commit message was: '${COMMIT_MESSAGE}'"
 
       if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then
           echo "Publishing"
