@@ -25,6 +25,18 @@ function is_pr_merge() {
   fi
 }
 
+# Detect if this commit represents a tag. This is useful
+# to detect if we are on a travis job that is running due to
+# "git tags --push". In this case we don't want to publish even
+# if [publish binary] is present since that should refer only to the
+# previously job that ran for that commit and not the tag made
+function is_tag_commit() {
+  export COMMIT_MATCHES_KNOWN_TAG=$(git describe --exact-match $(git rev-parse HEAD) 2> /dev/null)
+  if [[ ${COMMIT_MATCHES_KNOWN_TAG} ]]; then
+    echo true
+  fi
+}
+
 # `publish` is used to publish binaries to s3 via commit messages if:
 # - the commit message includes [publish binary]
 # - the commit message includes [republish binary]
@@ -37,8 +49,10 @@ function publish() {
 
   if [[ $(is_pr_merge) ]]; then
       echo "Skipping publishing because this is a PR merge commit"
+  elif [[  $(is_tag_commit) ]]; then
+      echo "Skipping publishing because this is a tag"
   else
-      echo "Commit message: ${COMMIT_MESSAGE}"
+      echo "Commit message was: '${COMMIT_MESSAGE}'"
 
       if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then
           echo "Publishing"
