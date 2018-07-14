@@ -16,7 +16,7 @@ With updated versions of npm, there is now such thing as a `package-lock.json` f
 
 Running `npm install` in a folder that contains a `package.json` file will create a `package-lock.json` file if one does not exist. **You should commit this file**.
 
-If a `package-lock.json` file exists in the repository, but some of the versions of dependencies are out-of-sync with what's specifed in `package.json` then running `npm install` will update the `package-lock.json` file. This may happen if you manually edited a version of a dependency in `package.json`, which you should not do (see below).
+If a `package-lock.json` file exists in the repository, but some of the versions of dependencies are out-of-sync with what's specified in `package.json` then running `npm install` will update the `package-lock.json` file. This may happen if you manually edited a version of a dependency in `package.json`, which you should not do (see below).
 
 If you are creating a PR, you should notice if that PR contains changes to `package-lock.json`, and you should be able to explain in the PR why those changes are being made.
 
@@ -25,6 +25,8 @@ To take full advantage of the explicit dependency versions specified in `package
 ```
 npm ci
 ```
+
+Note: this `ci` requires at least npm >= v5.7.1 (https://blog.npmjs.org/post/171556855892/introducing-npm-ci-for-faster-more-reliable).
 
 This will remove your existing `node_modules` folder, and then install the exact versions defined by `package-lock.json`. It will **never** make changes to `package.json` or `package-lock.json`, unlike `npm install`.
 
@@ -42,7 +44,7 @@ If you want to upgrade a dependency to the most recent version specified by the 
 npm update eslint
 ```
 
-If you want to remove a dependecy:
+If you want to remove a dependency:
 
 ```
 npm remove eslint
