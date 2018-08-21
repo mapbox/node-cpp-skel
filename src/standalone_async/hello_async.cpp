@@ -74,7 +74,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
     using Base = Nan::AsyncWorker;
 
     AsyncHelloWorker(bool louder, bool buffer, Nan::Callback* cb)
-        : Base(cb, "skel:standalone-async-worker"), result_(), louder_(louder), buffer_(buffer) {}
+        : Base(cb, "skel:standalone-async-worker"), louder_(louder), buffer_(buffer) {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -114,7 +114,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
         }
     }
 
-    std::unique_ptr<std::string> result_;
+    std::unique_ptr<std::string> result_ = std::make_unique<std::string>();
     const bool louder_;
     const bool buffer_;
 };

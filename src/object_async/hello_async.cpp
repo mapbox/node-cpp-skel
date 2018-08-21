@@ -162,7 +162,6 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
                      const std::string* name,
                      Nan::Callback* cb)
         : Base(cb, "skel:object-async-worker"),
-          result_(),
           louder_(louder),
           buffer_(buffer),
           name_(name) {}
@@ -206,7 +205,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguideline
         }
     }
 
-    std::unique_ptr<std::string> result_;
+    std::unique_ptr<std::string> result_ = std::make_unique<std::string>();
     const bool louder_;
     const bool buffer_;
     // We use a pointer here to avoid copying the string data.
