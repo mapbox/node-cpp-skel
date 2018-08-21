@@ -114,7 +114,7 @@ struct AsyncHelloWorker : Nan::AsyncWorker {
         }
     }
 
-    std::unique_ptr<std::string> result_{};
+    std::unique_ptr<std::string> result_ = std::make_unique<std::string>();
     const bool louder_;
     const bool buffer_;
 };
