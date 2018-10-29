@@ -259,7 +259,12 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
             return utils::CallbackError("option 'louder' must be a boolean",
                                         callback);
         }
-        louder = louder_val->BooleanValue();
+        Nan::Maybe<bool> maybe_louder = Nan::To<bool>(louder_val);
+        if (maybe_louder.IsNothing())
+        {
+            return utils::CallbackError("option 'louder' must be a boolean", callback);
+        }
+        louder = maybe_louder.FromJust();
     }
     // Check options object for the "buffer" property, which should be a boolean
     // value
@@ -270,7 +275,12 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
             return utils::CallbackError("option 'buffer' must be a boolean",
                                         callback);
         }
-        buffer = buffer_val->BooleanValue();
+        Nan::Maybe<bool> maybe_buffer = Nan::To<bool>(buffer_val);
+        if (maybe_buffer.IsNothing())
+        {
+            return utils::CallbackError("option 'buffer' must be a boolean", callback);
+        }
+        buffer = maybe_buffer.FromJust();
     }
 
     // Create a worker instance and queues it to run asynchronously invoking the
