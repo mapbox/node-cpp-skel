@@ -73,7 +73,7 @@ NAN_METHOD(HelloObject::New) {
                      */
                     auto self = std::make_unique<HelloObject>(std::move(name)); // Using unique pointer to adhere to cpp core guideline: https://clang.llvm.org/extra/clang-tidy/checks/cppcoreguidelines-owning-memory.html
                     self->Wrap(info.This());                                    // Connects C++ object to Javascript object (this)
-                    self.release();                                             // Release the ownership of self so it can be managed by wrapper
+                    self.release();                                             // NOLINT Release the ownership of self so it can be managed by wrapper
                 } else {
                     return Nan::ThrowTypeError(
                         "arg must be a string");

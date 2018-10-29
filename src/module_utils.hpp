@@ -36,7 +36,7 @@ inline Nan::MaybeLocal<v8::Object> NewBufferFrom(std::unique_ptr<std::string>&& 
         },
         ptr.get());
     if (!res.IsEmpty()) {
-        ptr.release();
+        ptr.release(); // NOLINT ignore bugprone-unused-return-value
     }
     return res;
 }
