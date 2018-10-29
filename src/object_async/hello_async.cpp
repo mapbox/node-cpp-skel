@@ -260,8 +260,7 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
                                         callback);
         }
         Nan::Maybe<bool> maybe_louder = Nan::To<bool>(louder_val);
-        if (maybe_louder.IsNothing())
-        {
+        if (maybe_louder.IsNothing()) {
             return utils::CallbackError("option 'louder' must be a boolean", callback);
         }
         louder = maybe_louder.FromJust();
@@ -276,8 +275,7 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
                                         callback);
         }
         Nan::Maybe<bool> maybe_buffer = Nan::To<bool>(buffer_val);
-        if (maybe_buffer.IsNothing())
-        {
+        if (maybe_buffer.IsNothing()) {
             return utils::CallbackError("option 'buffer' must be a boolean", callback);
         }
         buffer = maybe_buffer.FromJust();
