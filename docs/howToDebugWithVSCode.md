@@ -1,6 +1,6 @@
 # How to debug C++ with VS Code
 
-VS Code is a great tool to develop many languages. This document is to tell you how to debug C++ addon with the VS Code.
+VS Code is a great tool to develop code in many languages. This document is to tell you how to debug C++ addon with the VS Code.
 
 ### 1. Setting up VSCode debug
 
@@ -34,15 +34,15 @@ In the `launch.json` you can see some template, like this:
 }
 ```
 
-`launch.json` is defined which program you want to run after you click the debug, let's say `node node test/vtshaver.test.js`. In this command we want to use `node` to run `test/vtshaver.test.js`, so we need to change the configurations, put `program` to node's absolute path(you can use `which node` to find the path of node), and change the `args` to `test/vtshaver.test.js`'s absolute path. 
+`launch.json` defined which program you want to run after you click the run debug button, let's say we want run `node test/vtshaver.test.js`(In this command we want to use `node` to run `test/vtshaver.test.js`), so we need to change the configurations, put `program` to node's absolute path(you can use `which node` to find the path of current version of node), and change the `args` to `test/vtshaver.test.js`'s absolute path. 
 
-Additional we want everytime we run debug VS Code can rebuild the C++, so we add this line into the config:
+Additional we want build C++ everytime before we start debug, so we add `preLaunchTask` into the config:
 
 ```
 "preLaunchTask": "npm: build:dev",
 ```
 
-so the result could be 
+Untill now, the config file could looks like this:
 
 
 ```json
@@ -66,10 +66,10 @@ so the result could be
 }
 ```
 
-Now go to any c++ files and click the left side of the line number to add a breakpoint, the go to the debug button on the sidebar, click the run button on the top. 
+Now you can open any C++ files and click the left side of the line number to add a breakpoint, then go to the debug button on the sidebar, click the run button on the top. 
 
 ![howtodebug](./image/howtodebug2.png)
 
-Now everything is done! Debug is Done! The program will stop at the breakpoint, and you can use your mouse to explore the variable, you can navigate the program use the top control box. 
+Now everything is done! Debug is Done! The program will stop at the breakpoint, you can use your mouse to explore the variable. If you want you program to continue from the breakpoint, you can navigate the program use the top control box. 
 
 ![howtodebug](./image/howtodebug3.png)
