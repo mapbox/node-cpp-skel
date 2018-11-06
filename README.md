@@ -133,6 +133,10 @@ Once your project has ported node-cpp-skel, follow these steps to integrate your
 ### Adding dependencies
 With updated versions of npm, a `package-lock.json` file is created, which is now included in node-cpp-skel. See [`npm-and-package-lock.md`](./docs/npm-and-package-lock.md) for more info on how to interact with this file and how to add new dependencies.
 
+### Debug
+
+* [Debug with VS CODE](./docs/howToDebugWithVSCode.md)
+
 # Code coverage
 
 Code coverage is critical for knowing how well your tests actually test all your code. To see code coverage you can view current results online at [![codecov](https://codecov.io/gh/mapbox/node-cpp-skel/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/node-cpp-skel) or you can build in a customized way and display coverage locally like:
