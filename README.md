@@ -37,6 +37,9 @@ make test
 # Cleans your current builds and removes potential cache
 make clean
 
+# Build binaries in Debug mode (https://github.com/mapbox/cpp/blob/master/glossary.md#debug-build)
+make debug
+
 # Cleans everything, including the things you download from the network in order to compile (ex: npm packages).
 # This is useful if you want to nuke everything and start from scratch.
 # For example, it's super useful for making sure everything works for Travis, production, someone else's machine, etc
@@ -133,9 +136,9 @@ Once your project has ported node-cpp-skel, follow these steps to integrate your
 ### Adding dependencies
 With updated versions of npm, a `package-lock.json` file is created, which is now included in node-cpp-skel. See [`npm-and-package-lock.md`](./docs/npm-and-package-lock.md) for more info on how to interact with this file and how to add new dependencies.
 
-### Debug
+### Interactive Debugging
 
-* [Debug with VS CODE](./docs/howToDebugWithVSCode.md)
+* [Debugging with VS Code](./docs/debugging-with-vs-code.md)
 
 # Code coverage
 
