@@ -87,7 +87,7 @@ NAN_METHOD(HelloObjectAsync::New) {
                     **/
                     auto self = std::make_unique<HelloObjectAsync>(std::move(name)); // Using unique pointer to adhere to cpp core guideline: https://clang.llvm.org/extra/clang-tidy/checks/cppcoreguidelines-owning-memory.html
                     self->Wrap(info.This());                                         // Connects C++ object to Javascript object (this)
-                    self.release();                                                  // Release the ownership of self so it can be managed by wrapper
+                    self.release();                                                  // NOLINT Release the ownership of self so it can be managed by wrapper
                 } else {
                     return Nan::ThrowTypeError(
                         "arg must be a string");
@@ -259,7 +259,11 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
             return utils::CallbackError("option 'louder' must be a boolean",
                                         callback);
         }
-        louder = louder_val->BooleanValue();
+        Nan::Maybe<bool> maybe_louder = Nan::To<bool>(louder_val);
+        if (maybe_louder.IsNothing()) {
+            return utils::CallbackError("option 'louder' must be a boolean", callback);
+        }
+        louder = maybe_louder.FromJust();
     }
     // Check options object for the "buffer" property, which should be a boolean
     // value
@@ -270,7 +274,11 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
             return utils::CallbackError("option 'buffer' must be a boolean",
                                         callback);
         }
-        buffer = buffer_val->BooleanValue();
+        Nan::Maybe<bool> maybe_buffer = Nan::To<bool>(buffer_val);
+        if (maybe_buffer.IsNothing()) {
+            return utils::CallbackError("option 'buffer' must be a boolean", callback);
+        }
+        buffer = maybe_buffer.FromJust();
     }
 
     // Create a worker instance and queues it to run asynchronously invoking the
