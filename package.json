@@ -1,7 +1,7 @@
 {
   "name": "@mapbox/node-cpp-skel",
   "version": "0.1.0",
-  "description": "Skeleton for bindings to C++ libraries for Node.js using NAN",
+  "description": "Skeleton for bindings to C++ libraries for Node.js using N-API (node-addon-api)",
   "url": "http://github.com/mapbox/node-cpp-skel",
   "main": "./lib/index.js",
   "repository": {
@@ -17,7 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "mason-js-sdk": "~0.1.4",
-    "nan": "~2.10.0",
+    "node-addon-api": "^1.5.0",
     "node-pre-gyp": "~0.10.0"
   },
   "devDependencies": {

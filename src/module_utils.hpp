@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <nan.h>
+#include <napi.h>
 #include <string>
 
 namespace utils {
@@ -10,7 +10,7 @@ namespace utils {
 * throwing errors.
 * Usage:
 *
-* v8::Local<v8::Function> callback;
+* Napi::Function callback;
 * return CallbackError("error message", callback);  // "return" is important to
 * prevent duplicate callbacks from being fired!
 *
@@ -21,24 +21,25 @@ namespace utils {
 * context
 *
 */
-inline void CallbackError(std::string message, v8::Local<v8::Function> func) {
-    Nan::Callback cb(func);
-    v8::Local<v8::Value> argv[1] = {Nan::Error(message.c_str())};
-    Nan::Call(cb, 1, argv);
+inline Napi::Value CallbackError(std::string const& message, Napi::CallbackInfo const& info)
+{
+    Napi::Object obj = Napi::Object::New(info.Env());
+    obj.Set("message", message);
+    auto func = info[info.Length() - 1].As<Napi::Function>();
+    return func.Call({obj});
 }
 
-inline Nan::MaybeLocal<v8::Object> NewBufferFrom(std::unique_ptr<std::string>&& ptr) {
-    Nan::MaybeLocal<v8::Object> res = Nan::NewBuffer(
-        &(*ptr)[0],
-        ptr->size(),
-        [](char*, void* hint) {
-            delete static_cast<std::string*>(hint);
-        },
-        ptr.get());
-    if (!res.IsEmpty()) {
-        ptr.release();
-    }
-    return res;
+inline Napi::Value NewBufferFrom(Napi::Env const& env, std::unique_ptr<std::string>&& ptr)
+{
+    std::string& str = *ptr;
+    Napi::Value val = Napi::Buffer<char>::New(env,
+                                              const_cast<char*>(str.data()),
+                                              str.size(),
+                                              [](Napi::Env, char*, std::string * s) {
+                                                delete s;
+                                              },
+                                              ptr.release());
+    return val;
 }
 
 } // namespace utils

@@ -2,26 +2,27 @@
 #include "object_sync/hello.hpp"
 #include "standalone/hello.hpp"
 #include "standalone_async/hello_async.hpp"
-#include <nan.h>
+#include <napi.h>
 // #include "your_code.hpp"
 
 // "target" is a magic var that NAN_MODULE_INIT passes into a module's scope.
 // When you write things to target, they become available to call from
 // Javascript world.
-NAN_MODULE_INIT(init) {
+Napi::Object init(Napi::Env env, Napi::Object exports) {
 
     // expose hello method
-    Nan::SetMethod(target, "hello", standalone::hello);
+    exports.Set(Napi::String::New(env, "hello"), Napi::Function::New(env, standalone::hello));
 
     // expose helloAsync method
-    Nan::SetMethod(target, "helloAsync", standalone_async::helloAsync);
+    exports.Set(Napi::String::New(env, "helloAsync"), Napi::Function::New(env, standalone_async::helloAsync));
 
     // expose HelloObject class
-    object_sync::HelloObject::Init(target);
+    object_sync::HelloObject::Init(env, exports);
 
     // expose HelloObjectAsync class
-    object_async::HelloObjectAsync::Init(target);
+    object_async::HelloObjectAsync::Init(env, exports);
 
+    return exports;
     /**
    * You may have noticed there are multiple "hello" functions as part of this
    * module.
@@ -45,4 +46,4 @@ NAN_MODULE_INIT(init) {
 // directly change to avoid the warning.
 // NODE_GYP_MODULE_NAME is the name of our module as defined in 'target_name'
 // variable in the 'binding.gyp', which is passed along as a compiler define
-NODE_MODULE(NODE_GYP_MODULE_NAME, init) // NOLINT
+NODE_API_MODULE(NODE_GYP_MODULE_NAME, init) // NOLINT

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nan.h>
+#include <napi.h>
 
 namespace object_sync {
 
@@ -9,27 +9,15 @@ namespace object_sync {
      * This is in a header file so we can access it across other .cpp files if necessary
      * Also, this class adheres to the rule of Zero because we define no custom destructor or copy constructor
      */
-class HelloObject : public Nan::ObjectWrap {
-
+class HelloObject : public Napi::ObjectWrap<HelloObject>
+{
   public:
-    // initializer
-    static void Init(v8::Local<v8::Object> target);
-
-    // methods required for the V8 constructor (?)
-    static NAN_METHOD(New);
-    static Nan::Persistent<v8::Function>& create_once();
-
-    // hello, custom sync method tied to Init of this class
-    // method's logic lives in ./hello.cpp
-    static NAN_METHOD(hello);
-
-    // C++ Constructor
-    // Passing the arg by rvalue reference (&&)
-    HelloObject(std::string&& name);
-
+    // initializers
+    static Napi::Object Init(Napi::Env env, Napi::Object exports);
+    HelloObject(Napi::CallbackInfo const& info);
+    Napi::Value hello(Napi::CallbackInfo const& info);
   private:
-    // member variable
-    // specific to each instance of the class
+    static Napi::FunctionReference constructor;
     std::string name_;
 };
 } // namespace object_sync

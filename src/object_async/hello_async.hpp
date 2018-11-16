@@ -1,5 +1,5 @@
 #pragma once
-#include <nan.h>
+#include <napi.h>
 
 namespace object_async {
 
@@ -10,27 +10,17 @@ namespace object_async {
  * Also, this class adheres to the rule of Zero because we define no custom
  * destructor or copy constructor
  */
-class HelloObjectAsync : public Nan::ObjectWrap {
-
+class HelloObjectAsync : public Napi::ObjectWrap<HelloObjectAsync>
+{
   public:
     // initializer
-    static void Init(v8::Local<v8::Object> target);
-
-    // methods required for the V8 constructor
-    static NAN_METHOD(New);
-    static Nan::Persistent<v8::Function>& create_once();
-
-    // helloAsync, custom async method tied to Init of this class
-    // method's logic lives in ./hello.cpp
-    static NAN_METHOD(helloAsync);
-
-    // C++ Constructor
-    // Passing the arg by rvalue reference (&&)
-    HelloObjectAsync(std::string&& name);
-
+    static Napi::Object Init(Napi::Env env, Napi::Object exports);
+    HelloObjectAsync(Napi::CallbackInfo const& info);
+    Napi::Value helloAsync(Napi::CallbackInfo const& info);
   private:
     // member variable
     // specific to each instance of the class
+    static Napi::FunctionReference constructor;
     std::string name_;
 };
 } // namespace object_async

@@ -1,6 +1,6 @@
 #pragma once
-#include <nan.h>
-// carrots, ex: <nan.h> --> look for header in global
+#include <napi.h>
+// carrots, ex: <napi.h> --> look for header in global
 // quotes, ex: "hello.hpp" --> look for header in location relative to this file
 
 /*
@@ -31,5 +31,5 @@ namespace standalone_async {
 
 // hello, custom sync method tied to module.cpp
 // method's logic lives in hello.cpp
-NAN_METHOD(helloAsync);
+Napi::Value helloAsync(Napi::CallbackInfo const& info);
 } // namespace standalone_async
