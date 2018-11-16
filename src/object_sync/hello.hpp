@@ -18,6 +18,6 @@ class HelloObject : public Napi::ObjectWrap<HelloObject> {
 
   private:
     static Napi::FunctionReference constructor;
-    std::string name_{};
+    std::string name_;
 };
 } // namespace object_sync
