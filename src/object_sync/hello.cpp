@@ -27,39 +27,31 @@
 // clearly organize your application.
 namespace object_sync {
 
-
 Napi::FunctionReference HelloObject::constructor;
 
 // Triggered from Javascript world when calling "new HelloObject(name)"
 HelloObject::HelloObject(Napi::CallbackInfo const& info)
-    : Napi::ObjectWrap<HelloObject>(info)
-{
+    : Napi::ObjectWrap<HelloObject>(info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     std::size_t length = info.Length();
-    if (length != 1 || !info[0].IsString())
-    {
+    if (length != 1 || !info[0].IsString()) {
         Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
     }
     name_ = info[0].As<Napi::String>().Utf8Value();
-    if (name_.empty())
-    {
+    if (name_.empty()) {
         Napi::TypeError::New(env, "arg must be a non-empty string").ThrowAsJavaScriptException();
     }
 }
 
-Napi::Value HelloObject::hello(Napi::CallbackInfo const& info)
-{
+Napi::Value HelloObject::hello(Napi::CallbackInfo const& info) {
     Napi::Env env = info.Env();
     return Napi::String::New(env, name_);
 }
 
-Napi::Object HelloObject::Init(Napi::Env env, Napi::Object exports)
-{
+Napi::Object HelloObject::Init(Napi::Env env, Napi::Object exports) {
 
-    Napi::Function func = DefineClass(env, "HelloObject", {
-            InstanceMethod("helloMethod", &HelloObject::hello)
-                });
+    Napi::Function func = DefineClass(env, "HelloObject", {InstanceMethod("helloMethod", &HelloObject::hello)});
     // Create a peristent reference to the class constructor. This will allow
     // a function called on a class prototype and a function
     // called on instance of a class to be distinguished from each other.

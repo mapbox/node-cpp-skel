@@ -70,8 +70,7 @@ std::unique_ptr<std::string> do_expensive_work(bool louder) {
 // them alive until done.
 // Nan AsyncWorker docs:
 // https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
-struct AsyncHelloWorker : Napi::AsyncWorker
-{
+struct AsyncHelloWorker : Napi::AsyncWorker {
     using Base = Napi::AsyncWorker;
 
     AsyncHelloWorker(bool louder, bool buffer, Napi::Function& cb)
@@ -85,12 +84,9 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     void Execute() override {
         // The try/catch is critical here: if code was added that could throw an
         // unhandled error INSIDE the threadpool, it would be disasterous
-        try
-        {
+        try {
             result_ = do_expensive_work(louder_);
-        }
-        catch (std::exception const& e)
-        {
+        } catch (std::exception const& e) {
             SetError(e.what());
         }
     }
@@ -102,15 +98,11 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     // - You have access to Javascript v8 objects again
     // - You have to translate from C++ member variables to Javascript v8 objects
     // - Finally, you call the user's callback with your results
-    void OnOK() override
-    {
+    void OnOK() override {
         Napi::HandleScope scope(Env());
-        if (buffer_)
-        {
+        if (buffer_) {
             Callback().Call({Env().Null(), utils::NewBufferFrom(Env(), std::move(result_))});
-        }
-        else
-        {
+        } else {
             Callback().Call({Env().Null(), Napi::String::New(Env(), *result_)});
         }
     }
@@ -123,8 +115,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker
 // helloAsync is a "standalone function" because it's not a class.
 // If this function was not defined within a namespace ("standalone_async"
 // specified above), it would be in the global scope.
-Napi::Value helloAsync(Napi::CallbackInfo const& info)
-{
+Napi::Value helloAsync(Napi::CallbackInfo const& info) {
     bool louder = false;
     bool buffer = false;
 
@@ -133,8 +124,7 @@ Napi::Value helloAsync(Napi::CallbackInfo const& info)
     // instead of throwing.
     // Also, "info" comes from the NAN_METHOD macro, which returns differently
     // according to the version of node
-    if (!info[1].IsFunction())
-    {
+    if (!info[1].IsFunction()) {
         Napi::TypeError::New(info.Env(), "second arg 'callback' must be a function").ThrowAsJavaScriptException();
         return info.Env().Null();
     }
@@ -142,30 +132,25 @@ Napi::Value helloAsync(Napi::CallbackInfo const& info)
     Napi::Function callback = info[1].As<Napi::Function>();
 
     // Check first argument, should be an 'options' object
-    if (!info[0].IsObject())
-    {
+    if (!info[0].IsObject()) {
         return utils::CallbackError("first arg 'options' must be an object", info);
     }
     Napi::Object options = info[0].As<Napi::Object>();
 
     // Check options object for the "louder" property, which should be a boolean
     // value
-    if (options.Has(Napi::String::New(info.Env(), "louder")))
-    {
+    if (options.Has(Napi::String::New(info.Env(), "louder"))) {
         Napi::Value louder_val = options.Get(Napi::String::New(info.Env(), "louder"));
-        if (!louder_val.IsBoolean())
-        {
+        if (!louder_val.IsBoolean()) {
             return utils::CallbackError("option 'louder' must be a boolean", info);
         }
         louder = louder_val.As<Napi::Boolean>().Value();
     }
     // Check options object for the "buffer" property, which should be a boolean
     // value
-    if (options.Has(Napi::String::New(info.Env(), "buffer")))
-    {
+    if (options.Has(Napi::String::New(info.Env(), "buffer"))) {
         Napi::Value buffer_val = options.Get(Napi::String::New(info.Env(), "buffer"));
-        if (!buffer_val.IsBoolean())
-        {
+        if (!buffer_val.IsBoolean()) {
             return utils::CallbackError("option 'buffer' must be a boolean", info);
         }
         buffer = buffer_val.As<Napi::Boolean>().Value();
@@ -177,7 +162,7 @@ Napi::Value helloAsync(Napi::CallbackInfo const& info)
     // pointer automatically.
     // - Napi::AsyncQueueWorker takes a pointer to a Napi::AsyncWorker and deletes
     // the pointer automatically.
-    auto * worker = new AsyncHelloWorker{louder, buffer, callback};
+    auto* worker = new AsyncHelloWorker{louder, buffer, callback};
     worker->Queue();
     return info.Env().Undefined();
 }

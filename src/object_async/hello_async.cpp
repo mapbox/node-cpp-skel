@@ -37,7 +37,6 @@
 // If this was not defined within a namespace, it would be in the global scope.
 namespace object_async {
 
-
 // This is the worker running asynchronously and calling a user-provided
 // callback when done.
 // Consider storing all C++ objects you need by value or by shared_ptr to keep
@@ -99,12 +98,9 @@ struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelin
     // - You only have access to member variables stored in this worker.
     // - You do not have access to Javascript v8 objects here.
     void Execute() override {
-        try
-        {
+        try {
             result_ = do_expensive_work(louder_, *name_);
-        }
-        catch (std::exception const& e)
-        {
+        } catch (std::exception const& e) {
             SetError(e.what());
         }
     }
@@ -116,15 +112,11 @@ struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelin
     // - You have access to Javascript v8 objects again
     // - You have to translate from C++ member variables to Javascript v8 objects
     // - Finally, you call the user's callback with your results
-    void OnOK() override
-    {
+    void OnOK() override {
         Napi::HandleScope scope(Env());
-        if (buffer_)
-        {
+        if (buffer_) {
             Callback().Call({Env().Null(), utils::NewBufferFrom(Env(), std::move(result_))});
-        }
-        else
-        {
+        } else {
             Callback().Call({Env().Null(), Napi::String::New(Env(), *result_)});
         }
     }
@@ -143,34 +135,29 @@ struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelin
 Napi::FunctionReference HelloObjectAsync::constructor;
 
 HelloObjectAsync::HelloObjectAsync(Napi::CallbackInfo const& info)
-    : Napi::ObjectWrap<HelloObjectAsync>(info)
-{
+    : Napi::ObjectWrap<HelloObjectAsync>(info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
     std::size_t length = info.Length();
-    if (length != 1 || !info[0].IsString())
-    {
+    if (length != 1 || !info[0].IsString()) {
         Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
     }
     name_ = info[0].As<Napi::String>().Utf8Value();
-    if (name_.empty())
-    {
+    if (name_.empty()) {
         Napi::TypeError::New(env, "arg must be a non-empty string").ThrowAsJavaScriptException();
     }
 }
 
 // NAN_METHOD is applicable to methods you want to expose to JS world
-Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info)
-{
+Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info) {
     // ????
     bool louder = false;
     bool buffer = false;
     // ????
 
     Napi::Env env = info.Env();
-    if (info.Length() != 2 || !info[1].IsFunction())
-    {
+    if (info.Length() != 2 || !info[1].IsFunction()) {
         Napi::TypeError::New(env, "second arg 'callback' must be a function").ThrowAsJavaScriptException();
         return env.Null();
     }
@@ -178,46 +165,38 @@ Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info)
     Napi::Function callback = info[1].As<Napi::Function>();
 
     // Check first argument, should be an 'options' object
-    if (!info[0].IsObject())
-    {
+    if (!info[0].IsObject()) {
         return utils::CallbackError("first arg 'options' must be an object", info);
     }
     Napi::Object options = info[0].As<Napi::Object>();
 
     // Check options object for the "louder" property, which should be a boolean
     // value
-    if (options.Has(Napi::String::New(env, "louder")))
-    {
+    if (options.Has(Napi::String::New(env, "louder"))) {
         Napi::Value louder_val = options.Get(Napi::String::New(env, "louder"));
-        if (!louder_val.IsBoolean())
-        {
+        if (!louder_val.IsBoolean()) {
             return utils::CallbackError("option 'louder' must be a boolean", info);
         }
         louder = louder_val.As<Napi::Boolean>().Value();
     }
     // Check options object for the "buffer" property, which should be a boolean
     // value
-    if (options.Has(Napi::String::New(env, "buffer")))
-    {
+    if (options.Has(Napi::String::New(env, "buffer"))) {
         Napi::Value buffer_val = options.Get(Napi::String::New(env, "buffer"));
-        if (!buffer_val.IsBoolean())
-        {
+        if (!buffer_val.IsBoolean()) {
             return utils::CallbackError("option 'buffer' must be a boolean", info);
         }
         buffer = buffer_val.As<Napi::Boolean>().Value();
     }
 
-    auto * worker = new AsyncHelloWorker{louder, buffer, &name_, callback};
+    auto* worker = new AsyncHelloWorker{louder, buffer, &name_, callback};
     worker->Queue();
     return info.Env().Undefined();
 }
 
-Napi::Object HelloObjectAsync::Init(Napi::Env env, Napi::Object exports)
-{
+Napi::Object HelloObjectAsync::Init(Napi::Env env, Napi::Object exports) {
 
-    Napi::Function func = DefineClass(env, "HelloObjectAsync", {
-            InstanceMethod("helloAsync", &HelloObjectAsync::helloAsync)
-                });
+    Napi::Function func = DefineClass(env, "HelloObjectAsync", {InstanceMethod("helloAsync", &HelloObjectAsync::helloAsync)});
     // Create a peristent reference to the class constructor. This will allow
     // a function called on a class prototype and a function
     // called on instance of a class to be distinguished from each other.
@@ -229,7 +208,5 @@ Napi::Object HelloObjectAsync::Init(Napi::Env env, Napi::Object exports)
     exports.Set("HelloObjectAsync", func);
     return exports;
 }
-
-
 
 } // namespace object_async
