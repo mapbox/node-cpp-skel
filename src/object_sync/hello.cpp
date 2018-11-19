@@ -31,8 +31,7 @@ Napi::FunctionReference HelloObject::constructor;
 
 // Triggered from Javascript world when calling "new HelloObject(name)"
 HelloObject::HelloObject(Napi::CallbackInfo const& info)
-    : Napi::ObjectWrap<HelloObject>(info),
-      name_{} {
+    : Napi::ObjectWrap<HelloObject>(info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     std::size_t length = info.Length();

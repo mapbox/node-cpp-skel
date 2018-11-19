@@ -135,8 +135,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelin
 Napi::FunctionReference HelloObjectAsync::constructor;
 
 HelloObjectAsync::HelloObjectAsync(Napi::CallbackInfo const& info)
-    : Napi::ObjectWrap<HelloObjectAsync>(info),
-      name_{} {
+    : Napi::ObjectWrap<HelloObjectAsync>(info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
