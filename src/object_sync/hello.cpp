@@ -27,7 +27,7 @@
 // clearly organize your application.
 namespace object_sync {
 
-Napi::FunctionReference HelloObject::constructor;
+Napi::FunctionReference HelloObject::constructor; // NOLINT
 
 // Triggered from Javascript world when calling "new HelloObject(name)"
 HelloObject::HelloObject(Napi::CallbackInfo const& info)

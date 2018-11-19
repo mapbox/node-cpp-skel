@@ -132,7 +132,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelin
     std::string const* name_;
 };
 
-Napi::FunctionReference HelloObjectAsync::constructor;
+Napi::FunctionReference HelloObjectAsync::constructor; // NOLINT
 
 HelloObjectAsync::HelloObjectAsync(Napi::CallbackInfo const& info)
     : Napi::ObjectWrap<HelloObjectAsync>(info) {
@@ -157,7 +157,7 @@ Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info) {
     // ????
 
     Napi::Env env = info.Env();
-    if (info.Length() != 2 || !info[1].IsFunction())
+    if (!(info.Length() == 2 && info[1].IsFunction()))
     {
         Napi::TypeError::New(env, "second arg 'callback' must be a function").ThrowAsJavaScriptException();
         return env.Null();
@@ -190,9 +190,9 @@ Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info) {
         buffer = buffer_val.As<Napi::Boolean>().Value();
     }
 
-    auto* worker = new AsyncHelloWorker{louder, buffer, &name_, callback};
+    auto * worker = new AsyncHelloWorker{louder, buffer, &name_, callback}; // NOLINT
     worker->Queue();
-    return info.Env().Undefined();
+    return info.Env().Undefined(); // NOLINT
 }
 
 Napi::Object HelloObjectAsync::Init(Napi::Env env, Napi::Object exports) {

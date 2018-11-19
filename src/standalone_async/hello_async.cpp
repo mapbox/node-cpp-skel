@@ -70,10 +70,11 @@ std::unique_ptr<std::string> do_expensive_work(bool louder) {
 // them alive until done.
 // Nan AsyncWorker docs:
 // https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
-struct AsyncHelloWorker : Napi::AsyncWorker {
+struct AsyncHelloWorker : Napi::AsyncWorker
+{
     using Base = Napi::AsyncWorker;
 
-    AsyncHelloWorker(bool louder, bool buffer, Napi::Function& cb)
+    AsyncHelloWorker(bool louder, bool buffer, Napi::Function const& cb)
         : Base(cb),
           louder_(louder),
           buffer_(buffer) {}
@@ -162,9 +163,9 @@ Napi::Value helloAsync(Napi::CallbackInfo const& info) {
     // pointer automatically.
     // - Napi::AsyncQueueWorker takes a pointer to a Napi::AsyncWorker and deletes
     // the pointer automatically.
-    auto* worker = new AsyncHelloWorker{louder, buffer, callback};
+    auto* worker = new AsyncHelloWorker{louder, buffer, callback}; // NOLINT
     worker->Queue();
-    return info.Env().Undefined();
+    return info.Env().Undefined(); // NOLINT
 }
 
 } // namespace standalone_async
