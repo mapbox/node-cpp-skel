@@ -88,7 +88,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelin
     AsyncHelloWorker(bool louder,
                      bool buffer,
                      std::string const* name,
-                     Napi::Function& cb)
+                     Napi::Function const& cb)
         : Base(cb),
           louder_(louder),
           buffer_(buffer),
@@ -157,7 +157,8 @@ Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info) {
     // ????
 
     Napi::Env env = info.Env();
-    if (info.Length() != 2 || !info[1].IsFunction()) {
+    if (info.Length() != 2 || !info[1].IsFunction())
+    {
         Napi::TypeError::New(env, "second arg 'callback' must be a function").ThrowAsJavaScriptException();
         return env.Null();
     }
