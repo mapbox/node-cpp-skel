@@ -14,7 +14,7 @@ class HelloObjectAsync : public Napi::ObjectWrap<HelloObjectAsync> {
   public:
     // initializer
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
-    HelloObjectAsync(Napi::CallbackInfo const& info);
+    explicit HelloObjectAsync(Napi::CallbackInfo const& info);
     Napi::Value helloAsync(Napi::CallbackInfo const& info);
 
   private:
