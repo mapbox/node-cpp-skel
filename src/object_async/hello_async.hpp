@@ -21,6 +21,6 @@ class HelloObjectAsync : public Napi::ObjectWrap<HelloObjectAsync> {
     // member variable
     // specific to each instance of the class
     static Napi::FunctionReference constructor;
-    std::string name_;
+    std::string name_ = "";
 };
 } // namespace object_async

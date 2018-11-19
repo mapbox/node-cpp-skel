@@ -13,11 +13,11 @@ class HelloObject : public Napi::ObjectWrap<HelloObject> {
   public:
     // initializers
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
-    HelloObject(Napi::CallbackInfo const& info);
+    explicit HelloObject(Napi::CallbackInfo const& info);
     Napi::Value hello(Napi::CallbackInfo const& info);
 
   private:
     static Napi::FunctionReference constructor;
-    std::string name_;
+    std::string name_ = "";
 };
 } // namespace object_sync
