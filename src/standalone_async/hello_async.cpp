@@ -70,8 +70,7 @@ std::unique_ptr<std::string> do_expensive_work(bool louder) {
 // them alive until done.
 // Nan AsyncWorker docs:
 // https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
-struct AsyncHelloWorker : Napi::AsyncWorker
-{
+struct AsyncHelloWorker : Napi::AsyncWorker {
     using Base = Napi::AsyncWorker;
 
     AsyncHelloWorker(bool louder, bool buffer, Napi::Function const& cb)

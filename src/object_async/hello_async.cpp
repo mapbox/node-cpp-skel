@@ -157,8 +157,7 @@ Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info) {
     // ????
 
     Napi::Env env = info.Env();
-    if (!(info.Length() == 2 && info[1].IsFunction()))
-    {
+    if (!(info.Length() == 2 && info[1].IsFunction())) {
         Napi::TypeError::New(env, "second arg 'callback' must be a function").ThrowAsJavaScriptException();
         return env.Null();
     }
@@ -190,7 +189,7 @@ Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info) {
         buffer = buffer_val.As<Napi::Boolean>().Value();
     }
 
-    auto * worker = new AsyncHelloWorker{louder, buffer, &name_, callback}; // NOLINT
+    auto* worker = new AsyncHelloWorker{louder, buffer, &name_, callback}; // NOLINT
     worker->Queue();
     return info.Env().Undefined(); // NOLINT
 }
