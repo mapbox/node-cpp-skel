@@ -37,13 +37,6 @@
 // If this was not defined within a namespace, it would be in the global scope.
 namespace object_async {
 
-// This is the worker running asynchronously and calling a user-provided
-// callback when done.
-// Consider storing all C++ objects you need by value or by shared_ptr to keep
-// them alive until done.
-// Nan AsyncWorker docs:
-// https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
-
 // This function performs expensive allocation of std::map, querying, and string
 // comparison, therefore threads are nice & busy.
 // Also, notice that name is passed by reference (std::string const& name)
