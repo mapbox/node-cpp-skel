@@ -10,15 +10,8 @@ namespace utils {
 * throwing errors.
 * Usage:
 *
-* Napi::Function callback;
-* return CallbackError("error message", callback);  // "return" is important to
-* prevent duplicate callbacks from being fired!
-*
-*
-* "inline" is important here as well. See for more contex:
-* - https://github.com/mapbox/cpp/blob/master/glossary.md#inline-keyword
-* - https://github.com/mapbox/node-cpp-skel/pull/52#discussion_r126847394 for
-* context
+* Napi::CallbackInfo info;
+* return CallbackError("error message", info);
 *
 */
 inline Napi::Value CallbackError(std::string const& message, Napi::CallbackInfo const& info)
@@ -26,6 +19,8 @@ inline Napi::Value CallbackError(std::string const& message, Napi::CallbackInfo 
     Napi::Object obj = Napi::Object::New(info.Env());
     obj.Set("message", message);
     auto func = info[info.Length() - 1].As<Napi::Function>();
+    // ^^^ here we assume that info has a valid callback function
+    // TODO: consider changing either method signature or adding internal checks
     return func.Call({obj});
 }
 
