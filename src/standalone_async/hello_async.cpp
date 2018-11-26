@@ -1,4 +1,5 @@
 #include "hello_async.hpp"
+#include "../cpu_intensive_task.hpp"
 #include "../module_utils.hpp"
 
 #include <exception>
@@ -24,45 +25,7 @@
  * });
  */
 
-// If this was not defined within a namespace, it would be in the global scope.
-// Namespaces are used because C++ has no notion of scoped modules, so all of
-// the code you write in any file could conflict with other code.
-// Namespaces are generally a great idea in C++ because it helps scale and
-// clearly organize your application.
 namespace standalone_async {
-
-// Expensive allocation of std::map, querying, and string comparison,
-// therefore threads are busy
-std::unique_ptr<std::string> do_expensive_work(bool louder) {
-
-    std::map<std::size_t, std::string> container;
-    std::size_t work_to_do = 100000;
-
-    for (std::size_t i = 0; i < work_to_do; ++i) {
-        container.emplace(i, std::to_string(i));
-    }
-
-    for (std::size_t i = 0; i < work_to_do; ++i) {
-        std::string const& item = container[i];
-        if (item != std::to_string(i)) {
-
-            // AsyncHelloWorker's Execute function will take care of this error
-            // and return it to js-world via callback
-            // Marked NOLINT to avoid clang-tidy cert-err60-cpp error which we cannot
-            // avoid on some linux distros where std::runtime_error is not properly
-            // marked noexcept. Details at https://www.securecoding.cert.org/confluence/display/cplusplus/ERR60-CPP.+Exception+objects+must+be+nothrow+copy+constructible
-            throw std::runtime_error("Uh oh, this should never happen"); // NOLINT
-        }
-    }
-
-    std::unique_ptr<std::string> result = std::make_unique<std::string>("...threads are busy async bees...hello world");
-
-    if (louder) {
-        *result += "!!!!";
-    }
-
-    return result;
-}
 
 // This is the worker running asynchronously and calling a user-provided
 // callback when done.
@@ -70,7 +33,8 @@ std::unique_ptr<std::string> do_expensive_work(bool louder) {
 // them alive until done.
 // Nan AsyncWorker docs:
 // https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
-struct AsyncHelloWorker : Napi::AsyncWorker {
+struct AsyncHelloWorker : Napi::AsyncWorker
+{
     using Base = Napi::AsyncWorker;
 
     AsyncHelloWorker(bool louder, bool buffer, Napi::Function const& cb)
@@ -81,12 +45,16 @@ struct AsyncHelloWorker : Napi::AsyncWorker {
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
     // - You do not have access to Javascript v8 objects here.
-    void Execute() override {
+    void Execute() override final
+    {
         // The try/catch is critical here: if code was added that could throw an
         // unhandled error INSIDE the threadpool, it would be disasterous
-        try {
-            result_ = do_expensive_work(louder_);
-        } catch (std::exception const& e) {
+        try
+        {
+            result_ = detail::do_expensive_work("world", louder_);
+        }
+        catch (std::exception const& e)
+        {
             SetError(e.what());
         }
     }
@@ -98,11 +66,15 @@ struct AsyncHelloWorker : Napi::AsyncWorker {
     // - You have access to Javascript v8 objects again
     // - You have to translate from C++ member variables to Javascript v8 objects
     // - Finally, you call the user's callback with your results
-    void OnOK() override {
+    void OnOK() override final
+    {
         Napi::HandleScope scope(Env());
-        if (buffer_) {
+        if (buffer_)
+        {
             Callback().Call({Env().Null(), utils::NewBufferFrom(Env(), std::move(result_))});
-        } else {
+        }
+        else
+        {
             Callback().Call({Env().Null(), Napi::String::New(Env(), *result_)});
         }
     }
@@ -115,16 +87,14 @@ struct AsyncHelloWorker : Napi::AsyncWorker {
 // helloAsync is a "standalone function" because it's not a class.
 // If this function was not defined within a namespace ("standalone_async"
 // specified above), it would be in the global scope.
-Napi::Value helloAsync(Napi::CallbackInfo const& info) {
+Napi::Value helloAsync(Napi::CallbackInfo const& info)
+{
     bool louder = false;
     bool buffer = false;
 
     // Check second argument, should be a 'callback' function.
-    // This allows us to set the callback so we can use it to return errors
-    // instead of throwing.
-    // Also, "info" comes from the NAN_METHOD macro, which returns differently
-    // according to the version of node
-    if (!info[1].IsFunction()) {
+    if (!info[1].IsFunction())
+    {
         Napi::TypeError::New(info.Env(), "second arg 'callback' must be a function").ThrowAsJavaScriptException();
         return info.Env().Null();
     }
@@ -132,25 +102,29 @@ Napi::Value helloAsync(Napi::CallbackInfo const& info) {
     Napi::Function callback = info[1].As<Napi::Function>();
 
     // Check first argument, should be an 'options' object
-    if (!info[0].IsObject()) {
+    if (!info[0].IsObject())
+    {
         return utils::CallbackError("first arg 'options' must be an object", info);
     }
     Napi::Object options = info[0].As<Napi::Object>();
 
     // Check options object for the "louder" property, which should be a boolean
     // value
-    if (options.Has(Napi::String::New(info.Env(), "louder"))) {
+    if (options.Has(Napi::String::New(info.Env(), "louder")))
+    {
         Napi::Value louder_val = options.Get(Napi::String::New(info.Env(), "louder"));
-        if (!louder_val.IsBoolean()) {
+        if (!louder_val.IsBoolean())
+        {
             return utils::CallbackError("option 'louder' must be a boolean", info);
         }
         louder = louder_val.As<Napi::Boolean>().Value();
     }
-    // Check options object for the "buffer" property, which should be a boolean
-    // value
-    if (options.Has(Napi::String::New(info.Env(), "buffer"))) {
+    // Check options object for the "buffer" property, which should be a boolean value
+    if (options.Has(Napi::String::New(info.Env(), "buffer")))
+    {
         Napi::Value buffer_val = options.Get(Napi::String::New(info.Env(), "buffer"));
-        if (!buffer_val.IsBoolean()) {
+        if (!buffer_val.IsBoolean())
+        {
             return utils::CallbackError("option 'buffer' must be a boolean", info);
         }
         buffer = buffer_val.As<Napi::Boolean>().Value();

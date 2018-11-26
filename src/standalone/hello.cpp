@@ -19,7 +19,8 @@ namespace standalone {
 // hello is a "standalone function" because it's not a class.
 // If this function was not defined within a namespace, it would be in the
 // global scope.
-Napi::Value hello(Napi::CallbackInfo const& info) {
+Napi::Value hello(Napi::CallbackInfo const& info)
+{
 
     // "info" comes from the NAN_METHOD macro, which returns differently
     // according to the version of node

@@ -8,7 +8,8 @@
 // "target" is a magic var that NAN_MODULE_INIT passes into a module's scope.
 // When you write things to target, they become available to call from
 // Javascript world.
-Napi::Object init(Napi::Env env, Napi::Object exports) {
+Napi::Object init(Napi::Env env, Napi::Object exports)
+{
 
     // expose hello method
     exports.Set(Napi::String::New(env, "hello"), Napi::Function::New(env, standalone::hello));

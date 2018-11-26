@@ -9,7 +9,8 @@ namespace object_sync {
      * This is in a header file so we can access it across other .cpp files if necessary
      * Also, this class adheres to the rule of Zero because we define no custom destructor or copy constructor
      */
-class HelloObject : public Napi::ObjectWrap<HelloObject> {
+class HelloObject : public Napi::ObjectWrap<HelloObject>
+{
   public:
     // initializers
     static Napi::Object Init(Napi::Env env, Napi::Object exports);

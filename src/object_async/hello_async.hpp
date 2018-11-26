@@ -10,7 +10,8 @@ namespace object_async {
  * Also, this class adheres to the rule of Zero because we define no custom
  * destructor or copy constructor
  */
-class HelloObjectAsync : public Napi::ObjectWrap<HelloObjectAsync> {
+class HelloObjectAsync : public Napi::ObjectWrap<HelloObjectAsync>
+{
   public:
     // initializer
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
