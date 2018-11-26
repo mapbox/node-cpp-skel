@@ -45,7 +45,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
     // - You do not have access to Javascript v8 objects here.
-    void Execute() override final
+    void Execute() final
     {
         // The try/catch is critical here: if code was added that could throw an
         // unhandled error INSIDE the threadpool, it would be disasterous
@@ -66,7 +66,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     // - You have access to Javascript v8 objects again
     // - You have to translate from C++ member variables to Javascript v8 objects
     // - Finally, you call the user's callback with your results
-    void OnOK() override final
+    void OnOK() final
     {
         Napi::HandleScope scope(Env());
         if (buffer_)
