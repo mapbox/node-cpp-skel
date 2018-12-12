@@ -24,6 +24,7 @@ SUPPRESSION_FILE="/tmp/leak_suppressions.txt"
 echo "leak:__strdup" > ${SUPPRESSION_FILE}
 echo "leak:v8::internal" >> ${SUPPRESSION_FILE}
 echo "leak:node::CreateEnvironment" >> ${SUPPRESSION_FILE}
+echo "leak:node::Start" >> ${SUPPRESSION_FILE}
 echo "leak:node::Init" >> ${SUPPRESSION_FILE}
 export ASAN_SYMBOLIZER_PATH=$(pwd)/mason_packages/.link/bin/llvm-symbolizer
 export MSAN_SYMBOLIZER_PATH=$(pwd)/mason_packages/.link/bin/llvm-symbolizer
