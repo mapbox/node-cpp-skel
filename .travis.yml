@@ -108,9 +108,8 @@ matrix:
       script:
         - export PATH=$(pwd)/mason_packages/.link/bin/:${PATH}
         - which llvm-cov
-        - curl -S -f https://codecov.io/bash -o codecov
-        - chmod +x codecov
-        - ./codecov -x "llvm-cov gcov" -Z
+        - pip install --user codecov
+        - codecov --gcov-exec "llvm-cov gcov -l"
     # Clang format build
     - os: linux
       # can be generic since we don't need nodejs to run formatting
