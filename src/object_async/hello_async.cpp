@@ -252,7 +252,7 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
 
     // Check options object for the "louder" property, which should be a boolean
     // value
-    if (Nan::Has(options,Nan::New("louder").ToLocalChecked()).FromMaybe(false)) {
+    if (Nan::Has(options, Nan::New("louder").ToLocalChecked()).FromMaybe(false)) {
         v8::Local<v8::Value> louder_val =
             Nan::Get(options, Nan::New("louder").ToLocalChecked()).ToLocalChecked();
         if (!louder_val->IsBoolean()) {
