@@ -39,6 +39,10 @@ matrix:
     - os: linux
       env: BUILDTYPE=release TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -fvisibility=hidden" LDFLAGS="-fsanitize=cfi"
       node_js: 10
+    # linux publishable node v12/release
+    - os: linux
+      env: BUILDTYPE=release
+      node_js: 12
     # linux publishable node v10/release
     - os: linux
       env: BUILDTYPE=release
@@ -47,42 +51,16 @@ matrix:
     - os: linux
       env: BUILDTYPE=debug
       node_js: 10
-    # linux publishable node v8/release
-    - os: linux
-      env: BUILDTYPE=release
-      node_js: 8
-    # linux publishable node v8/debug
-    - os: linux
-      env: BUILDTYPE=debug
-      node_js: 8
-    # linux publishable node v6/release
-    - os: linux
-      env: BUILDTYPE=release
-      node_js: 6
-    # linux publishable node v6/debug
-    - os: linux
-      env: BUILDTYPE=debug
-      node_js: 6
     # osx publishable node v10/release
     - os: osx
       osx_image: xcode9.3
       env: BUILDTYPE=release
       node_js: 10
-    # osx publishable node v8/release
+    # osx publishable node v12/release
     - os: osx
       osx_image: xcode9.3
       env: BUILDTYPE=release
-      node_js: 8
-    # osx publishable node v6/release
-    - os: osx
-      osx_image: xcode9.3
-      env: BUILDTYPE=release
-      node_js: 6
-    # osx publishable node v6/debug
-    - os: osx
-      osx_image: xcode9.3
-      env: BUILDTYPE=debug
-      node_js: 6
+      node_js: 12
     # linux sanitizer build node v6/debug
     - os: linux
       env: BUILDTYPE=debug TOOLSET=asan
