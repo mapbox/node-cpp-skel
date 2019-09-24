@@ -252,9 +252,9 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
 
     // Check options object for the "louder" property, which should be a boolean
     // value
-    if (options->Has(Nan::New("louder").ToLocalChecked())) {
+    if (Nan::Has(options,Nan::New("louder").ToLocalChecked()).FromMaybe(false)) {
         v8::Local<v8::Value> louder_val =
-            options->Get(Nan::New("louder").ToLocalChecked());
+            Nan::Get(options, Nan::New("louder").ToLocalChecked()).ToLocalChecked();
         if (!louder_val->IsBoolean()) {
             return utils::CallbackError("option 'louder' must be a boolean",
                                         callback);
@@ -267,9 +267,9 @@ NAN_METHOD(HelloObjectAsync::helloAsync) {
     }
     // Check options object for the "buffer" property, which should be a boolean
     // value
-    if (options->Has(Nan::New("buffer").ToLocalChecked())) {
+    if (Nan::Has(options, Nan::New("buffer").ToLocalChecked()).FromMaybe(false)) {
         v8::Local<v8::Value> buffer_val =
-            options->Get(Nan::New("buffer").ToLocalChecked());
+            Nan::Get(options, Nan::New("buffer").ToLocalChecked()).ToLocalChecked();
         if (!buffer_val->IsBoolean()) {
             return utils::CallbackError("option 'buffer' must be a boolean",
                                         callback);
