@@ -92,11 +92,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelin
     std::unique_ptr<std::string> result_ = std::make_unique<std::string>();
     bool const louder_;
     bool const buffer_;
-    // We use a pointer here to avoid copying the string data.
-    // This works because we know that the original string we are
-    // pointing to will be kept in scope/alive for the time while AsyncHelloWorker
-    // is using it. If we could not guarantee this then we would need to either
-    // copy the string or pass a shared_ptr<std::string>.
+    // Store `name_` by const reference to avoid copying
     std::string const& name_;
 };
 
