@@ -24,16 +24,15 @@ inline Napi::Value CallbackError(std::string const& message, Napi::CallbackInfo 
     return func.Call({obj});
 }
 
-inline Napi::Value NewBufferFrom(Napi::Env const& env, std::unique_ptr<std::string>&& ptr)
+inline Napi::Value NewBufferFrom(Napi::Env const& env, std::unique_ptr<std::string>&& str_p)
 {
-    std::string& str = *ptr;
     Napi::Value val = Napi::Buffer<char>::New(env,
-                                              const_cast<char*>(str.data()),
-                                              str.size(),
+                                              const_cast<char*>(str_p->data()),
+                                              str_p->size(),
                                               [](Napi::Env, char*, std::string* s) {
                                                   delete s;
                                               },
-                                              ptr.release());
+                                              str_p.release());
     return val;
 }
 
