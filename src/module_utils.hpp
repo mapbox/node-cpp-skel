@@ -33,6 +33,8 @@ inline Napi::Value NewBufferFrom(Napi::Env const& env, std::unique_ptr<std::stri
                                                   delete s;
                                               },
                                               str_p.release());
+    // ^^^ New Bufer does not assume ownership for the data and expects it to be valid for the lifetime of the object.
+    // Docs: https://github.com/nodejs/node-addon-api/blob/master/doc/buffer.md
     return val;
 }
 
