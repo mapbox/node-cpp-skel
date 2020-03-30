@@ -78,7 +78,14 @@ struct AsyncHelloWorker : Napi::AsyncWorker
         Napi::HandleScope scope(Env());
         if (buffer_)
         {
-            Callback().Call({Env().Null(), Napi::Buffer<char>::Copy(Env(), result_->data(), result_->size())});
+            auto buffer = Napi::Buffer<char>::New(Env(),
+                                                  const_cast<char*>(result_->data()),
+                                                  result_->size(),
+                                                  [](Napi::Env, char*, std::string* s) {
+                                                      delete s;
+                                                  },
+                                                  result_.release());
+            Callback().Call({Env().Null(), buffer});
         }
         else
         {
