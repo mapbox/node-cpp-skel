@@ -81,7 +81,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelin
         Napi::HandleScope scope(Env());
         if (buffer_)
         {
-            Callback().Call({Env().Null(), utils::NewBufferFrom(Env(), std::move(result_))});
+            Callback().Call({Env().Null(), Napi::Buffer<char>::Copy(Env(), result_->data(), result_->size())});
         }
         else
         {
