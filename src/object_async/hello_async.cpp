@@ -116,7 +116,6 @@ HelloObjectAsync::HelloObjectAsync(Napi::CallbackInfo const& info)
     }
 }
 
-// NAN_METHOD is applicable to methods you want to expose to JS world
 Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info)
 {
     bool louder = false;

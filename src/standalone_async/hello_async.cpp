@@ -31,8 +31,8 @@ namespace standalone_async {
 // callback when done.
 // Consider storing all C++ objects you need by value or by shared_ptr to keep
 // them alive until done.
-// Nan AsyncWorker docs:
-// https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
+// Napi::AsyncWorker docs:
+// https://github.com/nodejs/node-addon-api/blob/master/doc/async_worker.md
 struct AsyncHelloWorker : Napi::AsyncWorker
 {
     using Base = Napi::AsyncWorker;
