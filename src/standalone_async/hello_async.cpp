@@ -45,7 +45,6 @@ struct AsyncHelloWorker : Napi::AsyncWorker
           louder_(louder),
           buffer_(buffer) {}
 
-
     ~AsyncHelloWorker() {} // empty dtor
 
     // The Execute() function is getting called when the worker starts to run.
