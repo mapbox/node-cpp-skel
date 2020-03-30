@@ -36,11 +36,17 @@ namespace standalone_async {
 struct AsyncHelloWorker : Napi::AsyncWorker
 {
     using Base = Napi::AsyncWorker;
-
+    // not copyable
+    AsyncHelloWorker(AsyncHelloWorker const&) = delete;
+    AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
+    // ctor
     AsyncHelloWorker(bool louder, bool buffer, Napi::Function const& cb)
         : Base(cb),
           louder_(louder),
           buffer_(buffer) {}
+
+
+    ~AsyncHelloWorker() {} // empty dtor
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.

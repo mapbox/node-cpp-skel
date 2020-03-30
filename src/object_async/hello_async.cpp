@@ -54,6 +54,8 @@ struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelin
           buffer_(buffer),
           name_(name) {}
 
+    ~AsyncHelloWorker() {} // empty destructor
+
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
     // - You do not have access to Javascript v8 objects here.
