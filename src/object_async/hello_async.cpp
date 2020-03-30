@@ -38,12 +38,9 @@
 // If this was not defined within a namespace, it would be in the global scope.
 namespace object_async {
 
-struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelines-special-member-functions
+struct AsyncHelloWorker : Napi::AsyncWorker
 {
     using Base = Napi::AsyncWorker;
-    // not copyable
-    AsyncHelloWorker(AsyncHelloWorker const&) = delete;
-    AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
     // ctor
     AsyncHelloWorker(bool louder,
                      bool buffer,
@@ -53,8 +50,6 @@ struct AsyncHelloWorker : Napi::AsyncWorker // NOLINT to disable cppcoreguidelin
           louder_(louder),
           buffer_(buffer),
           name_(name) {}
-
-    ~AsyncHelloWorker() {} // empty destructor
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
