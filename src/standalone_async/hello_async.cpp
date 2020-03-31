@@ -45,7 +45,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
     // - You do not have access to Javascript v8 objects here.
-    void Execute() final
+    void Execute() override
     {
         // The try/catch is critical here: if code was added that could throw an
         // unhandled error INSIDE the threadpool, it would be disasterous
@@ -69,24 +69,27 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     void OnOK() final
     {
         Napi::HandleScope scope(Env());
-        if (buffer_)
+        if (!Callback().IsEmpty())
         {
-            auto buffer = Napi::Buffer<char>::New(Env(),
-                                                  const_cast<char*>(result_->data()),
-                                                  result_->size(),
-                                                  [](Napi::Env, char*, std::string* s) {
-                                                      delete s;
-                                                  },
-                                                  result_.release());
-            Callback().Call({Env().Null(), buffer});
-        }
-        else
-        {
-            Callback().Call({Env().Null(), Napi::String::New(Env(), *result_)});
+            if (buffer_)
+            {
+                auto buffer = Napi::Buffer<char>::New(Env(),
+                                                      const_cast<char*>(result_->data()),
+                                                      result_->size(),
+                                                      [](Napi::Env, char*, std::string* s) {
+                                                          delete s;
+                                                      },
+                                                      result_.release());
+                Callback().Call({Env().Null(), buffer});
+            }
+            else
+            {
+                Callback().Call({Env().Null(), Napi::String::New(Env(), *result_)});
+            }
         }
     }
 
-    std::unique_ptr<std::string> result_ = std::make_unique<std::string>();
+    std::unique_ptr<std::string> result_ = nullptr;
     const bool louder_;
     const bool buffer_;
 };
