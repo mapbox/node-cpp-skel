@@ -44,7 +44,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     // ctor
     AsyncHelloWorker(bool louder,
                      bool buffer,
-                     std::string  name,
+                     std::string name,
                      Napi::Function const& cb)
         : Base(cb),
           louder_(louder),
