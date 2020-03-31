@@ -55,7 +55,7 @@ test('error: handles non-string arg within constructor', function(t) {
     var H = new module.HelloObjectAsync(24);
   } catch(err) {
     console.log(err.message);
-    t.ok(err.message.indexOf('A string was expected') > -1, 'expected error message');
+    t.equal(err.message, 'String expected', 'expected error message');
     t.end();
   }
 });
@@ -103,7 +103,7 @@ test('error: handles missing arg', function(t) {
     var H = new module.HelloObjectAsync();
   } catch (err) {
     t.ok(err, 'expected error');
-    t.ok(err.message.indexOf('A string was expected') > -1, 'expected error message');
+    t.equal(err.message, 'String expected', 'expected error message');
     t.end();
   }
 });
