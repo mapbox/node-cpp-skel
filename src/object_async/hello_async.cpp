@@ -96,7 +96,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker
         }
     }
 
-    std::unique_ptr<std::string> result_;
+    std::unique_ptr<std::string> result_ = nullptr;
     bool const louder_;
     bool const buffer_;
     std::string const name_;
