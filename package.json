@@ -17,7 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "mason-js-sdk": "~0.1.4",
-    "node-addon-api": "^2.0.0",
+    "node-addon-api": "nodejs/node-addon-api",
     "node-pre-gyp": "~0.10.0"
   },
   "devDependencies": {
