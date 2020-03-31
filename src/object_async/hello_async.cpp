@@ -3,10 +3,10 @@
 #include "../module_utils.hpp"
 
 #include <exception>
-#include <iostream>
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 /**
  * Asynchronous class, called HelloObjectAsync
@@ -44,17 +44,17 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     // ctor
     AsyncHelloWorker(bool louder,
                      bool buffer,
-                     std::string const& name,
+                     std::string  name,
                      Napi::Function const& cb)
         : Base(cb),
           louder_(louder),
           buffer_(buffer),
-          name_(name) {}
+          name_(std::move(name)) {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
     // - You do not have access to Javascript v8 objects here.
-    void Execute() final
+    void Execute() override
     {
         try
         {
@@ -73,31 +73,33 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     // - You have access to Javascript v8 objects again
     // - You have to translate from C++ member variables to Javascript v8 objects
     // - Finally, you call the user's callback with your results
-    void OnOK() final
+    void OnOK() override
     {
         Napi::HandleScope scope(Env());
-        if (buffer_)
+        if (!Callback().IsEmpty())
         {
-            auto buffer = Napi::Buffer<char>::New(Env(),
-                                                  const_cast<char*>(result_->data()),
-                                                  result_->size(),
-                                                  [](Napi::Env, char*, std::string* s) {
-                                                      delete s;
-                                                  },
-                                                  result_.release());
-            Callback().Call({Env().Null(), buffer});
-        }
-        else
-        {
-            Callback().Call({Env().Null(), Napi::String::New(Env(), *result_)});
+            if (buffer_)
+            {
+                auto buffer = Napi::Buffer<char>::New(Env(),
+                                                      const_cast<char*>(result_->data()),
+                                                      result_->size(),
+                                                      [](Napi::Env, char*, std::string* s) {
+                                                          delete s;
+                                                      },
+                                                      result_.release());
+                Callback().Call({Env().Null(), buffer});
+            }
+            else
+            {
+                Callback().Call({Env().Null(), Napi::String::New(Env(), *result_)});
+            }
         }
     }
 
-    std::unique_ptr<std::string> result_ = std::make_unique<std::string>();
+    std::unique_ptr<std::string> result_;
     bool const louder_;
     bool const buffer_;
-    // Store `name_` by const reference to avoid copying
-    std::string const& name_;
+    std::string const name_;
 };
 
 Napi::FunctionReference HelloObjectAsync::constructor; // NOLINT
