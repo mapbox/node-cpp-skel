@@ -39,6 +39,7 @@ HelloObject::HelloObject(Napi::CallbackInfo const& info)
     if (length != 1 || !info[0].IsString())
     {
         Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
+        return;
     }
     name_ = info[0].As<Napi::String>().Utf8Value();
     if (name_.empty())
