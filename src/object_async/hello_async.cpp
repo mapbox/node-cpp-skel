@@ -39,6 +39,7 @@
 
 namespace object_async {
 
+/*
 struct AsyncHelloWorker : Napi::AsyncWorker
 {
     using Base = Napi::AsyncWorker;
@@ -102,6 +103,63 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     bool const buffer_;
     std::string const name_;
 };
+*/
+
+// This V2 worker is overriding `GetResult` to return the arguments
+// passed to the Callback invoked by the default OnOK() implementation.
+// Above is alternative implementation with OnOK() method calling
+// Callback with appropriate args. Both implementations use default OnError().
+struct AsyncHelloWorker_v2 : Napi::AsyncWorker
+{
+    using Base = Napi::AsyncWorker;
+    // ctor
+    AsyncHelloWorker_v2(bool louder,
+                     bool buffer,
+                     std::string name,
+                     Napi::Function const& cb)
+        : Base(cb),
+          louder_(louder),
+          buffer_(buffer),
+          name_(std::move(name)) {}
+
+    // The Execute() function is getting called when the worker starts to run.
+    // - You only have access to member variables stored in this worker.
+    // - You do not have access to Javascript v8 objects here.
+    void Execute() override
+    {
+        try
+        {
+            result_ = detail::do_expensive_work(name_, louder_);
+        }
+        catch (std::exception const& e)
+        {
+            SetError(e.what());
+        }
+    }
+
+    std::vector<napi_value> GetResult(Napi::Env env) override
+    {
+        if (buffer_)
+        {
+            auto buffer = Napi::Buffer<char>::New(env,
+                                                  result_->data(),
+                                                  result_->size(),
+                                                  [](Napi::Env, char*, gsl::owner<std::vector<char>*> v) {
+                                                      delete v;
+                                                  },
+                                                  result_.release());
+            return {env.Null(), buffer};
+        }
+        return {env.Null(), Napi::String::New(env, result_->data(), result_->size())};
+
+    }
+
+    std::unique_ptr<std::vector<char>> result_ = nullptr;
+    bool const louder_;
+    bool const buffer_;
+    std::string const name_;
+};
+
 
 Napi::FunctionReference HelloObjectAsync::constructor; // NOLINT
 
@@ -168,7 +226,7 @@ Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info)
         buffer = buffer_val.As<Napi::Boolean>().Value();
     }
 
-    auto* worker = new AsyncHelloWorker{louder, buffer, name_, callback}; // NOLINT
+    auto* worker = new AsyncHelloWorker_v2{louder, buffer, name_, callback}; // NOLINT
     worker->Queue();
     return info.Env().Undefined(); // NOLINT
 }
