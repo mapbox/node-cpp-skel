@@ -114,9 +114,9 @@ struct AsyncHelloWorker_v2 : Napi::AsyncWorker
     using Base = Napi::AsyncWorker;
     // ctor
     AsyncHelloWorker_v2(bool louder,
-                     bool buffer,
-                     std::string name,
-                     Napi::Function const& cb)
+                        bool buffer,
+                        std::string name,
+                        Napi::Function const& cb)
         : Base(cb),
           louder_(louder),
           buffer_(buffer),
@@ -151,7 +151,6 @@ struct AsyncHelloWorker_v2 : Napi::AsyncWorker
             return {env.Null(), buffer};
         }
         return {env.Null(), Napi::String::New(env, result_->data(), result_->size())};
-
     }
 
     std::unique_ptr<std::vector<char>> result_ = nullptr;
@@ -159,7 +158,6 @@ struct AsyncHelloWorker_v2 : Napi::AsyncWorker
     bool const buffer_;
     std::string const name_;
 };
-
 
 Napi::FunctionReference HelloObjectAsync::constructor; // NOLINT
 
