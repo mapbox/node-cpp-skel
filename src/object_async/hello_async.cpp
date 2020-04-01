@@ -36,6 +36,7 @@
  */
 
 // If this was not defined within a namespace, it would be in the global scope.
+
 namespace object_async {
 
 struct AsyncHelloWorker : Napi::AsyncWorker
@@ -81,22 +82,22 @@ struct AsyncHelloWorker : Napi::AsyncWorker
             if (buffer_)
             {
                 auto buffer = Napi::Buffer<char>::New(Env(),
-                                                      const_cast<char*>(result_->data()),
+                                                      result_->data(),
                                                       result_->size(),
-                                                      [](Napi::Env, char*, std::string* s) {
-                                                          delete s;
+                                                      [](Napi::Env, char*, gsl::owner<std::vector<char>*> v) {
+                                                          delete v;
                                                       },
                                                       result_.release());
                 Callback().Call({Env().Null(), buffer});
             }
             else
             {
-                Callback().Call({Env().Null(), Napi::String::New(Env(), *result_)});
+                Callback().Call({Env().Null(), Napi::String::New(Env(), result_->data(), result_->size())});
             }
         }
     }
 
-    std::unique_ptr<std::string> result_ = nullptr;
+    std::unique_ptr<std::vector<char>> result_ = nullptr;
     bool const louder_;
     bool const buffer_;
     std::string const name_;

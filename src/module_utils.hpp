@@ -24,3 +24,10 @@ inline Napi::Value CallbackError(std::string const& message, Napi::CallbackInfo 
     return func.Call({obj});
 }
 } // namespace utils
+
+namespace gsl {
+template <typename T>
+using owner = T;
+} // namespace gsl
+
+// ^^^ type alias required for clang-tidy (cppcoreguidelines-owning-memory)
