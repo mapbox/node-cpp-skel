@@ -31,11 +31,7 @@ script:
 # run your tests and build binaries
 matrix:
   include:
-
     ## ** Builds that are published **
-
-    # Node 10
-
     # linux cfi build node v10/release
     - os: linux
       env: BUILDTYPE=release TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -fvisibility=hidden" LDFLAGS="-fsanitize=cfi"
@@ -139,8 +135,6 @@ matrix:
       # Overrides `script` to disable publishing
       script:
         - true
-
-    # Node 12
     # linux cfi build node v12/release
     - os: linux
       env: BUILDTYPE=release TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -fvisibility=hidden" LDFLAGS="-fsanitize=cfi"
