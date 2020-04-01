@@ -74,6 +74,7 @@ matrix:
         - make sanitize
       # Overrides `before_script` (tests are already run in `make sanitize`)
       before_script:
+        - true
     # osx sanitizer build node v10/debug
     - os: osx
       env: BUILDTYPE=debug TOOLSET=asan
@@ -84,7 +85,7 @@ matrix:
         - make sanitize
       # Overrides `before_script` (tests are already run in `make sanitize`)
       before_script:
-
+        - true
     ## ** Builds that do not get published **
 
     # g++ build (default builds all use clang++)
@@ -103,6 +104,7 @@ matrix:
         - make ${BUILDTYPE}
       # Overrides `script` to disable publishing
       script:
+        - true
     # Coverage build
     - os: linux
       env: BUILDTYPE=debug CXXFLAGS="--coverage" LDFLAGS="--coverage"
@@ -127,8 +129,10 @@ matrix:
         - make format
       # Overrides `before_script`, no need to run tests
       before_script:
+        - true
       # Overrides `script` to disable publishing
       script:
+        - true
     # Clang tidy build
     - os: linux
       env: CLANG_TIDY
@@ -142,5 +146,7 @@ matrix:
         - make tidy
       # Overrides `before_script`, no need to run tests
       before_script:
+        - true
       # Overrides `script` to disable publishing
       script:
+        - true
