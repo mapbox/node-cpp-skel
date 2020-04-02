@@ -1,13 +1,12 @@
 ![dancing skel](https://mapbox.s3.amazonaws.com/cpp-assets/node-cpp-skel-readme_blue.png)
+[![Build Status](https://travis-ci.org/mapbox/node-cpp-skel.svg?branch=master)](https://travis-ci.org/mapbox/node-cpp-skel)
+[![codecov](https://codecov.io/gh/mapbox/node-cpp-skel/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/node-cpp-skel)
 
-A skeleton for binding C++ libraries to Node.js using [Nan](https://github.com/nodejs/nan). This is a small, helper repository that generates simple `HelloWorld` Javascript example constructors. The examples have a number of methods to demonstrate different ways to use Nan for building particular types of functionality (i.e. asynchronous functions). Use this repo as both a template for your own code as well as a learning tool if you're just starting to develop Node/C++ Addons.
+A skeleton for building a C++ addon for Node.js. This is a small, helper repository that generates simple `HelloWorld` Javascript example constructors. The examples have a number of methods to demonstrate different ways to use the Node C+ API for building particular types of functionality (i.e. asynchronous functions). Use this repo as both a template for your own code as well as a learning tool if you're just starting to develop Node/C++ Addons.
 
 **Why port C++ to Node.js?**. That's a great question! C++ is a high performance language that allows you to execute operations without clogging up the event loop. Node.js is single-threaded, which blocks execution. Even in highly optimized javascript code it may be impossible to improve performance. Passing heavy operations into C++ and subsequently into C++ workers can greatly improve the overall runtime of the code. Porting C++ code to Node.js is also referred to as creating an ["Addon"](https://github.com/mapbox/cpp/blob/master/node-cpp.md).
 
-**Nan**: Nan is used in many C++ => Node.js port projects, such as [node-mapnik](https://github.com/mapnik/node-mapnik), [node-osrm](https://github.com/Project-OSRM/node-osrm), and [node-osmium](https://github.com/osmcode/node-osmium). More examples of how to port C++ libraries to node can be found at [nodejs.org/api/addons.html](https://nodejs.org/api/addons.html). See https://nodesource.com/blog/c-add-ons-for-nodejs-v4/ for a detailed summary of the origins of Nan.
-
-[![Build Status](https://travis-ci.org/mapbox/node-cpp-skel.svg?branch=master)](https://travis-ci.org/mapbox/node-cpp-skel)
-[![codecov](https://codecov.io/gh/mapbox/node-cpp-skel/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/node-cpp-skel)
+More examples of how to port C++ libraries to node can be found at [nodejs.org/api/addons.html](https://nodejs.org/api/addons.html).
 
 # What's in the box? :package:
 
