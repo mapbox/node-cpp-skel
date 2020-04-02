@@ -21,10 +21,6 @@ fi
 
 export MASON_LLVM_RT_PRELOAD=$(pwd)/$(ls mason_packages/.link/lib/clang/*/lib/*/libclang_rt.asan*${SHARED_LIB_EXT})
 SUPPRESSION_FILE="/tmp/leak_suppressions.txt"
-echo "leak:__strdup" > ${SUPPRESSION_FILE}
-echo "leak:v8::internal" >> ${SUPPRESSION_FILE}
-echo "leak:node::CreateEnvironment" >> ${SUPPRESSION_FILE}
-echo "leak:node::Init" >> ${SUPPRESSION_FILE}
 # Suppress leak related to https://github.com/libuv/libuv/pull/2480
 echo "leak:uv__set_process_title_platform_init" >> ${SUPPRESSION_FILE}
 export ASAN_SYMBOLIZER_PATH=$(pwd)/mason_packages/.link/bin/llvm-symbolizer
