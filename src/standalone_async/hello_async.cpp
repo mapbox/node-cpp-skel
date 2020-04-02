@@ -69,13 +69,15 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     void OnOK() final
     {
         Napi::HandleScope scope(Env());
-        if (!Callback().IsEmpty())
+        if (!Callback().IsEmpty() && result_)
         {
             if (buffer_)
             {
+                char* data = result_->data();
+                std::size_t size = result_->size();
                 auto buffer = Napi::Buffer<char>::New(Env(),
-                                                      result_->data(),
-                                                      result_->size(),
+                                                      data,
+                                                      size,
                                                       [](Napi::Env, char*, gsl::owner<std::vector<char>*> v) {
                                                           delete v;
                                                       },

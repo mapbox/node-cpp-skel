@@ -82,9 +82,11 @@ struct AsyncHelloWorker : Napi::AsyncWorker
         {
             if (buffer_)
             {
+                char * data = result_->data();
+                std::size_t size = result_->size();
                 auto buffer = Napi::Buffer<char>::New(Env(),
-                                                      result_->data(),
-                                                      result_->size(),
+                                                      data,
+                                                      size,
                                                       [](Napi::Env, char*, gsl::owner<std::vector<char>*> v) {
                                                           delete v;
                                                       },
@@ -139,18 +141,24 @@ struct AsyncHelloWorker_v2 : Napi::AsyncWorker
 
     std::vector<napi_value> GetResult(Napi::Env env) override
     {
-        if (buffer_)
+        if (result_)
         {
-            auto buffer = Napi::Buffer<char>::New(env,
-                                                  result_->data(),
-                                                  result_->size(),
-                                                  [](Napi::Env, char*, gsl::owner<std::vector<char>*> v) {
-                                                      delete v;
-                                                  },
-                                                  result_.release());
-            return {env.Null(), buffer};
+            if (buffer_)
+            {
+                char* data = result_->data();
+                std::size_t size = result_->size();
+                auto buffer = Napi::Buffer<char>::New(env,
+                                                      data,
+                                                      size,
+                                                      [](Napi::Env, char*, gsl::owner<std::vector<char>*> v) {
+                                                          delete v;
+                                                      },
+                                                      result_.release());
+                return {env.Null(), buffer};
+            }
+            return {env.Null(), Napi::String::New(env, result_->data(), result_->size())};
         }
-        return {env.Null(), Napi::String::New(env, result_->data(), result_->size())};
+        return Base::GetResult(env); // returns an empty vector (default)
     }
 
     std::unique_ptr<std::vector<char>> result_ = nullptr;
