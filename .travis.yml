@@ -123,6 +123,8 @@ matrix:
         - which llvm-cov
         - curl -S -f https://codecov.io/bash -o codecov
         - chmod +x codecov
+        # Workaround until we can avoid problem after https://github.com/travis-ci/travis-build/pull/1263 lands
+        - PATH=$(echo "$PATH" | sed 's/.\/node_modules\/.bin://')
         - ./codecov -x "llvm-cov gcov" -Z
     # Clang format build
     - os: linux
