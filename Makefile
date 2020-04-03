@@ -24,10 +24,10 @@ export WERROR ?= true
 # just typing `make` will call `make release`
 default: release
 
-node_modules/install:
+node_modules/node-addon-api:
 	npm install --ignore-scripts
 
-mason_packages/headers: node_modules/install
+mason_packages/headers: node_modules/node-addon-api
 	node_modules/.bin/mason-js install
 
 mason_packages/.link/include: mason_packages/headers
