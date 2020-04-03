@@ -26,6 +26,8 @@ echo "leak:v8::internal" >> ${SUPPRESSION_FILE}
 echo "leak:node::CreateEnvironment" >> ${SUPPRESSION_FILE}
 echo "leak:node::Start" >> ${SUPPRESSION_FILE}
 echo "leak:node::Init" >> ${SUPPRESSION_FILE}
+# Suppress leak related to https://github.com/libuv/libuv/pull/2480
+echo "leak:uv__set_process_title_platform_init" >> ${SUPPRESSION_FILE}
 export ASAN_SYMBOLIZER_PATH=$(pwd)/mason_packages/.link/bin/llvm-symbolizer
 export MSAN_SYMBOLIZER_PATH=$(pwd)/mason_packages/.link/bin/llvm-symbolizer
 export UBSAN_OPTIONS=print_stacktrace=1

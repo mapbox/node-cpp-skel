@@ -2,26 +2,24 @@
 #include "object_sync/hello.hpp"
 #include "standalone/hello.hpp"
 #include "standalone_async/hello_async.hpp"
-#include <nan.h>
+#include <napi.h>
 // #include "your_code.hpp"
 
-// "target" is a magic var that NAN_MODULE_INIT passes into a module's scope.
-// When you write things to target, they become available to call from
-// Javascript world.
-NAN_MODULE_INIT(init) {
-
+Napi::Object init(Napi::Env env, Napi::Object exports)
+{
     // expose hello method
-    Nan::SetMethod(target, "hello", standalone::hello);
+    exports.Set(Napi::String::New(env, "hello"), Napi::Function::New(env, standalone::hello));
 
     // expose helloAsync method
-    Nan::SetMethod(target, "helloAsync", standalone_async::helloAsync);
+    exports.Set(Napi::String::New(env, "helloAsync"), Napi::Function::New(env, standalone_async::helloAsync));
 
     // expose HelloObject class
-    object_sync::HelloObject::Init(target);
+    object_sync::HelloObject::Init(env, exports);
 
     // expose HelloObjectAsync class
-    object_async::HelloObjectAsync::Init(target);
+    object_async::HelloObjectAsync::Init(env, exports);
 
+    return exports;
     /**
    * You may have noticed there are multiple "hello" functions as part of this
    * module.
@@ -36,13 +34,8 @@ NAN_MODULE_INIT(init) {
     // Include your .hpp file at the top of this file.
 }
 
-// Here we initialize the module (we only do this once)
-// by attaching the init function to the module. This invokes
-// a variety of magic from inside nodejs core that we don't need to
-// worry about, but if you care the details are at https://github.com/nodejs/node/blob/34d1b1144e1af8382dad71c28c8d956ebf709801/src/node.h#L431-L518
-// We mark this NOLINT to avoid the clang-tidy checks
-// warning about code inside nodejs that we don't control and can't
-// directly change to avoid the warning.
+// Initialize the module (we only do this once)
+// Mark this NOLINT to avoid the clang-tidy checks
 // NODE_GYP_MODULE_NAME is the name of our module as defined in 'target_name'
 // variable in the 'binding.gyp', which is passed along as a compiler define
-NODE_MODULE(NODE_GYP_MODULE_NAME, init) // NOLINT
+NODE_API_MODULE(NODE_GYP_MODULE_NAME, init) // NOLINT

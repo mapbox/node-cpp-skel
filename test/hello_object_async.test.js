@@ -45,7 +45,7 @@ test('error: throws when missing "new"', function(t) {
     var H = module.HelloObjectAsync('world');
   } catch(err) {
     t.ok(err, 'expected error');
-    t.equal(err.message, 'Cannot call constructor as function, you need to use \'new\' keyword', 'expected error message')
+    t.equal(err.message, 'Class constructors cannot be invoked without \'new\'', 'expected error message')
     t.end();
   }
 });
@@ -54,8 +54,8 @@ test('error: handles non-string arg within constructor', function(t) {
   try {
     var H = new module.HelloObjectAsync(24);
   } catch(err) {
-    t.ok(err, 'expected error');
-    t.ok(err.message.indexOf('arg must be a string') > -1, 'expected error message');
+    console.log(err.message);
+    t.equal(err.message, 'String expected', 'expected error message');
     t.end();
   }
 });
@@ -103,7 +103,7 @@ test('error: handles missing arg', function(t) {
     var H = new module.HelloObjectAsync();
   } catch (err) {
     t.ok(err, 'expected error');
-    t.ok(err.message.indexOf('must provide string arg') > -1, 'expected error message');
+    t.equal(err.message, 'String expected', 'expected error message');
     t.end();
   }
 });

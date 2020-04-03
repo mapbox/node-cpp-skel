@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <nan.h>
+#include <napi.h>
 #include <string>
 
 namespace utils {
@@ -10,35 +10,24 @@ namespace utils {
 * throwing errors.
 * Usage:
 *
-* v8::Local<v8::Function> callback;
-* return CallbackError("error message", callback);  // "return" is important to
-* prevent duplicate callbacks from being fired!
-*
-*
-* "inline" is important here as well. See for more contex:
-* - https://github.com/mapbox/cpp/blob/master/glossary.md#inline-keyword
-* - https://github.com/mapbox/node-cpp-skel/pull/52#discussion_r126847394 for
-* context
+* Napi::CallbackInfo info;
+* return CallbackError("error message", info);
 *
 */
-inline void CallbackError(std::string message, v8::Local<v8::Function> func) {
-    Nan::Callback cb(func);
-    v8::Local<v8::Value> argv[1] = {Nan::Error(message.c_str())};
-    Nan::Call(cb, 1, argv);
+inline Napi::Value CallbackError(std::string const& message, Napi::CallbackInfo const& info)
+{
+    Napi::Object obj = Napi::Object::New(info.Env());
+    obj.Set("message", message);
+    auto func = info[info.Length() - 1].As<Napi::Function>();
+    // ^^^ here we assume that info has a valid callback function
+    // TODO: consider changing either method signature or adding internal checks
+    return func.Call({obj});
 }
-
-inline Nan::MaybeLocal<v8::Object> NewBufferFrom(std::unique_ptr<std::string>&& ptr) {
-    Nan::MaybeLocal<v8::Object> res = Nan::NewBuffer(
-        &(*ptr)[0],
-        ptr->size(),
-        [](char*, void* hint) {
-            delete static_cast<std::string*>(hint);
-        },
-        ptr.get());
-    if (!res.IsEmpty()) {
-        ptr.release(); // NOLINT ignore bugprone-unused-return-value
-    }
-    return res;
-}
-
 } // namespace utils
+
+namespace gsl {
+template <typename T>
+using owner = T;
+} // namespace gsl
+
+// ^^^ type alias required for clang-tidy (cppcoreguidelines-owning-memory)

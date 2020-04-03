@@ -1,11 +1,12 @@
 #include "hello_async.hpp"
+#include "../cpu_intensive_task.hpp"
 #include "../module_utils.hpp"
 
 #include <exception>
-#include <iostream>
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 /**
  * Asynchronous class, called HelloObjectAsync
@@ -35,305 +36,220 @@
  */
 
 // If this was not defined within a namespace, it would be in the global scope.
+
 namespace object_async {
 
-// Custom constructor, assigns custom name arg passed in from Javascript world.
-// This constructor uses member init list via the colon, aka "direct
-// initialization", which is more efficient than using assignment operators.
-// This constructor is using move semantics to literally "move" the value of
-// name to a new place in memory (to the "name_" variable).
-// This avoids copying the value and duplicating memory allocation, which can
-// negatively affect performance.
-HelloObjectAsync::HelloObjectAsync(std::string&& name)
-    : name_(name) {}
-
-// Triggered from Javascript world when calling "new HelloObjectAsync(name)"
-NAN_METHOD(HelloObjectAsync::New) {
-    if (info.IsConstructCall()) {
-        try {
-            if (info.Length() >= 1) {
-                if (info[0]->IsString()) {
-                    // Don't want to risk passing a null string around, which might create unpredictable behavior.
-                    Nan::Utf8String utf8_value(info[0]);
-                    int len = utf8_value.length();
-                    if (len <= 0) {
-                        return Nan::ThrowTypeError("arg must be a non-empty string");
-                    }
-
-                    /**
-                    * This line converts a V8 string to a C++ std::string.
-                    * In the background, it triggers memory allocation (stack allocating, but std:string is also dynamically allocating memory in the heap)
-                    * We want to avoid heap allocation to ensure more performant code.
-                    * See https://github.com/mapbox/cpp/blob/master/glossary.md#stack-allocation
-                    * and https://stackoverflow.com/questions/79923/what-and-where-are-the-stack-and-heap/80113#80113
-                    * Also, providing the length allows the std::string constructor to avoid calculating the length internally
-                    * and should be faster since it skips an operation.
-                    */
-                    std::string name(*utf8_value, static_cast<std::size_t>(len));
-
-                    /**
-                    * This line is where HelloObjectAsync takes ownership of "name" with the use of move semantics.
-                    * Then all later usage of "name" are passed by reference (const&), but the actual home or address in memory
-                    * will always be owned by this instance of HelloObjectAsync. Generally important to know what has ownership of an object.
-                    * When a object/value is a member of a class (like "name"), we know the class (HelloObjectAsync) has full control of the scope of the object/value.
-                    * This avoids the scenario of "name" being destroyed or becoming out of scope.
-                    *
-                    * Also, we're using "new" here to create a custom C++ class, based on node::ObjectWrap since this is a node addon.
-                    * In this case, "new" allocates a C++ object (dynamically on the heap) and then passes ownership (control of when it gets deleted)
-                    * to V8, the javascript engine which decides when to clean up the object based on how its’ garbage collector works.
-                    * In other words, the memory of HelloObjectAsync is expliclty deleted via node::ObjectWrap when it's gone out of scope
-                    * (the object needs to stay alive until the V8 garbage collector has decided it's done):
-                    * https://github.com/nodejs/node/blob/7ec28a0a506efe9d1c03240fd028bea4a3d350da/src/node_object_wrap.h#L124
-                    **/
-                    auto self = std::make_unique<HelloObjectAsync>(std::move(name)); // Using unique pointer to adhere to cpp core guideline: https://clang.llvm.org/extra/clang-tidy/checks/cppcoreguidelines-owning-memory.html
-                    self->Wrap(info.This());                                         // Connects C++ object to Javascript object (this)
-                    self.release();                                                  // NOLINT Release the ownership of self so it can be managed by wrapper
-                } else {
-                    return Nan::ThrowTypeError(
-                        "arg must be a string");
-                }
-            } else {
-                return Nan::ThrowTypeError(
-                    "must provide string arg");
-            }
-        } catch (const std::exception& ex) {
-            return Nan::ThrowTypeError(ex.what());
-        }
-
-        info.GetReturnValue().Set(info.This());
-    } else {
-        return Nan::ThrowTypeError(
-            "Cannot call constructor as function, you need to use 'new' keyword");
-    }
-}
-
-// This function performs expensive allocation of std::map, querying, and string
-// comparison, therefore threads are nice & busy.
-// Also, notice that name is passed by reference (std::string const& name)
-std::unique_ptr<std::string> do_expensive_work(bool louder, std::string const& name) {
-
-    std::map<std::size_t, std::string> container;
-    std::size_t work_to_do = 100000;
-
-    for (std::size_t i = 0; i < work_to_do; ++i) {
-        container.emplace(i, std::to_string(i));
-    }
-
-    for (std::size_t i = 0; i < work_to_do; ++i) {
-        std::string const& item = container[i];
-
-        if (item != std::to_string(i)) {
-
-            // AsyncHelloWorker's Execute function will take care of this error
-            // and return it to js-world via callback
-            // Marked NOLINT to avoid clang-tidy cert-err60-cpp error which we cannot
-            // avoid on some linux distros where std::runtime_error is not properly
-            // marked noexcept. Details at https://www.securecoding.cert.org/confluence/display/cplusplus/ERR60-CPP.+Exception+objects+must+be+nothrow+copy+constructible
-            throw std::runtime_error("Uh oh, this should never happen"); // NOLINT
-        }
-    }
-
-    std::unique_ptr<std::string> result = std::make_unique<std::string>("...threads are busy async bees...hello " + name);
-
-    if (louder) {
-        *result += "!!!!";
-    }
-
-    return result;
-}
-
-// This is the worker running asynchronously and calling a user-provided
-// callback when done.
-// Consider storing all C++ objects you need by value or by shared_ptr to keep
-// them alive until done.
-// Nan AsyncWorker docs:
-// https://github.com/nodejs/nan/blob/master/doc/asyncworker.md
-struct AsyncHelloWorker : Nan::AsyncWorker // NOLINT to disable cppcoreguidelines-special-member-functions
+/*
+struct AsyncHelloWorker : Napi::AsyncWorker
 {
-
-    using Base = Nan::AsyncWorker;
-    // We explicitly delete the copy constructor and assignment operator below (even though Nan::Asyncworker)
-    // already does this in the base class. This allows us to have the `const std::string* name`
-    // pointer member without the silly g++ warning of "error: ‘struct object_async::AsyncHelloWorker’ has pointer data members [-Werror=effc++]"
-    AsyncHelloWorker(AsyncHelloWorker const&) = delete;
-    AsyncHelloWorker& operator=(AsyncHelloWorker const&) = delete;
+    using Base = Napi::AsyncWorker;
+    // ctor
     AsyncHelloWorker(bool louder,
                      bool buffer,
-                     const std::string* name,
-                     Nan::Callback* cb)
-        : Base(cb, "skel:object-async-worker"),
+                     std::string name,
+                     Napi::Function const& cb)
+        : Base(cb),
           louder_(louder),
           buffer_(buffer),
-          name_(name) {}
+          name_(std::move(name)) {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
     // - You do not have access to Javascript v8 objects here.
-    void Execute() override {
-        try {
-            result_ = do_expensive_work(louder_, *name_);
-        } catch (const std::exception& e) {
-            SetErrorMessage(e.what());
+    void Execute() override
+    {
+        try
+        {
+            result_ = detail::do_expensive_work(name_, louder_);
+        }
+        catch (std::exception const& e)
+        {
+            SetError(e.what());
         }
     }
 
-    // The HandleOKCallback() is getting called when Execute() successfully
+    // The OnOK() is getting called when Execute() successfully
     // completed.
     // - In case Execute() invoked SetErrorMessage("") this function is not
     // getting called.
     // - You have access to Javascript v8 objects again
     // - You have to translate from C++ member variables to Javascript v8 objects
     // - Finally, you call the user's callback with your results
-    void HandleOKCallback() override {
-        Nan::HandleScope scope;
-
-        if (buffer_) {
-            const auto argc = 2u;
-            v8::Local<v8::Value> argv[argc] = {
-                Nan::Null(), utils::NewBufferFrom(std::move(result_)).ToLocalChecked()};
-
-            // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
-            callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
-
-        } else {
-            const auto argc = 2u;
-            v8::Local<v8::Value> argv[argc] = {
-                Nan::Null(), Nan::New<v8::String>(*result_).ToLocalChecked()};
-
-            // Static cast done here to avoid 'cppcoreguidelines-pro-bounds-array-to-pointer-decay' warning with clang-tidy
-            callback->Call(argc, static_cast<v8::Local<v8::Value>*>(argv), async_resource);
+    void OnOK() override
+    {
+        Napi::HandleScope scope(Env());
+        if (!Callback().IsEmpty())
+        {
+            if (buffer_)
+            {
+                char * data = result_->data();
+                std::size_t size = result_->size();
+                auto buffer = Napi::Buffer<char>::New(Env(),
+                                                      data,
+                                                      size,
+                                                      [](Napi::Env, char*, gsl::owner<std::vector<char>*> v) {
+                                                          delete v;
+                                                      },
+                                                      result_.release());
+                Callback().Call({Env().Null(), buffer});
+            }
+            else
+            {
+                Callback().Call({Env().Null(), Napi::String::New(Env(), result_->data(), result_->size())});
+            }
         }
     }
 
-    std::unique_ptr<std::string> result_ = std::make_unique<std::string>();
-    const bool louder_;
-    const bool buffer_;
-    // We use a pointer here to avoid copying the string data.
-    // This works because we know that the original string we are
-    // pointing to will be kept in scope/alive for the time while AsyncHelloWorker
-    // is using it. If we could not guarantee this then we would need to either
-    // copy the string or pass a shared_ptr<std::string>.
-    const std::string* name_;
+    std::unique_ptr<std::vector<char>> result_ = nullptr;
+    bool const louder_;
+    bool const buffer_;
+    std::string const name_;
+};
+*/
+
+// This V2 worker is overriding `GetResult` to return the arguments
+// passed to the Callback invoked by the default OnOK() implementation.
+// Above is alternative implementation with OnOK() method calling
+// Callback with appropriate args. Both implementations use default OnError().
+struct AsyncHelloWorker_v2 : Napi::AsyncWorker
+{
+    using Base = Napi::AsyncWorker;
+    // ctor
+    AsyncHelloWorker_v2(bool louder,
+                        bool buffer,
+                        std::string name,
+                        Napi::Function const& cb)
+        : Base(cb),
+          louder_(louder),
+          buffer_(buffer),
+          name_(std::move(name)) {}
+
+    // The Execute() function is getting called when the worker starts to run.
+    // - You only have access to member variables stored in this worker.
+    // - You do not have access to Javascript v8 objects here.
+    void Execute() override
+    {
+        try
+        {
+            result_ = detail::do_expensive_work(name_, louder_);
+        }
+        catch (std::exception const& e)
+        {
+            SetError(e.what());
+        }
+    }
+
+    std::vector<napi_value> GetResult(Napi::Env env) override
+    {
+        if (result_)
+        {
+            if (buffer_)
+            {
+                char* data = result_->data();
+                std::size_t size = result_->size();
+                auto buffer = Napi::Buffer<char>::New(env,
+                                                      data,
+                                                      size,
+                                                      [](Napi::Env, char*, gsl::owner<std::vector<char>*> v) {
+                                                          delete v;
+                                                      },
+                                                      result_.release());
+                return {env.Null(), buffer};
+            }
+            return {env.Null(), Napi::String::New(env, result_->data(), result_->size())};
+        }
+        return Base::GetResult(env); // returns an empty vector (default)
+    }
+
+    std::unique_ptr<std::vector<char>> result_ = nullptr;
+    bool const louder_;
+    bool const buffer_;
+    std::string const name_;
 };
 
-NAN_METHOD(HelloObjectAsync::helloAsync) {
-    // "info" comes from the NAN_METHOD macro, which returns differently according
-    // to the Node version
-    // "What is node::ObjectWrap???" The short version is that node::ObjectWrap
-    // and wrapping/unwrapping objects
-    // is the somewhat clumsy way it is possible to bind Node and C++. The main
-    // points to remember:
-    // - To access a class instance inside a C++ static method, you must unwrap
-    // the object.
-    // - The C++ methods must be static to make them available at startup across
-    // the language boundary (JS <-> C++).
-    auto* h =
-        Nan::ObjectWrap::Unwrap<HelloObjectAsync>(info.Holder());
+Napi::FunctionReference HelloObjectAsync::constructor; // NOLINT
 
+HelloObjectAsync::HelloObjectAsync(Napi::CallbackInfo const& info)
+    : Napi::ObjectWrap<HelloObjectAsync>(info)
+{
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    std::size_t length = info.Length();
+    if (length != 1 || !info[0].IsString())
+    {
+        Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
+        return;
+    }
+    name_ = info[0].As<Napi::String>().Utf8Value();
+    if (name_.empty())
+    {
+        Napi::TypeError::New(env, "arg must be a non-empty string").ThrowAsJavaScriptException();
+    }
+}
+
+Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info)
+{
     bool louder = false;
     bool buffer = false;
 
-    // Check second argument, should be a 'callback' function.
-    // This allows us to set the callback so we can use it to return errors
-    // instead of throwing.
-    // Also, "info" comes from the NAN_METHOD macro, which returns differently
-    // according to the version of node
-    if (!info[1]->IsFunction()) {
-        return Nan::ThrowTypeError("second arg 'callback' must be a function");
+    Napi::Env env = info.Env();
+    if (!(info.Length() == 2 && info[1].IsFunction()))
+    {
+        Napi::TypeError::New(env, "second arg 'callback' must be a function").ThrowAsJavaScriptException();
+        return env.Null();
     }
-    v8::Local<v8::Function> callback = info[1].As<v8::Function>();
+
+    Napi::Function callback = info[1].As<Napi::Function>();
 
     // Check first argument, should be an 'options' object
-    if (!info[0]->IsObject()) {
-        return utils::CallbackError("first arg 'options' must be an object",
-                                    callback);
+    if (!info[0].IsObject())
+    {
+        return utils::CallbackError("first arg 'options' must be an object", info);
     }
-    v8::Local<v8::Object> options = info[0].As<v8::Object>();
+    Napi::Object options = info[0].As<Napi::Object>();
 
     // Check options object for the "louder" property, which should be a boolean
     // value
-    if (Nan::Has(options, Nan::New("louder").ToLocalChecked()).FromMaybe(false)) {
-        v8::Local<v8::Value> louder_val =
-            Nan::Get(options, Nan::New("louder").ToLocalChecked()).ToLocalChecked();
-        if (!louder_val->IsBoolean()) {
-            return utils::CallbackError("option 'louder' must be a boolean",
-                                        callback);
+    if (options.Has(Napi::String::New(env, "louder")))
+    {
+        Napi::Value louder_val = options.Get(Napi::String::New(env, "louder"));
+        if (!louder_val.IsBoolean())
+        {
+            return utils::CallbackError("option 'louder' must be a boolean", info);
         }
-        Nan::Maybe<bool> maybe_louder = Nan::To<bool>(louder_val);
-        if (maybe_louder.IsNothing()) {
-            return utils::CallbackError("option 'louder' must be a boolean", callback);
-        }
-        louder = maybe_louder.FromJust();
+        louder = louder_val.As<Napi::Boolean>().Value();
     }
     // Check options object for the "buffer" property, which should be a boolean
     // value
-    if (Nan::Has(options, Nan::New("buffer").ToLocalChecked()).FromMaybe(false)) {
-        v8::Local<v8::Value> buffer_val =
-            Nan::Get(options, Nan::New("buffer").ToLocalChecked()).ToLocalChecked();
-        if (!buffer_val->IsBoolean()) {
-            return utils::CallbackError("option 'buffer' must be a boolean",
-                                        callback);
+    if (options.Has(Napi::String::New(env, "buffer")))
+    {
+        Napi::Value buffer_val = options.Get(Napi::String::New(env, "buffer"));
+        if (!buffer_val.IsBoolean())
+        {
+            return utils::CallbackError("option 'buffer' must be a boolean", info);
         }
-        Nan::Maybe<bool> maybe_buffer = Nan::To<bool>(buffer_val);
-        if (maybe_buffer.IsNothing()) {
-            return utils::CallbackError("option 'buffer' must be a boolean", callback);
-        }
-        buffer = maybe_buffer.FromJust();
+        buffer = buffer_val.As<Napi::Boolean>().Value();
     }
 
-    // Create a worker instance and queues it to run asynchronously invoking the
-    // callback when done.
-    // - Nan::AsyncWorker takes a pointer to a Nan::Callback and deletes the
-    // pointer automatically.
-    // - Nan::AsyncQueueWorker takes a pointer to a Nan::AsyncWorker and deletes
-    // the pointer automatically.
-    auto cb = std::make_unique<Nan::Callback>(callback);
-    auto worker = std::make_unique<AsyncHelloWorker>(louder, buffer, &h->name_, cb.release());
-    Nan::AsyncQueueWorker(worker.release());
+    auto* worker = new AsyncHelloWorker_v2{louder, buffer, name_, callback}; // NOLINT
+    worker->Queue();
+    return info.Env().Undefined(); // NOLINT
 }
 
-// Singleton
-Nan::Persistent<v8::Function>& HelloObjectAsync::create_once() {
-    static Nan::Persistent<v8::Function> init;
-    return init;
+Napi::Object HelloObjectAsync::Init(Napi::Env env, Napi::Object exports)
+{
+    Napi::Function func = DefineClass(env, "HelloObjectAsync", {InstanceMethod("helloAsync", &HelloObjectAsync::helloAsync)});
+    // Create a peristent reference to the class constructor. This will allow
+    // a function called on a class prototype and a function
+    // called on instance of a class to be distinguished from each other.
+    constructor = Napi::Persistent(func);
+    // Call the SuppressDestruct() method on the static data prevent the calling
+    // to this destructor to reset the reference when the environment is no longer
+    // available.
+    constructor.SuppressDestruct();
+    exports.Set("HelloObjectAsync", func);
+    return exports;
 }
 
-void HelloObjectAsync::Init(v8::Local<v8::Object> target) {
-    // A handlescope is needed so that v8 objects created in the local memory
-    // space (this function in this case)
-    // are cleaned up when the function is done running (and the handlescope is
-    // destroyed)
-    // Fun trivia: forgetting a handlescope is one of the most common causes of
-    // memory leaks in node.js core
-    // https://www.joyent.com/blog/walmart-node-js-memory-leak
-    Nan::HandleScope scope;
-
-    // This is saying:
-    // "Node, please allocate a new Javascript string object
-    // inside the V8 local memory space, with the value 'HelloObjectAsync' "
-    v8::Local<v8::String> whoami = Nan::New("HelloObjectAsync").ToLocalChecked();
-
-    // Create the HelloObject
-    auto fnTp = Nan::New<v8::FunctionTemplate>(
-        HelloObjectAsync::New, v8::Local<v8::Value>()); // Passing the HelloObject::New method above
-    fnTp->InstanceTemplate()->SetInternalFieldCount(1); // It's 1 when holding the ObjectWrap itself and nothing else
-    fnTp->SetClassName(whoami);                         // Passing the Javascript string object above
-
-    // Add custom methods here.
-    // This is how helloAsync() is exposed as part of HelloObjectAsync.
-    // This line is attaching the "helloAsync" method to a JavaScript function
-    // prototype.
-    // "helloAsync" is therefore like a property of the fnTp object
-    // ex: console.log(HelloObjectAsync.helloAsync) --> [Function: helloAsync]
-    SetPrototypeMethod(fnTp, "helloAsync", helloAsync);
-
-    // Create an unique instance of the HelloObject function template,
-    // then set this unique instance to the target
-    const auto fn = Nan::GetFunction(fnTp).ToLocalChecked();
-    create_once().Reset(fn); // calls the static &HelloObjectAsync::create_once
-                             // method above. This ensures the instructions in
-                             // this Init function are retained in memory even
-                             // after this code block ends.
-    Nan::Set(target, whoami, fn);
-}
 } // namespace object_async
