@@ -122,6 +122,7 @@ Napi::Value helloAsync(Napi::CallbackInfo const& info)
 
     // Check options object for the "louder" property, which should be a boolean
     // value
+
     if (options.Has(Napi::String::New(info.Env(), "louder")))
     {
         Napi::Value louder_val = options.Get(Napi::String::New(info.Env(), "louder"));
