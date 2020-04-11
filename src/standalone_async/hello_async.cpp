@@ -75,13 +75,14 @@ struct AsyncHelloWorker : Napi::AsyncWorker
             {
                 char* data = result_->data();
                 std::size_t size = result_->size();
-                auto buffer = Napi::Buffer<char>::New(Env(),
-                                                      data,
-                                                      size,
-                                                      [](Napi::Env, char*, gsl::owner<std::vector<char>*> v) {
-                                                          delete v;
-                                                      },
-                                                      result_.release());
+                auto buffer = Napi::Buffer<char>::New(
+                    Env(),
+                    data,
+                    size,
+                    [](Napi::Env /*unused*/, char* /*unused*/, gsl::owner<std::vector<char>*> v) {
+                        delete v;
+                    },
+                    result_.release());
                 Callback().Call({Env().Null(), buffer});
             }
             else

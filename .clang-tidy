@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-fuchsia-default-arguments'
+Checks:          '*,-fuchsia-default-arguments*,-llvm-header-guard,-modernize-use-trailing-return-type,-misc-non-private-member-variables-in-classes,-readability-magic-numbers,-cppcoreguidelines-avoid-magic-numbers'
 WarningsAsErrors: '*'
 HeaderFilterRegex: '\/src\/'
 AnalyzeTemporaryDtors: false

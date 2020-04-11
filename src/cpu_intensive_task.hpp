@@ -15,8 +15,10 @@ inline std::unique_ptr<std::vector<char>> do_expensive_work(std::string const& n
     std::unique_ptr<std::vector<char>> result = std::make_unique<std::vector<char>>(str.begin(), str.end());
     if (louder)
     {
-        std::string extra{"!!!!"};
-        std::copy(extra.c_str(), extra.c_str() + extra.length(), back_inserter(*result));
+        result->push_back('!');
+        result->push_back('!');
+        result->push_back('!');
+        result->push_back('!');
     }
     return result;
 }
