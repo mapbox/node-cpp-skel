@@ -79,7 +79,7 @@ struct AsyncHelloWorker : Napi::AsyncWorker
                     Env(),
                     data,
                     size,
-                    [](Napi::Env, char*, gsl::owner<std::vector<char>*> v) {
+                    [](Napi::Env /*unused*/, char* /*unused*/, gsl::owner<std::vector<char>*> v) {
                         delete v;
                     },
                     result_.release());

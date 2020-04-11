@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-fuchsia-default-arguments'
+Checks:          '*,-fuchsia-default-arguments*,-llvm-header-guard,-modernize-use-trailing-return-type'
 WarningsAsErrors: '*'
 HeaderFilterRegex: '\/src\/'
 AnalyzeTemporaryDtors: false
