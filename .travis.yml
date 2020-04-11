@@ -68,12 +68,12 @@ matrix:
       node_js: 13
     # osx publishable node v10/release
     - os: osx
-      osx_image: xcode9.3
+      osx_image: xcode11
       env: BUILDTYPE=release
       node_js: 10
     # osx publishable node v12/release
     - os: osx
-      osx_image: xcode9.3
+      osx_image: xcode11
       env: BUILDTYPE=release
       node_js: 12
     # linux sanitizer build node v10/debug
@@ -89,6 +89,7 @@ matrix:
         - true
     # osx sanitizer build node v10/debug
     - os: osx
+      osx_image: xcode11
       env: BUILDTYPE=debug TOOLSET=asan
       node_js: 10
       sudo: required
