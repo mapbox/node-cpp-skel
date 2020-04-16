@@ -104,12 +104,12 @@ Napi::Value helloAsync(Napi::CallbackInfo const& info)
 {
     bool louder = false;
     bool buffer = false;
-
+    Napi::Env env = info.Env();
     // Check second argument, should be a 'callback' function.
     if (!info[1].IsFunction())
     {
-        Napi::TypeError::New(info.Env(), "second arg 'callback' must be a function").ThrowAsJavaScriptException();
-        return info.Env().Null();
+        Napi::TypeError::New(env, "second arg 'callback' must be a function").ThrowAsJavaScriptException();
+        return env.Null();
     }
 
     Napi::Function callback = info[1].As<Napi::Function>();
@@ -117,29 +117,29 @@ Napi::Value helloAsync(Napi::CallbackInfo const& info)
     // Check first argument, should be an 'options' object
     if (!info[0].IsObject())
     {
-        return utils::CallbackError("first arg 'options' must be an object", info);
+        return utils::CallbackError(env, "first arg 'options' must be an object", callback);
     }
     Napi::Object options = info[0].As<Napi::Object>();
 
     // Check options object for the "louder" property, which should be a boolean
     // value
 
-    if (options.Has(Napi::String::New(info.Env(), "louder")))
+    if (options.Has(Napi::String::New(env, "louder")))
     {
-        Napi::Value louder_val = options.Get(Napi::String::New(info.Env(), "louder"));
+        Napi::Value louder_val = options.Get(Napi::String::New(env, "louder"));
         if (!louder_val.IsBoolean())
         {
-            return utils::CallbackError("option 'louder' must be a boolean", info);
+            return utils::CallbackError(env, "option 'louder' must be a boolean", callback);
         }
         louder = louder_val.As<Napi::Boolean>().Value();
     }
     // Check options object for the "buffer" property, which should be a boolean value
-    if (options.Has(Napi::String::New(info.Env(), "buffer")))
+    if (options.Has(Napi::String::New(env, "buffer")))
     {
-        Napi::Value buffer_val = options.Get(Napi::String::New(info.Env(), "buffer"));
+        Napi::Value buffer_val = options.Get(Napi::String::New(env, "buffer"));
         if (!buffer_val.IsBoolean())
         {
-            return utils::CallbackError("option 'buffer' must be a boolean", info);
+            return utils::CallbackError(env, "option 'buffer' must be a boolean", callback);
         }
         buffer = buffer_val.As<Napi::Boolean>().Value();
     }
@@ -152,7 +152,7 @@ Napi::Value helloAsync(Napi::CallbackInfo const& info)
     // the pointer automatically.
     auto* worker = new AsyncHelloWorker{louder, buffer, callback}; // NOLINT
     worker->Queue();
-    return info.Env().Undefined(); // NOLINT
+    return env.Undefined(); // NOLINT
 }
 
 } // namespace standalone_async
