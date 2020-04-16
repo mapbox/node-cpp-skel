@@ -182,7 +182,10 @@ HelloObjectAsync::HelloObjectAsync(Napi::CallbackInfo const& info)
         Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
         return;
     }
-    name_ = info[0].As<Napi::String>().Utf8Value();
+    name_ = info[0].As<Napi::String>();
+    // ^^ uses std::string() operator to convert to UTF-8 encoded string
+    // alternatively Utf8Value() method can be used e.g
+    // name_ = info[0].As<Napi::String>().Utf8Value();
     if (name_.empty())
     {
         Napi::TypeError::New(env, "arg must be a non-empty string").ThrowAsJavaScriptException();
