@@ -10,19 +10,17 @@ namespace utils {
 * throwing errors.
 * Usage:
 *
-* Napi::CallbackInfo info;
-* return CallbackError("error message", info);
+* return CallbackError(env, "error message", callback);
 *
 */
-inline Napi::Value CallbackError(std::string const& message, Napi::CallbackInfo const& info)
+
+inline Napi::Value CallbackError(Napi::Env env, std::string const& message, Napi::Function const& func)
 {
-    Napi::Object obj = Napi::Object::New(info.Env());
+    Napi::Object obj = Napi::Object::New(env);
     obj.Set("message", message);
-    auto func = info[info.Length() - 1].As<Napi::Function>();
-    // ^^^ here we assume that info has a valid callback function
-    // TODO(danespringmeyer): consider changing either method signature or adding internal checks
     return func.Call({obj});
 }
+
 } // namespace utils
 
 namespace gsl {

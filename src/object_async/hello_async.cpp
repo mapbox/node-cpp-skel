@@ -182,7 +182,10 @@ HelloObjectAsync::HelloObjectAsync(Napi::CallbackInfo const& info)
         Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
         return;
     }
-    name_ = info[0].As<Napi::String>().Utf8Value();
+    name_ = info[0].As<Napi::String>();
+    // ^^ uses std::string() operator to convert to UTF-8 encoded string
+    // alternatively Utf8Value() method can be used e.g
+    // name_ = info[0].As<Napi::String>().Utf8Value();
     if (name_.empty())
     {
         Napi::TypeError::New(env, "arg must be a non-empty string").ThrowAsJavaScriptException();
@@ -206,7 +209,7 @@ Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info)
     // Check first argument, should be an 'options' object
     if (!info[0].IsObject())
     {
-        return utils::CallbackError("first arg 'options' must be an object", info);
+        return utils::CallbackError(env, "first arg 'options' must be an object", callback);
     }
     Napi::Object options = info[0].As<Napi::Object>();
 
@@ -217,7 +220,7 @@ Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info)
         Napi::Value louder_val = options.Get(Napi::String::New(env, "louder"));
         if (!louder_val.IsBoolean())
         {
-            return utils::CallbackError("option 'louder' must be a boolean", info);
+            return utils::CallbackError(env, "option 'louder' must be a boolean", callback);
         }
         louder = louder_val.As<Napi::Boolean>().Value();
     }
@@ -228,7 +231,7 @@ Napi::Value HelloObjectAsync::helloAsync(Napi::CallbackInfo const& info)
         Napi::Value buffer_val = options.Get(Napi::String::New(env, "buffer"));
         if (!buffer_val.IsBoolean())
         {
-            return utils::CallbackError("option 'buffer' must be a boolean", info);
+            return utils::CallbackError(env, "option 'buffer' must be a boolean", callback);
         }
         buffer = buffer_val.As<Napi::Boolean>().Value();
     }
