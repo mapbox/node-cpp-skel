@@ -1,5 +1,5 @@
-![dancing skel](https://mapbox.s3.amazonaws.com/cpp-assets/node-cpp-skel-readme_blue.png)
-[![Build Status](https://travis-ci.org/mapbox/node-cpp-skel.svg?branch=master)](https://travis-ci.org/mapbox/node-cpp-skel)
+![dancing skel](https://raw.githubusercontent.com/mapbox/cpp/master/assets/node-cpp-skel-readme_blue.png)
+[![Build Status](https://travis-ci.com/mapbox/node-cpp-skel.svg?branch=master)](https://travis-ci.com/mapbox/node-cpp-skel)
 [![codecov](https://codecov.io/gh/mapbox/node-cpp-skel/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/node-cpp-skel)
 
 A skeleton for building a C++ addon for Node.js. This is a small, helper repository that generates simple `HelloWorld` Javascript example constructors. The examples have a number of methods to demonstrate different ways to use the Node C+ API for building particular types of functionality (i.e. asynchronous functions). Use this repo as both a template for your own code as well as a learning tool if you're just starting to develop Node/C++ Addons.
