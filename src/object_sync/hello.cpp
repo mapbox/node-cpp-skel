@@ -64,16 +64,21 @@ Napi::Value HelloObject::hello(Napi::CallbackInfo const& info)
 Napi::Object HelloObject::Init(Napi::Env env, Napi::Object exports)
 {
 
+    std::cerr << "DefinedClass" << std::endl;
     Napi::Function func = DefineClass(env, "HelloObject",
                                       {InstanceMethod<&HelloObject::hello>("helloMethod")});
+
     // Create a peristent reference to the class constructor. This will allow
     // a function called on a class prototype and a function
     // called on instance of a class to be distinguished from each other.
+    std::cerr << "Napi::Persistent(func);" << std::endl;
     constructor = Napi::Persistent(func);
     // Call the SuppressDestruct() method on the static data prevent the calling
     // to this destructor to reset the reference when the environment is no longer
     // available.
+    std::cerr << "constructor.SuppressDestruct();" << std::endl;
     constructor.SuppressDestruct();
+    std::cerr << "exports.Set(\"HelloObject\", func);" << std::endl;
     exports.Set("HelloObject", func);
     return exports;
 }
