@@ -38,3 +38,130 @@ matrix:
     - os: linux
       env: BUILDTYPE=release TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -fsanitize-blacklist=$PWD/blacklist.txt -fvisibility=hidden" LDFLAGS="-fsanitize=cfi"
       node_js: 10
+    # linux publishable node v12/release
+    - os: linux
+      env: BUILDTYPE=release
+      node_js: 12
+    # linux publishable node v10/release
+    - os: linux
+      env: BUILDTYPE=release
+      node_js: 10
+    # linux publishable node v10/debug
+    - os: linux
+      env: BUILDTYPE=debug
+      node_js: 10
+    # linux publishable node v12/release
+    - os: linux
+      env: BUILDTYPE=release
+      node_js: 12
+    # linux publishable node v12/debug
+    - os: linux
+      env: BUILDTYPE=debug
+      node_js: 12
+    # linux publishable node v13/release
+    - os: linux
+      env: BUILDTYPE=release
+      node_js: 13
+    # linux publishable node v13/debug
+    - os: linux
+      env: BUILDTYPE=debug
+      node_js: 13
+    # osx publishable node v10/release
+    - os: osx
+      osx_image: xcode11
+      env: BUILDTYPE=release
+      node_js: 10
+    # osx publishable node v12/release
+    - os: osx
+      osx_image: xcode11
+      env: BUILDTYPE=release
+      node_js: 12
+    # linux sanitizer build node v10/debug
+    - os: linux
+      env: BUILDTYPE=debug TOOLSET=asan
+      node_js: 10
+      sudo: required
+      # Overrides `install` to set up custom asan flags
+      install:
+        - make sanitize
+      # Overrides `before_script` (tests are already run in `make sanitize`)
+      before_script:
+        - true
+    # osx sanitizer build node v10/debug
+    - os: osx
+      osx_image: xcode11
+      env: BUILDTYPE=debug TOOLSET=asan
+      node_js: 10
+      sudo: required
+      # Overrides `install` to set up custom asan flags
+      install:
+        - make sanitize
+      # Overrides `before_script` (tests are already run in `make sanitize`)
+      before_script:
+        - true
+    ## ** Builds that do not get published **
+
+    # g++ build (default builds all use clang++)
+    - os: linux
+      env: BUILDTYPE=debug CXX="g++-6" CC="gcc-6" LINK="g++-6" AR="ar" NM="nm"
+      node_js: 10
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - libstdc++-6-dev
+            - g++-6
+      # Overrides `install` to avoid initializing clang toolchain
+      install:
+        - make ${BUILDTYPE}
+      # Overrides `script` to disable publishing
+      script:
+        - true
+    # Coverage build
+    - os: linux
+      env: BUILDTYPE=debug CXXFLAGS="--coverage" LDFLAGS="--coverage"
+      node_js: 10
+      # Overrides `script` to publish coverage data to codecov
+      script:
+        - export PATH=$(pwd)/mason_packages/.link/bin/:${PATH}
+        - which llvm-cov
+        - curl -S -f https://codecov.io/bash -o codecov
+        - chmod +x codecov
+        # Workaround until we can avoid problem after https://github.com/travis-ci/travis-build/pull/1263 lands
+        - PATH=$(echo "$PATH" | sed 's/.\/node_modules\/.bin://')
+        - ./codecov -x "llvm-cov gcov" -Z
+    # Clang format build
+    - os: linux
+      # can be generic since we don't need nodejs to run formatting
+      language: generic
+      env: CLANG_FORMAT
+      # Overrides `install` to avoid initializing clang toolchain
+      install:
+        # Run the clang-format script. Any code formatting changes
+        # will trigger the build to fail (idea here is to get us to pay attention
+        # and get in the habit of running these locally before committing)
+        - make format
+      # Overrides `before_script`, no need to run tests
+      before_script:
+        - true
+      # Overrides `script` to disable publishing
+      script:
+        - true
+    # Clang tidy build
+    - os: linux
+      env: CLANG_TIDY
+      node_js: 10
+      # Overrides `install` to avoid initializing clang toolchain
+      install:
+        # First run the clang-tidy target
+        # Any code formatting fixes automatically applied by clang-tidy
+        # will trigger the build to fail (idea here is to get us to pay attention
+        # and get in the habit of running these locally before committing)
+        - make tidy
+      # Overrides `before_script`, no need to run tests
+      before_script:
+        - true
+      # Overrides `script` to disable publishing
+      script:
+        - true

@@ -1,6 +1,6 @@
 #include "hello.hpp"
 #include <memory>
-#include <iostream>
+
 /**
  * Synchronous class, called HelloObject
  * @class HelloObject
@@ -40,9 +40,7 @@ HelloObject::HelloObject(Napi::CallbackInfo const& info)
         Napi::TypeError::New(env, "String expected").ThrowAsJavaScriptException();
         return;
     }
-    std::cerr << "testing.." << std::endl;
     name_ = info[0].As<Napi::String>();
-    std::cerr << "name_:" << name_ << std::endl;
     // ^^ uses std::string() operator to convert to UTF-8 encoded string
     // alternatively Utf8Value() method can be used e.g
     // name_ = info[0].As<Napi::String>().Utf8Value();

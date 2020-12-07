@@ -2,13 +2,9 @@ var test = require('tape');
 var module = require('../lib/index.js');
 
 test('success: prints expected string', function(t) {
-  console.log("#1");
   var H = new module.HelloObject('carol');
-  console.log("#2");
   var check = H.helloMethod();
-  console.log("#3");
   t.equal(check, 'carol', 'returned expected string');
-  console.log("#4");
   t.end();
 });
 
