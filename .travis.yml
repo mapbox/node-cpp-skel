@@ -36,5 +36,5 @@ matrix:
 
     # linux cfi build node v10/release
     - os: linux
-      env: BUILDTYPE=release TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -fvisibility=hidden" LDFLAGS="-fsanitize=cfi"
+      env: BUILDTYPE=release TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -fno-sanitize=cfi-derived-cast -fvisibility=hidden" LDFLAGS="-fsanitize=cfi"
       node_js: 10

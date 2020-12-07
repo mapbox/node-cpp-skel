@@ -1,7 +1,7 @@
 var test = require('tape');
 var module = require('../lib/index.js');
 
-test.only('success: prints expected string', function(t) {
+test('success: prints expected string', function(t) {
   console.log("#1");
   var H = new module.HelloObject('carol');
   console.log("#2");
