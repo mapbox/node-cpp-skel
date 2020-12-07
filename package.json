@@ -18,7 +18,7 @@
   "dependencies": {
     "@mapbox/mason-js": "^0.1.5",
     "node-addon-api": "nodejs/node-addon-api",
-    "node-pre-gyp": "^0.14.0"
+    "node-pre-gyp": "^0.17.0"
   },
   "devDependencies": {
     "aws-sdk": "^2.4.7",
