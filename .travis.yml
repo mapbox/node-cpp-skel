@@ -36,7 +36,7 @@ matrix:
 
     # linux cfi build node v10/release
     - os: linux
-      env: BUILDTYPE=release TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -fvisibility=hidden" LDFLAGS="-fsanitize=cfi"
+      env: BUILDTYPE=release TOOLSET=cfi CXXFLAGS="-fsanitize=cfi -fsanitize-blacklist=$PWD/blacklist.txt -fvisibility=hidden" LDFLAGS="-fsanitize=cfi"
       node_js: 10
     # linux publishable node v12/release
     - os: linux

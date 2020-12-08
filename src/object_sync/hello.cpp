@@ -34,7 +34,6 @@ HelloObject::HelloObject(Napi::CallbackInfo const& info)
     : Napi::ObjectWrap<HelloObject>(info)
 {
     Napi::Env env = info.Env();
-    Napi::HandleScope scope(env);
     std::size_t length = info.Length();
     if (length != 1 || !info[0].IsString())
     {

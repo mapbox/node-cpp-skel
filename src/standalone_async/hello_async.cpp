@@ -68,7 +68,6 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     // - Finally, you call the user's callback with your results
     void OnOK() final
     {
-        Napi::HandleScope scope(Env());
         if (!Callback().IsEmpty() && result_)
         {
             if (buffer_)

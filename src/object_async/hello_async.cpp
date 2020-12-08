@@ -77,7 +77,6 @@ struct AsyncHelloWorker : Napi::AsyncWorker
     // - Finally, you call the user's callback with your results
     void OnOK() override
     {
-        Napi::HandleScope scope(Env());
         if (!Callback().IsEmpty())
         {
             if (buffer_)
@@ -174,8 +173,6 @@ HelloObjectAsync::HelloObjectAsync(Napi::CallbackInfo const& info)
     : Napi::ObjectWrap<HelloObjectAsync>(info)
 {
     Napi::Env env = info.Env();
-    Napi::HandleScope scope(env);
-
     std::size_t length = info.Length();
     if (length != 1 || !info[0].IsString())
     {
