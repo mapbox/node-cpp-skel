@@ -17,7 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@mapbox/mason-js": "^0.1.5",
-    "@mapbox/node-pre-gyp": "^1.0.0-alpha1",
+    "@mapbox/node-pre-gyp": "^1.0.0-alpha2",
     "node-addon-api": "nodejs/node-addon-api",
     "node-pre-gyp": "^0.17.0"
   },
