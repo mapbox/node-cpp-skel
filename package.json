@@ -1,6 +1,6 @@
 {
   "name": "@mapbox/node-cpp-skel",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "description": "Skeleton for bindings to C++ libraries for Node.js using N-API (node-addon-api)",
   "url": "http://github.com/mapbox/node-cpp-skel",
   "main": "./lib/index.js",
