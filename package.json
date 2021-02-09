@@ -22,11 +22,11 @@
     "node-pre-gyp": "^0.17.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.4.7",
+    "aws-sdk": "^2.840.0",
     "bytes": "^3.1.0",
     "d3-queue": "^3.0.7",
     "minimist": "^1.2.5",
-    "tape": "^4.13.2"
+    "tape": "^5.1.1"
   },
   "binary": {
     "module_name": "module",
