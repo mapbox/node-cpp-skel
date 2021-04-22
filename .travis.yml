@@ -126,11 +126,13 @@ matrix:
       script:
         - export PATH=$(pwd)/mason_packages/.link/bin/:${PATH}
         - which llvm-cov
-        - curl -S -f https://codecov.io/bash -o codecov
-        - chmod +x codecov
-        # Workaround until we can avoid problem after https://github.com/travis-ci/travis-build/pull/1263 lands
-        - PATH=$(echo "$PATH" | sed 's/.\/node_modules\/.bin://')
-        - ./codecov -x "llvm-cov gcov" -Z
+        # - NOTE: we are disabling the codecov bash uploader due to https://about.codecov.io/security-update/
+        # - This should be replaced with the node uploader in the future
+        # - curl -S -f https://codecov.io/bash -o codecov
+        # - chmod +x codecov
+        # # Workaround until we can avoid problem after https://github.com/travis-ci/travis-build/pull/1263 lands
+        # - PATH=$(echo "$PATH" | sed 's/.\/node_modules\/.bin://')
+        # - ./codecov -x "llvm-cov gcov" -Z
     # Clang format build
     - os: linux
       # can be generic since we don't need nodejs to run formatting
