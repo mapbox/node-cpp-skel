@@ -8,11 +8,16 @@ namespace standalone_promise {
 // async worker that handles the Deferred methods
 struct PromiseWorker : Napi::AsyncWorker
 {
+    const std::string phrase_;
+    const int multiply_;
+    Napi::Promise::Deferred deferred;
+    std::string output;
+
     // constructor / ctor
     PromiseWorker(Napi::Env const& env, std::string phrase, int multiply)
         : Napi::AsyncWorker(env),
-          phrase(std::move(phrase)),
-          multiply(multiply),
+          phrase_(std::move(phrase)),
+          multiply_(multiply),
           deferred(Napi::Promise::Deferred::New(env)) {}
 
     // The Execute() function is getting called when the worker starts to run.
@@ -20,9 +25,9 @@ struct PromiseWorker : Napi::AsyncWorker
     // - You do not have access to Javascript v8 objects here.
     void Execute() override
     {
-        for (int i = 0; i < multiply; ++i)
+        for (int i = 0; i < multiply_; ++i)
         {
-            output += phrase;
+            output += phrase_;
         }
     }
 
@@ -49,11 +54,6 @@ struct PromiseWorker : Napi::AsyncWorker
     {
         return deferred.Promise();
     }
-
-    const std::string phrase;
-    const int multiply;
-    Napi::Promise::Deferred deferred;
-    std::string output;
 };
 
 // entry point
