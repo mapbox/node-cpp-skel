@@ -8,17 +8,13 @@ namespace standalone_promise {
 // async worker that handles the Deferred methods
 struct PromiseWorker : Napi::AsyncWorker
 {
-    const std::string phrase_;
-    const int multiply_;
-    Napi::Promise::Deferred deferred;
-    std::string output;
-
     // constructor / ctor
     PromiseWorker(Napi::Env const& env, std::string phrase, int multiply)
         : Napi::AsyncWorker(env),
           phrase_(std::move(phrase)),
           multiply_(multiply),
-          deferred(Napi::Promise::Deferred::New(env)) {}
+          deferred(Napi::Promise::Deferred::New(env)),
+          output() {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -54,6 +50,11 @@ struct PromiseWorker : Napi::AsyncWorker
     {
         return deferred.Promise();
     }
+
+    const std::string phrase_;
+    const int multiply_;
+    Napi::Promise::Deferred deferred;
+    std::string output;
 };
 
 // entry point
@@ -109,7 +110,7 @@ Napi::Value helloPromise(Napi::CallbackInfo const& info)
     // initialize Napi::AsyncWorker
     // This comes with a GetPromise that returns the necessary
     // Napi::Promise::Deferred class that we send the user
-    auto* worker = new PromiseWorker(env, phrase, multiply);
+    auto* worker = new PromiseWorker{env, phrase, multiply};
     auto promise = worker->GetPromise();
 
     // begin asynchronous work by queueing it.
