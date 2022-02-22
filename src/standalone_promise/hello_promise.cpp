@@ -53,7 +53,7 @@ struct PromiseWorker : Napi::AsyncWorker
     const std::string phrase_;
     const int multiply_;
     Napi::Promise::Deferred deferred;
-    std::string output;
+    std::string output = "";
 };
 
 // entry point
