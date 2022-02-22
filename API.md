@@ -2,103 +2,188 @@
 
 ### Table of Contents
 
--   [HelloObjectAsync](#helloobjectasync)
-    -   [helloAsync](#helloasync)
--   [HelloObject](#helloobject)
-    -   [hello](#hello)
--   [helloAsync](#helloasync-1)
--   [hello](#hello-1)
+*   [hello][1]
+    *   [Examples][2]
+*   [helloAsync][3]
+    *   [Parameters][4]
+    *   [Examples][5]
+*   [helloPromise][6]
+    *   [Parameters][7]
+    *   [Examples][8]
+*   [HelloObject][9]
+    *   [Examples][10]
+    *   [hello][11]
+        *   [Examples][12]
+*   [HelloObjectAsync][13]
+    *   [Examples][14]
+    *   [helloAsync][15]
+        *   [Parameters][16]
+        *   [Examples][17]
 
-## HelloObjectAsync
+## hello
 
-Asynchronous class, called HelloObjectAsync
+This is a synchronous standalone function that logs a string.
 
-**Examples**
+### Examples
 
 ```javascript
-var module = require('index.js');
-var Obj = new module.HelloObjectAsync('greg');
+const { hello } = require('@mapbox/node-cpp-skel');
+const check = hello();
+console.log(check); // => "hello world"
 ```
 
-### helloAsync
+Returns **[string][18]** 
 
-Say hello while doing expensive work in threads
+## helloAsync
 
-**Parameters**
+This is an asynchronous standalone function that logs a string.
 
--   `args` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** different ways to alter the string
-    -   `args.louder` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** adds exclamation points to the string
--   `callback` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** from whence the hello comes, returns a string
+### Parameters
 
-**Examples**
+*   `args` **[Object][19]** different ways to alter the string
+
+    *   `args.louder` **[boolean][20]** adds exclamation points to the string
+    *   `args.buffer` **[boolean][20]** returns value as a node buffer rather than a string
+*   `callback` **[Function][21]** from whence the hello comes, returns a string
+
+### Examples
 
 ```javascript
-var module = require('index.js');
-var Obj = new module.HelloObjectAsync('greg');
-Obj.helloAsync({ louder: true }, function(err, result) {
+const { helloAsync } = require('@mapbox/node-cpp-skel');
+helloAsync({ louder: true }, function(err, result) {
   if (err) throw err;
-  console.log(result); // => '...threads are busy async bees...hello greg!!!'
+  console.log(result); // => "...threads are busy async bees...hello
+world!!!!"
 });
 ```
 
-Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+Returns **[string][18]** 
+
+## helloPromise
+
+This is a function that returns a promise. It multiplies a string N times.
+
+### Parameters
+
+*   `options` **[Object][19]?** different ways to alter the string
+
+    *   `options.phrase` **[string][18]** the string to multiply (optional, default `hello`)
+    *   `options.multiply` **[Number][22]** duplicate the string this number of times (optional, default `1`)
+
+### Examples
+
+```javascript
+const { helloPromise } = require('@mapbox/node-cpp-skel');
+const result = await helloAsync({ phrase: 'Howdy', multiply: 3 });
+console.log(result); // HowdyHowdyHowdy
+```
+
+Returns **[Promise][23]** 
 
 ## HelloObject
 
 Synchronous class, called HelloObject
 
-**Examples**
+### Examples
 
 ```javascript
-var module = require('index.js');
-var Obj = new module.HelloObject('greg');
+const { HelloObject } = require('@mapbox/node-cpp-skel');
+const Obj = new HelloObject('greg');
 ```
 
 ### hello
 
 Say hello
 
-**Examples**
+#### Examples
 
 ```javascript
-var x = Obj.hello();
+const x = Obj.hello();
 console.log(x); // => '...initialized an object...hello greg'
 ```
 
-Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+Returns **[String][18]** 
 
-## helloAsync
+## HelloObjectAsync
 
-This is an asynchronous standalone function that logs a string.
+Asynchronous class, called HelloObjectAsync
 
-**Parameters**
-
--   `args` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** different ways to alter the string
-    -   `args.louder` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** adds exclamation points to the string
--   `callback` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** from whence the hello comes, returns a string
-
-**Examples**
+### Examples
 
 ```javascript
-var module = require('./path/to/lib/index.js');
-module.helloAsync({ louder: true }, function(err, result) {
+const { HelloObjectAsync } = require('@mapbox/node-cpp-skel');
+const Obj = new module.HelloObjectAsync('greg');
+```
+
+### helloAsync
+
+Say hello while doing expensive work in threads
+
+#### Parameters
+
+*   `args` **[Object][19]** different ways to alter the string
+
+    *   `args.louder` **[boolean][20]** adds exclamation points to the string
+    *   `args.buffer` **[buffer][24]** returns object as a node buffer rather then string
+*   `callback` **[Function][21]** from whence the hello comes, returns a string
+
+#### Examples
+
+```javascript
+const { HelloObjectAsync } = require('@mapbox/node-cpp-skel');
+const Obj = new HelloObjectAsync('greg');
+Obj.helloAsync({ louder: true }, function(err, result) {
   if (err) throw err;
-  console.log(result); // => "...threads are busy async bees...hello world!!!!"
+  console.log(result); // => '...threads are busy async bees...hello greg!!!'
 });
 ```
 
-Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+Returns **[String][18]** 
 
-## hello
+[1]: #hello
 
-This is a synchronous standalone function that logs a string.
+[2]: #examples
 
-**Examples**
+[3]: #helloasync
 
-```javascript
-var module = require('./path/to/lib/index.js');
-var check = module.hello();
-console.log(check); // => "hello world"
-```
+[4]: #parameters
 
-Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+[5]: #examples-1
+
+[6]: #hellopromise
+
+[7]: #parameters-1
+
+[8]: #examples-2
+
+[9]: #helloobject
+
+[10]: #examples-3
+
+[11]: #hello-1
+
+[12]: #examples-4
+
+[13]: #helloobjectasync
+
+[14]: #examples-5
+
+[15]: #helloasync-1
+
+[16]: #parameters-2
+
+[17]: #examples-6
+
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+[24]: https://nodejs.org/api/buffer.html
