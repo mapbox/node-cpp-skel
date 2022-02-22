@@ -14,7 +14,7 @@ struct PromiseWorker : Napi::AsyncWorker
           phrase_(std::move(phrase)),
           multiply_(multiply),
           deferred(Napi::Promise::Deferred::New(env)),
-          output() {}
+          {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
