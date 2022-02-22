@@ -7,4 +7,4 @@ namespace standalone_promise {
 // method's logic lives in hello_promise.cpp
 Napi::Value helloPromise(Napi::CallbackInfo const& info);
 
-} // namespace standalone_async
+} // namespace standalone_promise
