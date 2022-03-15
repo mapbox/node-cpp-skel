@@ -13,7 +13,7 @@ struct PromiseWorker : Napi::AsyncWorker
         : Napi::AsyncWorker(env),
           phrase_(std::move(phrase)),
           multiply_(multiply),
-          deferred(Napi::Promise::Deferred::New(env)) {}
+          deferred_(Napi::Promise::Deferred::New(env)) {}
 
     // The Execute() function is getting called when the worker starts to run.
     // - You only have access to member variables stored in this worker.
@@ -22,7 +22,7 @@ struct PromiseWorker : Napi::AsyncWorker
     {
         for (int i = 0; i < multiply_; ++i)
         {
-            output += phrase_;
+            output_ += phrase_;
         }
     }
 
@@ -35,25 +35,25 @@ struct PromiseWorker : Napi::AsyncWorker
     // - Finally, you call the user's callback with your results
     void OnOK() final
     {
-        deferred.Resolve(Napi::String::New(Env(), output));
+        deferred_.Resolve(Napi::String::New(Env(), output_));
     }
 
     // If anything in the PromiseWorker.Execute method throws an error
     // it will be caught here and rejected.
     void OnError(Napi::Error const& error) override
     {
-        deferred.Reject(error.Value());
+        deferred_.Reject(error.Value());
     }
 
     Napi::Promise GetPromise() const
     {
-        return deferred.Promise();
+        return deferred_.Promise();
     }
 
     const std::string phrase_;
     const int multiply_;
-    Napi::Promise::Deferred deferred;
-    std::string output = "";
+    Napi::Promise::Deferred deferred_;
+    std::string output_ = "";
 };
 
 // entry point
