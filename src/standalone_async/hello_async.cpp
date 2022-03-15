@@ -8,23 +8,6 @@
 #include <memory>
 #include <stdexcept>
 
-/**
- * This is an asynchronous standalone function that logs a string.
- * @name helloAsync
- * @param {Object} args - different ways to alter the string
- * @param {boolean} args.louder - adds exclamation points to the string
- * @param {boolean} args.buffer - returns value as a node buffer rather than a string
- * @param {Function} callback - from whence the hello comes, returns a string
- * @returns {string}
- * @example
- * var module = require('./path/to/lib/index.js');
- * module.helloAsync({ louder: true }, function(err, result) {
- *   if (err) throw err;
- *   console.log(result); // => "...threads are busy async bees...hello
- * world!!!!"
- * });
- */
-
 namespace standalone_async {
 
 // This is the worker running asynchronously and calling a user-provided

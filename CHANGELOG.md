@@ -1,3 +1,8 @@
+# 2/21/2022
+
+* Add `helloPromise` function example using [Napi::Promise](https://github.com/nodejs/node-addon-api/blob/c54aeef5fd37d3304e61af189672f9f61d403e6f/doc/promises.md)
+* Move all JSDoc to lib/index.js since versions >=5 do not support the `--polyglot` flag and give docs a little refresh
+
 # 1/9/2018
 
 * Add memory stats option to bench tests
@@ -14,7 +19,7 @@
 
 * Add [sanitzer flag doc](https://github.com/mapbox/node-cpp-skel/pull/84)
 * Add [sanitizer script](hhttps://github.com/mapbox/node-cpp-skel/pull/85) and enable [leak sanitizer](https://github.com/mapbox/node-cpp-skel/commit/725601e4c7df6cb8477a128f018fb064a9f6f9aa)
-* 
+*
 
 # 10/20/2017
 

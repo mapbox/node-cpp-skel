@@ -2,6 +2,7 @@
 #include "object_sync/hello.hpp"
 #include "standalone/hello.hpp"
 #include "standalone_async/hello_async.hpp"
+#include "standalone_promise/hello_promise.hpp"
 #include <napi.h>
 // #include "your_code.hpp"
 
@@ -12,6 +13,9 @@ Napi::Object init(Napi::Env env, Napi::Object exports)
 
     // expose helloAsync method
     exports.Set(Napi::String::New(env, "helloAsync"), Napi::Function::New(env, standalone_async::helloAsync));
+
+    // expose helloPromise method
+    exports.Set(Napi::String::New(env, "helloPromise"), Napi::Function::New(env, standalone_promise::helloPromise));
 
     // expose HelloObject class
     object_sync::HelloObject::Init(env, exports);

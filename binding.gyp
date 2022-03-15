@@ -77,6 +77,7 @@
         './src/module.cpp',
         './src/standalone/hello.cpp',
         './src/standalone_async/hello_async.cpp',
+        './src/standalone_promise/hello_promise.cpp',
         './src/object_sync/hello.cpp',
         './src/object_async/hello_async.cpp'
       ],

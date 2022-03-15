@@ -8,33 +8,6 @@
 #include <stdexcept>
 #include <utility>
 
-/**
- * Asynchronous class, called HelloObjectAsync
- * @class HelloObjectAsync
- * @example
- * var module = require('index.js');
- * var Obj = new module.HelloObjectAsync('greg');
- */
-
-/**
- * Say hello while doing expensive work in threads
- *
- * @name helloAsync
- * @memberof HelloObjectAsync
- * @param {Object} args - different ways to alter the string
- * @param {boolean} args.louder - adds exclamation points to the string
- * @param {buffer} args.buffer - returns object as a node buffer rather then string
- * @param {Function} callback - from whence the hello comes, returns a string
- * @returns {String}
- * @example
- * var module = require('index.js');
- * var Obj = new module.HelloObjectAsync('greg');
- * Obj.helloAsync({ louder: true }, function(err, result) {
- *   if (err) throw err;
- *   console.log(result); // => '...threads are busy async bees...hello greg!!!'
- * });
- */
-
 // If this was not defined within a namespace, it would be in the global scope.
 
 namespace object_async {

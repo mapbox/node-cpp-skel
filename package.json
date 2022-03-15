@@ -11,15 +11,14 @@
   "scripts": {
     "test": "tape test/*.test.js",
     "install": "node-pre-gyp install --fallback-to-build",
-    "docs": "documentation build src/standalone_async/*.cpp src/standalone/*.cpp src/object_sync/*.cpp src/object_async/*.cpp --polyglot -f md -o API.md"
+    "docs": "documentation build ./lib/index.js -f md > API.md"
   },
   "author": "Mapbox",
   "license": "ISC",
   "dependencies": {
     "@mapbox/mason-js": "^0.1.5",
-    "@mapbox/node-pre-gyp": "^1.0.0",
-    "node-addon-api": "^3.1.0",
-    "node-pre-gyp": "^0.17.0"
+    "@mapbox/node-pre-gyp": "^1.0.8",
+    "node-addon-api": "^4.3.0"
   },
   "devDependencies": {
     "aws-sdk": "^2.840.0",

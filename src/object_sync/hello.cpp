@@ -1,25 +1,6 @@
 #include "hello.hpp"
 #include <memory>
 
-/**
- * Synchronous class, called HelloObject
- * @class HelloObject
- * @example
- * var module = require('index.js');
- * var Obj = new module.HelloObject('greg');
- */
-
-/**
- * Say hello
- *
- * @name hello
- * @memberof HelloObject
- * @returns {String}
- * @example
- * var x = Obj.hello();
- * console.log(x); // => '...initialized an object...hello greg'
- */
-
 // If this was not defined within a namespace, it would be in the global scope.
 // Namespaces are used because C++ has no notion of scoped modules, so all of
 // the code you write in any file could conflict with other code.
