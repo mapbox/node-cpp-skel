@@ -1,0 +1,45 @@
+name: mapbox/node-cpp-skel
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        buildtype: ['release', 'debug']
+        node-version: ['10', '12', '13']
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install packages
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt update
+          sudo apt-get install -y libstdc++-5-dev
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install and setup
+        run: |
+          node -v
+          which node
+          clang++ -v
+          which clang++
+          make "${BUILDTYPE}"
+
+      - name: Run tests
+        run: |
+          npm test
